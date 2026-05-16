@@ -1,4 +1,5 @@
 #include "TrayManager.h"
+#include "common/LanguageManager.h"
 #include <QtGui/QIcon>
 #include <QtGui/QPainter>
 #include <QtGui/QPixmap>
@@ -28,27 +29,38 @@ void TrayManager::initialize() {
 void TrayManager::buildMenu() {
     m_menu = new QMenu();
 
-    m_modeMenu = new QMenu("Mode", m_menu);
+    // Mode submenu
+    m_modeMenu = new QMenu(tr("Mode"), m_menu);
 
-    m_realtimeAction = m_modeMenu->addAction("Real-time Translation");
+    m_realtimeAction = m_modeMenu->addAction(tr("Real-time Translation"));
     m_realtimeAction->setCheckable(true);
-    m_snapshotAction = m_modeMenu->addAction("Snapshot Translation");
+    m_snapshotAction = m_modeMenu->addAction(tr("Snapshot Translation"));
     m_snapshotAction->setCheckable(true);
-    m_pauseAction    = m_modeMenu->addAction("Pause Translation");
+    m_pauseAction    = m_modeMenu->addAction(tr("Pause Translation"));
     m_pauseAction->setCheckable(true);
 
     m_menu->addMenu(m_modeMenu);
+
+    // Language submenu
+    m_langMenu = new QMenu(tr("Language"), m_menu);
+    m_langEnAction = m_langMenu->addAction(tr("English"));
+    m_langEnAction->setCheckable(true);
+    m_langZhAction = m_langMenu->addAction(tr("简体中文"));
+    m_langZhAction->setCheckable(true);
+    m_menu->addMenu(m_langMenu);
+
     m_menu->addSeparator();
 
-    QAction* areaAction = m_menu->addAction("Select Translation Area...");
-    QAction* toggleAction = m_menu->addAction("Show/Hide All Translations");
+    m_areaAction   = m_menu->addAction(tr("Select Translation Area..."));
+    m_toggleAction = m_menu->addAction(tr("Show/Hide All Translations"));
     m_menu->addSeparator();
 
-    QAction* settingsAction = m_menu->addAction("Settings...");
+    m_settingsAction = m_menu->addAction(tr("Settings..."));
     m_menu->addSeparator();
 
-    QAction* exitAction = m_menu->addAction("Exit");
+    m_exitAction = m_menu->addAction(tr("Exit"));
 
+    // Mode connections
     connect(m_realtimeAction, &QAction::triggered, this, [this]() {
         emit modeChangeRequested(Mode::RealTime);
     });
@@ -58,10 +70,23 @@ void TrayManager::buildMenu() {
     connect(m_pauseAction, &QAction::triggered, this, [this]() {
         emit modeChangeRequested(Mode::Pause);
     });
-    connect(areaAction, &QAction::triggered, this, &TrayManager::areaSelectRequested);
-    connect(toggleAction, &QAction::triggered, this, &TrayManager::globalVisibilityToggleRequested);
-    connect(settingsAction, &QAction::triggered, this, &TrayManager::settingsRequested);
-    connect(exitAction, &QAction::triggered, this, &TrayManager::exitRequested);
+
+    // Language connections
+    connect(m_langEnAction, &QAction::triggered, this, [this]() {
+        emit languageChangeRequested("en");
+    });
+    connect(m_langZhAction, &QAction::triggered, this, [this]() {
+        emit languageChangeRequested("zh_CN");
+    });
+
+    connect(m_areaAction, &QAction::triggered, this, &TrayManager::areaSelectRequested);
+    connect(m_toggleAction, &QAction::triggered, this, &TrayManager::globalVisibilityToggleRequested);
+    connect(m_settingsAction, &QAction::triggered, this, &TrayManager::settingsRequested);
+    connect(m_exitAction, &QAction::triggered, this, &TrayManager::exitRequested);
+
+    // Sync language checkmarks on language change
+    connect(LanguageManager::instance(), &LanguageManager::languageChanged,
+            this, &TrayManager::retranslateUi);
 }
 
 void TrayManager::updateModeCheck(Mode mode) {
@@ -88,4 +113,21 @@ void TrayManager::updateIcon(Mode mode) {
     painter.end();
 
     m_trayIcon->setIcon(QIcon(pix));
+}
+
+void TrayManager::retranslateUi() {
+    m_langEnAction->setChecked(LanguageManager::instance()->currentLanguage() == "en");
+    m_langZhAction->setChecked(LanguageManager::instance()->currentLanguage() == "zh_CN");
+
+    m_modeMenu->setTitle(tr("Mode"));
+    m_realtimeAction->setText(tr("Real-time Translation"));
+    m_snapshotAction->setText(tr("Snapshot Translation"));
+    m_pauseAction->setText(tr("Pause Translation"));
+    m_langMenu->setTitle(tr("Language"));
+    m_langEnAction->setText(tr("English"));
+    m_langZhAction->setText(tr("简体中文"));
+    m_areaAction->setText(tr("Select Translation Area..."));
+    m_toggleAction->setText(tr("Show/Hide All Translations"));
+    m_settingsAction->setText(tr("Settings..."));
+    m_exitAction->setText(tr("Exit"));
 }

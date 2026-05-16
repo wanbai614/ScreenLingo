@@ -14,8 +14,11 @@ set(SOURCES
     src/app/SignalBus.h
     src/app/Application.h
     src/app/Application.cpp
+    src/common/Types.h
     src/common/Config.h
     src/common/Config.cpp
+    src/common/LanguageManager.h
+    src/common/LanguageManager.cpp
     src/core/translate/ITranslator.h
     src/core/translate/TranslatorManager.cpp
     src/core/translate/plugins/DeepLTranslator.h
@@ -76,6 +79,15 @@ set_target_properties(ScreenLingo PROPERTIES
 )
 
 target_sources(ScreenLingo PRIVATE resources/dpiaware.manifest)
+
+# Translations
+add_custom_command(
+    TARGET ScreenLingo POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:ScreenLingo>/translations
+    COMMAND ${QT6_INSTALL_PREFIX}/bin/lrelease ${CMAKE_SOURCE_DIR}/resources/screenlingo_zh_CN.ts
+            -qm $<TARGET_FILE_DIR:ScreenLingo>/translations/screenlingo_zh_CN.qm
+    COMMENT "Compiling translation: screenlingo_zh_CN.qm"
+)
 
 if(MSVC)
     target_compile_options(ScreenLingo PRIVATE /Zc:__cplusplus /utf-8 /FS)

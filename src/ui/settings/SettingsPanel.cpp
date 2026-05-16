@@ -2,7 +2,9 @@
 #include "core/translate/ITranslator.h"
 #include "engine/hotkey/HotkeyManager.h"
 #include "common/Config.h"
+#include "common/LanguageManager.h"
 #include "app/SignalBus.h"
+#include <QtCore/QPair>
 #include <QtGui/QFontDatabase>
 #include <QtWidgets/QMessageBox>
 
@@ -14,36 +16,59 @@ SettingsPanel::SettingsPanel(const QVector<ITranslator*>& translators,
     : QDialog(parent), m_bus(bus), m_config(config),
       m_hotkeyMgr(hotkeyMgr), m_translators(translators) {
 
-    setWindowTitle("ScreenLingo Settings");
-    setMinimumSize(520, 440);
+    setWindowTitle(tr("ScreenLingo Settings"));
+    setMinimumSize(540, 460);
 
-    auto* tabWidget = new QTabWidget;
+    m_tabWidget = new QTabWidget;
 
-    tabWidget->addTab(createAppearanceTab(),  "Appearance");
-    tabWidget->addTab(createTranslationTab(), "Translation");
-    tabWidget->addTab(createHotkeysTab(),     "Hotkeys");
-    tabWidget->addTab(createAreasTab(),       "Areas");
+    m_tabWidget->addTab(createAppearanceTab(),  tr("Appearance"));
+    m_tabWidget->addTab(createTranslationTab(), tr("Translation"));
+    m_tabWidget->addTab(createHotkeysTab(),     tr("Hotkeys"));
+    m_tabWidget->addTab(createAreasTab(),       tr("Areas"));
 
     auto* layout = new QVBoxLayout(this);
-    layout->addWidget(tabWidget);
+    layout->addWidget(m_tabWidget);
 
+    // General section
+    auto* generalGroup = new QGroupBox(tr("General"));
+    auto* generalForm = new QFormLayout(generalGroup);
+    m_langCombo = new QComboBox;
+    QVector<QPair<QString, QString>> langs = LanguageManager::instance()->availableLanguages();
+    for (const auto& pair : langs) {
+        m_langCombo->addItem(pair.second, pair.first);
+    }
+    QString curLang = LanguageManager::instance()->currentLanguage();
+    int idx = m_langCombo->findData(curLang);
+    if (idx >= 0) m_langCombo->setCurrentIndex(idx);
+    connect(m_langCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this](int i) {
+        QString lang = m_langCombo->itemData(i).toString();
+        emit languageChangeRequested(lang);
+    });
+    generalForm->addRow(tr("Interface Language:"), m_langCombo);
+    layout->addWidget(generalGroup);
+
+    // Buttons
     auto* btnLayout = new QHBoxLayout;
-    auto* resetBtn  = new QPushButton("Reset Defaults");
-    auto* applyBtn  = new QPushButton("Apply");
-    auto* closeBtn  = new QPushButton("Close");
-    btnLayout->addWidget(resetBtn);
+    m_resetBtn  = new QPushButton(tr("Reset Defaults"));
+    m_applyBtn  = new QPushButton(tr("Apply"));
+    m_closeBtn  = new QPushButton(tr("Close"));
+    btnLayout->addWidget(m_resetBtn);
     btnLayout->addStretch();
-    btnLayout->addWidget(applyBtn);
-    btnLayout->addWidget(closeBtn);
+    btnLayout->addWidget(m_applyBtn);
+    btnLayout->addWidget(m_closeBtn);
     layout->addLayout(btnLayout);
 
-    connect(applyBtn,  &QPushButton::clicked, this, &SettingsPanel::applyStyle);
-    connect(closeBtn,  &QPushButton::clicked, this, &QDialog::close);
-    connect(resetBtn,  &QPushButton::clicked, this, [this]() {
+    connect(m_applyBtn,  &QPushButton::clicked, this, &SettingsPanel::applyStyle);
+    connect(m_closeBtn,  &QPushButton::clicked, this, &QDialog::close);
+    connect(m_resetBtn,  &QPushButton::clicked, this, [this]() {
         m_pendingStyle = StyleConfig{};
         loadStyle();
         updatePreview();
     });
+
+    // React to language changes
+    connect(LanguageManager::instance(), &LanguageManager::languageChanged,
+            this, &SettingsPanel::retranslateUi);
 
     loadStyle();
 }
@@ -63,7 +88,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
             updatePreview();
         }
     });
-    form->addRow("Text Color:", m_textColorBtn);
+    form->addRow(tr("Text Color:"), m_textColorBtn);
 
     m_fontSizeSpin = new QSpinBox;
     m_fontSizeSpin->setRange(8, 48);
@@ -71,7 +96,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
         m_pendingStyle.font.setPointSize(v);
         updatePreview();
     });
-    form->addRow("Font Size:", m_fontSizeSpin);
+    form->addRow(tr("Font Size:"), m_fontSizeSpin);
 
     m_fontCombo = new QComboBox;
     QFontDatabase fontDb;
@@ -80,13 +105,13 @@ QWidget* SettingsPanel::createAppearanceTab() {
         m_pendingStyle.font.setFamily(f);
         updatePreview();
     });
-    form->addRow("Font:", m_fontCombo);
+    form->addRow(tr("Font:"), m_fontCombo);
 
     m_bgColorBtn = new QPushButton;
     m_bgColorBtn->setFixedSize(40, 24);
     connect(m_bgColorBtn, &QPushButton::clicked, this, [this]() {
         QColor c = QColorDialog::getColor(m_pendingStyle.backgroundColor, this,
-                                          "Choose", QColorDialog::ShowAlphaChannel);
+                                          tr("Choose"), QColorDialog::ShowAlphaChannel);
         if (c.isValid()) {
             m_pendingStyle.backgroundColor = c;
             m_bgColorBtn->setStyleSheet(
@@ -94,7 +119,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
             updatePreview();
         }
     });
-    form->addRow("Background:", m_bgColorBtn);
+    form->addRow(tr("Background:"), m_bgColorBtn);
 
     m_alphaSlider = new QSlider(Qt::Horizontal);
     m_alphaSlider->setRange(0, 100);
@@ -102,7 +127,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
         m_pendingStyle.backgroundAlpha = v;
         updatePreview();
     });
-    form->addRow("Opacity:", m_alphaSlider);
+    form->addRow(tr("Opacity:"), m_alphaSlider);
 
     m_borderRadiusSpin = new QSpinBox;
     m_borderRadiusSpin->setRange(0, 20);
@@ -110,7 +135,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
         m_pendingStyle.borderRadius = v;
         updatePreview();
     });
-    form->addRow("Border Radius:", m_borderRadiusSpin);
+    form->addRow(tr("Border Radius:"), m_borderRadiusSpin);
 
     m_borderColorBtn = new QPushButton;
     m_borderColorBtn->setFixedSize(40, 24);
@@ -123,7 +148,7 @@ QWidget* SettingsPanel::createAppearanceTab() {
             updatePreview();
         }
     });
-    form->addRow("Border Color:", m_borderColorBtn);
+    form->addRow(tr("Border Color:"), m_borderColorBtn);
 
     m_borderWidthSpin = new QSpinBox;
     m_borderWidthSpin->setRange(0, 5);
@@ -131,11 +156,11 @@ QWidget* SettingsPanel::createAppearanceTab() {
         m_pendingStyle.borderWidth = v;
         updatePreview();
     });
-    form->addRow("Border Width:", m_borderWidthSpin);
+    form->addRow(tr("Border Width:"), m_borderWidthSpin);
 
-    auto* previewGroup = new QGroupBox("Preview");
+    auto* previewGroup = new QGroupBox(tr("Preview"));
     auto* previewLayout = new QVBoxLayout(previewGroup);
-    m_previewLabel = new QLabel("Hello World!");
+    m_previewLabel = new QLabel(tr("Hello World!"));
     m_previewLabel->setMinimumHeight(50);
     m_previewLabel->setAlignment(Qt::AlignCenter);
     previewLayout->addWidget(m_previewLabel);
@@ -153,7 +178,7 @@ QWidget* SettingsPanel::createTranslationTab() {
         m_serviceCombo->addItem(
             QString("%1 (%2)").arg(t->name(), t->category()), t->name());
     }
-    layout->addWidget(new QLabel("Active Service:"));
+    layout->addWidget(new QLabel(tr("Active Service:")));
     layout->addWidget(m_serviceCombo);
 
     m_translatorConfigLayout = new QVBoxLayout;
@@ -169,7 +194,7 @@ QWidget* SettingsPanel::createTranslationTab() {
         auto* translator = m_translators.value(idx);
         if (!translator) return;
 
-        auto* group = new QGroupBox(translator->name() + " Configuration");
+        auto* group = new QGroupBox(translator->name() + " " + tr("Configuration"));
         auto* form = new QFormLayout(group);
 
         for (const auto& field : translator->configFields()) {
@@ -198,7 +223,7 @@ QWidget* SettingsPanel::createHotkeysTab() {
     auto* page = new QWidget;
     auto* layout = new QVBoxLayout(page);
 
-    layout->addWidget(new QLabel("Hotkey bindings:"));
+    layout->addWidget(new QLabel(tr("Hotkey bindings:")));
 
     for (const auto& binding : m_hotkeyMgr->bindings()) {
         auto* row = new QHBoxLayout;
@@ -207,9 +232,9 @@ QWidget* SettingsPanel::createHotkeysTab() {
         keyBtn->setMinimumWidth(120);
 
         connect(keyBtn, &QPushButton::clicked, this, [this, binding, keyBtn]() {
-            keyBtn->setText("Press keys...");
+            keyBtn->setText(tr("Press keys..."));
             keyBtn->setEnabled(false);
-            QMessageBox::information(this, "Rebind",
+            QMessageBox::information(this, tr("Rebind"),
                 QString("Key capture for '%1'.\nCurrent: %2\n\n"
                         "In production: press the new key combination.")
                 .arg(binding.label, binding.currentKeys));
@@ -222,7 +247,7 @@ QWidget* SettingsPanel::createHotkeysTab() {
         layout->addLayout(row);
     }
 
-    auto* resetBtn = new QPushButton("Reset All to Defaults");
+    auto* resetBtn = new QPushButton(tr("Reset All to Defaults"));
     layout->addWidget(resetBtn);
     layout->addStretch();
     return page;
@@ -232,9 +257,9 @@ QWidget* SettingsPanel::createAreasTab() {
     auto* page = new QWidget;
     auto* layout = new QVBoxLayout(page);
 
-    layout->addWidget(new QLabel("Translation Areas:"));
-    auto* areaList = new QLabel("No areas configured.\nUse Ctrl+Shift+A "
-                                 "or the tray menu to select areas.");
+    layout->addWidget(new QLabel(tr("Translation Areas:")));
+    auto* areaList = new QLabel(tr("No areas configured.\nUse Ctrl+Shift+A "
+                                   "or the tray menu to select areas."));
     areaList->setWordWrap(true);
     layout->addWidget(areaList);
     layout->addStretch();
@@ -287,6 +312,22 @@ void SettingsPanel::applyStyle() {
         }
     }
 
+    // Save language preference
+    QString lang = m_langCombo->currentData().toString();
+    m_config->setTranslatorConfig("app", "language", lang);
+
     emit styleChanged(m_pendingStyle);
     if (m_bus) m_bus->styleChanged(m_pendingStyle);
+}
+
+void SettingsPanel::retranslateUi() {
+    setWindowTitle(tr("ScreenLingo Settings"));
+    m_tabWidget->setTabText(0, tr("Appearance"));
+    m_tabWidget->setTabText(1, tr("Translation"));
+    m_tabWidget->setTabText(2, tr("Hotkeys"));
+    m_tabWidget->setTabText(3, tr("Areas"));
+    m_resetBtn->setText(tr("Reset Defaults"));
+    m_applyBtn->setText(tr("Apply"));
+    m_closeBtn->setText(tr("Close"));
+    updatePreview();
 }

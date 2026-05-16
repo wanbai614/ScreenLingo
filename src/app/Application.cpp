@@ -11,6 +11,7 @@
 #include "ui/tray/TrayManager.h"
 #include "ui/selector/AreaSelector.h"
 #include "common/Config.h"
+#include "common/LanguageManager.h"
 
 // SettingsPanel is being created in a parallel task.
 // When it lands the include will be picked up automatically.
@@ -38,6 +39,10 @@ bool Application::initialize() {
 
     // 2. SignalBus
     m_bus = new SignalBus(this);
+
+    // 2.5 Language - init before UI
+    LanguageManager::instance()->initialize(
+        m_config->translatorConfig("app", "language"));
 
     // 3. Core modules
     m_capture = new DxgiCaptureEngine(this);
@@ -124,6 +129,8 @@ bool Application::initialize() {
             this, &Application::onGlobalVisibilityToggle);
     connect(m_tray, &TrayManager::settingsRequested,
             this, &Application::onSettingsRequested);
+    connect(m_tray, &TrayManager::languageChangeRequested,
+            this, &Application::onLanguageChangeRequested);
     connect(m_tray, &TrayManager::exitRequested,
             qApp, &QApplication::quit);
 
@@ -228,6 +235,8 @@ void Application::onSettingsRequested() {
             m_hotkey, m_config, m_bus);
         connect(m_settings, &SettingsPanel::styleChanged,
                 this, &Application::onStyleChanged);
+        connect(m_settings, &SettingsPanel::languageChangeRequested,
+                this, &Application::onLanguageChangeRequested);
     }
     m_settings->show();
     m_settings->raise();
@@ -274,4 +283,10 @@ void Application::onTranslationReady(const QString& original,
 
 void Application::onStyleChanged(const StyleConfig& style) {
     m_overlays->updateAllStyles(style);
+}
+
+void Application::onLanguageChangeRequested(const QString& lang) {
+    LanguageManager::instance()->switchLanguage(lang);
+    m_config->setTranslatorConfig("app", "language", lang);
+    m_tray->retranslateUi();
 }

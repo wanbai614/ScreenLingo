@@ -13,11 +13,15 @@ public:
     void initialize();
     void updateIcon(Mode mode);
 
+public slots:
+    void retranslateUi();
+
 signals:
     void modeChangeRequested(Mode mode);
     void areaSelectRequested();
     void globalVisibilityToggleRequested();
     void settingsRequested();
+    void languageChangeRequested(const QString& lang);
     void exitRequested();
 
 private:
@@ -27,7 +31,14 @@ private:
     QSystemTrayIcon* m_trayIcon = nullptr;
     QMenu*           m_menu     = nullptr;
     QMenu*           m_modeMenu = nullptr;
+    QMenu*           m_langMenu = nullptr;
     QAction*         m_realtimeAction = nullptr;
     QAction*         m_snapshotAction = nullptr;
     QAction*         m_pauseAction    = nullptr;
+    QAction*         m_langEnAction   = nullptr;
+    QAction*         m_langZhAction   = nullptr;
+    QAction*         m_areaAction     = nullptr;
+    QAction*         m_toggleAction   = nullptr;
+    QAction*         m_settingsAction = nullptr;
+    QAction*         m_exitAction     = nullptr;
 };

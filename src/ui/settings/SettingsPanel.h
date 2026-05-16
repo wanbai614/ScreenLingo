@@ -34,6 +34,10 @@ public:
 
 signals:
     void styleChanged(const StyleConfig& style);
+    void languageChangeRequested(const QString& lang);
+
+public slots:
+    void retranslateUi();
 
 private:
     QWidget* createAppearanceTab();
@@ -51,6 +55,7 @@ private:
     QVector<ITranslator*>        m_translators;
     StyleConfig                  m_pendingStyle;
 
+    QTabWidget*   m_tabWidget   = nullptr;
     QPushButton* m_textColorBtn    = nullptr;
     QSpinBox*    m_fontSizeSpin    = nullptr;
     QComboBox*   m_fontCombo       = nullptr;
@@ -64,4 +69,8 @@ private:
     QVBoxLayout* m_translatorConfigLayout = nullptr;
 
     QLabel*      m_previewLabel = nullptr;
+    QComboBox*   m_langCombo    = nullptr;
+    QPushButton* m_resetBtn     = nullptr;
+    QPushButton* m_applyBtn     = nullptr;
+    QPushButton* m_closeBtn     = nullptr;
 };

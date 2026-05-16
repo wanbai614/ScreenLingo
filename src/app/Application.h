@@ -36,6 +36,7 @@ private slots:
     void onOcrCompleted(const OCRResult& result);
     void onTranslationReady(const QString& original, const QString& translated);
     void onStyleChanged(const StyleConfig& style);
+    void onLanguageChangeRequested(const QString& lang);
 
 private:
     void setMode(Mode mode);
