@@ -82,4 +82,10 @@ private:
     // Prevent concurrent OCR/translation cycles
     bool m_ocrBusy            = false;
     int  m_pendingTranslations = 0;
+
+    // Translation cache: original text → translated text (avoid re-translating)
+    QHash<QString, QString> m_translationCache;
+
+    // Last OCR full text (avoid re-processing identical frames)
+    QString m_lastOcrText;
 };

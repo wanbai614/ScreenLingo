@@ -198,11 +198,9 @@ void Application::onModeChanged(Mode mode) {
 
 void Application::processRealtimeFrame() {
     if (m_areas.isEmpty()) return;
+    if (m_ocrBusy) return;
     const auto& area = m_areas.first();
     if (!area.enabled) return;
-
-    // Guard: don't start new OCR while previous cycle is still translating
-    if (m_ocrBusy) return;
 
     QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
     if (frame.isNull()) return;
@@ -217,23 +215,28 @@ void Application::onSnapshotRequested() {
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
-    // Clear existing overlays for snapshot mode (start fresh)
-    m_overlays->removeAll();
-    m_textToOverlay.clear();
-
-    QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
-    if (!frame.isNull()) {
-        m_lastSourceRect = area.geometry;
-        m_ocr->recognize(frame);
-    }
-}
-
-void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
-    // Clear all previous state: overlays, tracking maps, busy flags
+    // Clear existing overlays for snapshot mode
     m_overlays->removeAll();
     m_textToOverlay.clear();
     m_textSourceRects.clear();
     m_activeTextHashes.clear();
+    m_pendingTranslations = 0;
+
+    QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
+    if (frame.isNull()) return;
+
+    m_lastSourceRect = area.geometry;
+    m_ocr->recognize(frame);
+}
+
+void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
+    // Full state reset
+    m_overlays->removeAll();
+    m_textToOverlay.clear();
+    m_textSourceRects.clear();
+    m_activeTextHashes.clear();
+    m_translationCache.clear();
+    m_lastOcrText.clear();
     m_pendingTranslations = 0;
     m_ocrBusy = false;
 
@@ -249,6 +252,9 @@ void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
 
     m_config->saveAreas(m_areas);
     if (m_settings) m_settings->refreshAreas();
+
+    // Auto-trigger one snapshot after area selection so user sees immediate result
+    QTimer::singleShot(300, this, &Application::onSnapshotRequested);
 }
 
 void Application::onAreaCleared() {
@@ -311,36 +317,60 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
     if (result.fullText.isEmpty()) return;
 
+    // Skip if identical to last frame (avoids redundant API calls)
+    if (result.fullText == m_lastOcrText) return;
+    m_lastOcrText = result.fullText;
+
     QString srcLang = m_config->sourceLang();
     QString tgtLang = m_config->targetLang();
-
-    // Track new hashes for this frame (don't clear yet — old bubbles stay
-    // visible until we confirm translations for the new frame)
     QSet<int> newHashes;
 
     if (!result.boxes.isEmpty()) {
         QRect captureRect = m_lastSourceRect;
         for (const auto& box : result.boxes) {
-            if (box.text.trimmed().isEmpty()) continue;
+            QString text = box.text.trimmed();
+            if (text.isEmpty()) continue;
+
             QRect screenRect(
                 captureRect.x() + box.boundingRect.x(),
                 captureRect.y() + box.boundingRect.y(),
                 box.boundingRect.width(),
                 box.boundingRect.height()
             );
-            m_textSourceRects[box.text] = screenRect;
-            m_translator->translate(box.text, srcLang, tgtLang);
-            ++m_pendingTranslations;
-            newHashes.insert(qHash(box.text));
+            m_textSourceRects[text] = screenRect;
+            int hash = qHash(text);
+            newHashes.insert(hash);
+
+            // Use cached translation if available, otherwise call API
+            if (m_translationCache.contains(text)) {
+                // Cached: increment count so stale cleanup fires after all are done
+                ++m_pendingTranslations;
+                QString cached = m_translationCache[text];
+                QTimer::singleShot(0, this, [this, text, cached]() {
+                    onTranslationReady(text, cached);
+                });
+            } else {
+                m_translator->translate(text, srcLang, tgtLang);
+                ++m_pendingTranslations;
+            }
         }
     } else {
+        int hash = qHash(result.fullText);
+        newHashes.insert(hash);
         m_textSourceRects[result.fullText] = m_lastSourceRect;
-        m_translator->translate(result.fullText, srcLang, tgtLang);
-        ++m_pendingTranslations;
-        newHashes.insert(qHash(result.fullText));
+
+        if (m_translationCache.contains(result.fullText)) {
+            ++m_pendingTranslations;
+            QString cached = m_translationCache[result.fullText];
+            QTimer::singleShot(0, this, [this, text = result.fullText, cached]() {
+                onTranslationReady(text, cached);
+            });
+        } else {
+            m_translator->translate(result.fullText, srcLang, tgtLang);
+            ++m_pendingTranslations;
+        }
     }
 
-    // Remember which hashes we expect this cycle
     m_activeTextHashes = newHashes;
 }
 
@@ -368,6 +398,9 @@ void Application::onTranslationReady(const QString& original,
 
     LayoutResult layout = m_layout->compute(req,
         m_overlays->existingBubbleRects(), screenBounds);
+
+    // Cache the translation to avoid re-translating
+    m_translationCache[original] = translated;
 
     if (m_textToOverlay.contains(textHash)) {
         m_overlays->updateTranslation(m_textToOverlay[textHash], translated, layout);
