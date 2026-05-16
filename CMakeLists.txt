@@ -15,6 +15,8 @@ set(SOURCES
     src/common/Config.h
     src/common/Config.cpp
     src/core/translate/TranslatorManager.cpp
+    src/core/translate/plugins/DeepLTranslator.cpp
+    src/core/translate/plugins/OpenAITranslator.cpp
     src/core/ocr/WindowsOcrEngine.cpp
     src/core/capture/ICaptureEngine.h
     src/core/capture/DxgiCaptureEngine.h
