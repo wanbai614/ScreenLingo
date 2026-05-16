@@ -11,6 +11,7 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
 
 set(SOURCES
     src/main.cpp
+    src/app/SignalBus.h
 )
 
 qt_add_executable(ScreenLingo ${SOURCES})
