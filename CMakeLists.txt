@@ -3,6 +3,7 @@ project(ScreenLingo VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 
@@ -23,14 +24,12 @@ target_link_libraries(ScreenLingo PRIVATE
     Qt6::Network
     d3d11
     dxgi
-    WindowsApp
     user32
     gdi32
 )
 
 set_target_properties(ScreenLingo PROPERTIES
     WIN32_EXECUTABLE TRUE
-    CXX_STANDARD 20
 )
 
 target_sources(ScreenLingo PRIVATE resources/dpiaware.manifest)
