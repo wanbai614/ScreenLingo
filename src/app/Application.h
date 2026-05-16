@@ -3,6 +3,7 @@
 #include <QtWidgets/QApplication>
 #include <QtCore/QTimer>
 #include <QtCore/QHash>
+#include <QtCore/QSet>
 #include <memory>
 #include "common/Types.h"
 
@@ -27,6 +28,7 @@ public:
     bool initialize();
 
 private slots:
+    void processRealtimeFrame();
     void onHotkeyTriggered(const QString& id);
     void onModeChanged(Mode mode);
     void onSnapshotRequested();
@@ -68,4 +70,10 @@ private:
 
     // Map text hash → overlay id for update-on-re-translation
     QHash<int, int>     m_textToOverlay;
+
+    // Track which hashes are active this cycle (real-time mode cleanup)
+    QSet<int>           m_activeTextHashes;
+
+    // Map original text → screen position of source
+    QHash<QString, QRect> m_textSourceRects;
 };

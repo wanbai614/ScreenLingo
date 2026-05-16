@@ -136,8 +136,9 @@ bool Application::initialize() {
 
     // 6. Capture timer for real-time mode
     m_captureTimer = new QTimer(this);
-    m_captureTimer->setInterval(100);
-    // Real-time mode frame processing loop will be wired in v1.1
+    m_captureTimer->setInterval(200);
+    connect(m_captureTimer, &QTimer::timeout,
+            this, &Application::processRealtimeFrame);
 
     // 7. Restore last mode and areas
     setMode(m_config->lastMode());
@@ -193,14 +194,32 @@ void Application::onModeChanged(Mode mode) {
     setMode(mode);
 }
 
+void Application::processRealtimeFrame() {
+    if (m_areas.isEmpty()) return;
+    const auto& area = m_areas.first();
+    if (!area.enabled) return;
+
+    // Skip if no change (low-power optimization)
+    if (!m_capture->hasChanged(area.geometry, area.screenIndex)) return;
+
+    QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
+    if (frame.isNull()) return;
+
+    m_lastSourceRect = area.geometry;
+    m_ocr->recognize(frame);
+}
+
 void Application::onSnapshotRequested() {
     if (m_areas.isEmpty()) return;
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
+    // Clear existing overlays for snapshot mode (start fresh)
+    m_overlays->removeAll();
+    m_textToOverlay.clear();
+
     QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
     if (!frame.isNull()) {
-        // Store source rect so onTranslationReady knows where to place the bubble.
         m_lastSourceRect = area.geometry;
         m_ocr->recognize(frame);
     }
@@ -248,17 +267,48 @@ void Application::onSettingsRequested() {
 
 void Application::onOcrCompleted(const OCRResult& result) {
     if (result.fullText.isEmpty()) return;
+
     QString srcLang = m_config->sourceLang();
     QString tgtLang = m_config->targetLang();
-    m_translator->translate(result.fullText, srcLang, tgtLang);
+
+    // Clear active set for this frame
+    m_activeTextHashes.clear();
+
+    if (!result.boxes.isEmpty()) {
+        // Translate each text block individually with its screen position
+        QRect captureRect = m_lastSourceRect;
+        for (const auto& box : result.boxes) {
+            if (box.text.trimmed().isEmpty()) continue;
+            // Convert image-local rect to screen coordinates
+            QRect screenRect(
+                captureRect.x() + box.boundingRect.x(),
+                captureRect.y() + box.boundingRect.y(),
+                box.boundingRect.width(),
+                box.boundingRect.height()
+            );
+            m_textSourceRects[box.text] = screenRect;
+            m_translator->translate(box.text, srcLang, tgtLang);
+        }
+    } else {
+        // No boxes, translate full text positioned over capture area
+        m_textSourceRects[result.fullText] = m_lastSourceRect;
+        m_translator->translate(result.fullText, srcLang, tgtLang);
+    }
 }
 
 void Application::onTranslationReady(const QString& original,
                                       const QString& translated) {
     if (!m_globalVisible) return;
 
-    QRect sourceRect = m_lastSourceRect;
-    if (sourceRect.isNull()) return;
+    // Get source rect for this text
+    QRect sourceRect = m_textSourceRects.value(original);
+    m_textSourceRects.remove(original);
+    if (sourceRect.isNull()) {
+        sourceRect = m_lastSourceRect;
+    }
+
+    int textHash = qHash(original);
+    m_activeTextHashes.insert(textHash);
 
     LayoutRequest req;
     req.sourceRect        = sourceRect;
@@ -272,12 +322,31 @@ void Application::onTranslationReady(const QString& original,
     LayoutResult layout = m_layout->compute(req,
         m_overlays->existingBubbleRects(), screenBounds);
 
-    int textHash = qHash(original);
     if (m_textToOverlay.contains(textHash)) {
         m_overlays->updateTranslation(m_textToOverlay[textHash], translated, layout);
     } else {
         int id = m_overlays->showTranslation(layout, translated);
         m_textToOverlay[textHash] = id;
+    }
+
+    // Clean up stale overlays (text no longer on screen)
+    if (m_mode == Mode::RealTime) {
+        QList<int> staleIds;
+        for (auto it = m_textToOverlay.begin(); it != m_textToOverlay.end(); ++it) {
+            if (!m_activeTextHashes.contains(it.key())) {
+                staleIds.append(it.value());
+            }
+        }
+        for (int id : staleIds) {
+            m_overlays->removeTranslation(id);
+            // Remove from hash
+            for (auto it = m_textToOverlay.begin(); it != m_textToOverlay.end(); ) {
+                if (it.value() == id)
+                    it = m_textToOverlay.erase(it);
+                else
+                    ++it;
+            }
+        }
     }
 }
 
