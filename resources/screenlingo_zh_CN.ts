@@ -211,4 +211,15 @@ Use Ctrl+Shift+A or the tray menu to select areas.</source>
         <translation>单次快照</translation>
     </message>
 </context>
+<context>
+    <name>DeepSeekTranslator</name>
+    <message>
+        <source>DeepSeek API key not configured</source>
+        <translation>DeepSeek API 密钥未配置</translation>
+    </message>
+    <message>
+        <source>Empty response from DeepSeek</source>
+        <translation>DeepSeek 返回空响应</translation>
+    </message>
+</context>
 </TS>

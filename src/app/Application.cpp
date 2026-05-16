@@ -5,6 +5,7 @@
 #include "core/translate/TranslatorManager.h"
 #include "core/translate/plugins/DeepLTranslator.h"
 #include "core/translate/plugins/OpenAITranslator.h"
+#include "core/translate/plugins/DeepSeekTranslator.h"
 #include "engine/layout/LayoutEngine.h"
 #include "engine/hotkey/HotkeyManager.h"
 #include "ui/overlay/OverlayManager.h"
@@ -62,6 +63,7 @@ bool Application::initialize() {
     m_translator = new TranslatorManager(this);
     m_translator->registerPlugin(std::make_unique<DeepLTranslator>());
     m_translator->registerPlugin(std::make_unique<OpenAITranslator>());
+    m_translator->registerPlugin(std::make_unique<DeepSeekTranslator>());
 
     // Restore translator configs
     for (auto* plugin : m_translator->plugins()) {
