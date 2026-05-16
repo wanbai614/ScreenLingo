@@ -30,6 +30,8 @@ set(SOURCES
     src/ui/tray/TrayManager.cpp
     src/ui/selector/AreaSelector.h
     src/ui/selector/AreaSelector.cpp
+    src/ui/settings/SettingsPanel.h
+    src/ui/settings/SettingsPanel.cpp
 )
 
 qt_add_executable(ScreenLingo ${SOURCES})
