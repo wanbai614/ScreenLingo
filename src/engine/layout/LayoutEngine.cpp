@@ -15,30 +15,47 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
         QFontMetrics fm(font);
         int textWidth  = fm.horizontalAdvance(request.translatedText);
         int textHeight = fm.height();
-        int bubbleW    = std::min(textWidth + 24, screenBounds.width() - 20);
-        int bubbleH    = textHeight + 16;
+        int bubbleW    = std::min(textWidth + 20, screenBounds.width() - 10);
+        int bubbleH    = textHeight + 12;
         QSize bubbleSize(bubbleW, bubbleH);
 
-        auto candidates = generateCandidates(request.sourceRect, bubbleSize, screenBounds);
+        // Candidates in priority order: right, right-above, right-below, below, left, above
+        QPoint srcTL = request.sourceRect.topLeft();
+        QPoint srcBR = request.sourceRect.bottomRight();
+        QPoint srcCenter = request.sourceRect.center();
+
+        struct { QPoint pos; int pri; } candidates[] = {
+            // Right side (closest, aligned to source vertical center)
+            {QPoint(srcBR.x() + kGap, srcCenter.y() - bubbleH / 2), 0},
+            // Right-above (if right is occupied)
+            {QPoint(srcBR.x() + kGap, srcTL.y() - bubbleH - kGap), 1},
+            // Right-below
+            {QPoint(srcBR.x() + kGap, srcBR.y() + kGap), 2},
+            // Below (centered under source)
+            {QPoint(srcTL.x(), srcBR.y() + kGap), 3},
+            // Left side
+            {QPoint(srcTL.x() - bubbleW - kGap, srcCenter.y() - bubbleH / 2), 4},
+            // Above
+            {QPoint(srcTL.x(), srcTL.y() - bubbleH - kGap), 5},
+        };
 
         bool placed = false;
         for (const auto& cand : candidates) {
-            QRect candidateRect(cand.position, bubbleSize);
+            QRect cr(cand.pos, bubbleSize);
 
-            if (overlapsSource(candidateRect, request.sourceRect)) continue;
-            if (overlapsExisting(candidateRect, existingBubbles)) continue;
+            if (overlapsSource(cr, request.sourceRect)) continue;
+            if (overlapsExisting(cr, existingBubbles)) continue;
 
-            candidateRect = clampToScreen(candidateRect, screenBounds);
+            cr = clampToScreen(cr, screenBounds);
 
-            // Re-check after clamping (screen edge clamping may shift into conflict)
-            if (overlapsSource(candidateRect, request.sourceRect)) continue;
-            if (overlapsExisting(candidateRect, existingBubbles)) continue;
+            if (overlapsSource(cr, request.sourceRect)) continue;
+            if (overlapsExisting(cr, existingBubbles)) continue;
 
-            result.position    = candidateRect.topLeft();
-            result.maxWidth    = candidateRect.width();
-            result.bubbleWidth = candidateRect.width();
-            result.bubbleHeight = candidateRect.height();
-            result.fontSize    = fontSize;
+            result.position     = cr.topLeft();
+            result.maxWidth     = cr.width();
+            result.bubbleWidth  = cr.width();
+            result.bubbleHeight = cr.height();
+            result.fontSize     = fontSize;
             placed = true;
             break;
         }
@@ -47,7 +64,7 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
         --fontSize;
     }
 
-    // Last resort: truncate and force place
+    // Last resort: truncate and force-place to the right
     result.fontSize    = kMinFontSize;
     result.isTruncated = true;
 
@@ -55,36 +72,25 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
     QFontMetrics fm(minFont);
     QString truncated = fm.elidedText(request.translatedText, Qt::ElideRight,
                                        screenBounds.width() - 20);
-    int w = fm.horizontalAdvance(truncated) + 24;
-    int h = fm.height() + 16;
+    int w = fm.horizontalAdvance(truncated) + 20;
+    int h = fm.height() + 12;
 
     QPoint pos(request.sourceRect.right() + kGap, request.sourceRect.top());
-    QRect candidateRect(pos, QSize(w, h));
-    candidateRect = clampToScreen(candidateRect, screenBounds);
-    result.position     = candidateRect.topLeft();
-    result.maxWidth     = candidateRect.width();
-    result.bubbleWidth  = candidateRect.width();
-    result.bubbleHeight = candidateRect.height();
+    QRect cr(pos, QSize(w, h));
+    cr = clampToScreen(cr, screenBounds);
+    result.position     = cr.topLeft();
+    result.maxWidth     = cr.width();
+    result.bubbleWidth  = cr.width();
+    result.bubbleHeight = cr.height();
 
     return result;
-}
-
-QVector<LayoutEngine::Candidate> LayoutEngine::generateCandidates(
-    const QRect& source, const QSize& bubbleSize, const QRect& screen) {
-
-    QVector<Candidate> candidates;
-    candidates.append({{source.right() + kGap, source.top()}, 0});  // right
-    candidates.append({{source.left(), source.bottom() + kGap}, 1}); // below
-    candidates.append({{source.left() - bubbleSize.width() - kGap, source.top()}, 2}); // left
-    candidates.append({{source.left(), source.top() - bubbleSize.height() - kGap}, 3}); // above
-    return candidates;
 }
 
 QSize LayoutEngine::estimateBubbleSize(const QString& text, const QFont& font, int maxWidth) {
     QFontMetrics fm(font);
     QRect rect = fm.boundingRect(QRect(0, 0, maxWidth, 10000),
                                   Qt::AlignLeft | Qt::TextWordWrap, text);
-    return QSize(rect.width() + 24, rect.height() + 16);
+    return QSize(rect.width() + 20, rect.height() + 12);
 }
 
 bool LayoutEngine::overlapsSource(const QRect& candidate, const QRect& source) {
@@ -94,7 +100,7 @@ bool LayoutEngine::overlapsSource(const QRect& candidate, const QRect& source) {
 bool LayoutEngine::overlapsExisting(const QRect& candidate,
                                      const QVector<QRect>& existing) {
     for (const auto& r : existing) {
-        if (candidate.intersects(r)) return true;
+        if (candidate.intersects(r.adjusted(-2, -2, 2, 2))) return true;
     }
     return false;
 }

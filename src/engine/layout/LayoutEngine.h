@@ -27,5 +27,5 @@ private:
     QSize estimateBubbleSize(const QString& text, const QFont& font, int maxWidth);
 
     static constexpr int kMinFontSize = 8;
-    static constexpr int kGap         = 8;
+    static constexpr int kGap         = 3;
 };

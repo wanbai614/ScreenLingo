@@ -376,7 +376,9 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
 void Application::onTranslationReady(const QString& original,
                                       const QString& translated) {
+    // Never show empty bubbles
     if (!m_globalVisible) return;
+    if (translated.trimmed().isEmpty()) return;
 
     // Get source rect for this text
     QRect sourceRect = m_textSourceRects.value(original);
@@ -399,8 +401,9 @@ void Application::onTranslationReady(const QString& original,
     LayoutResult layout = m_layout->compute(req,
         m_overlays->existingBubbleRects(), screenBounds);
 
-    // Cache the translation to avoid re-translating
-    m_translationCache[original] = translated;
+    // Cache non-empty translations to avoid re-translating
+    if (!translated.trimmed().isEmpty())
+        m_translationCache[original] = translated;
 
     if (m_textToOverlay.contains(textHash)) {
         m_overlays->updateTranslation(m_textToOverlay[textHash], translated, layout);

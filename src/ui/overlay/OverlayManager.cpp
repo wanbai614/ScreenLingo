@@ -27,12 +27,16 @@ void OverlayManager::updateTranslation(int id, const QString& newText,
 void OverlayManager::removeTranslation(int id) {
     auto it = m_overlays.find(id);
     if (it == m_overlays.end()) return;
-    delete it.value();
+    it.value()->hide();
+    it.value()->deleteLater();
     m_overlays.remove(id);
 }
 
 void OverlayManager::removeAll() {
-    qDeleteAll(m_overlays);
+    for (auto* overlay : m_overlays) {
+        overlay->hide();
+        overlay->deleteLater();
+    }
     m_overlays.clear();
 }
 
