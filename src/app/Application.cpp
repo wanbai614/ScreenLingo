@@ -201,9 +201,8 @@ void Application::processRealtimeFrame() {
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
-    // Skip if no change (low-power optimization)
-    if (!m_capture->hasChanged(area.geometry, area.screenIndex)) return;
-
+    // captureRegion blocks up to 100ms waiting for a new frame.
+    // If none arrives (idle screen), returns null → skip OCR/translate.
     QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
     if (frame.isNull()) return;
 
