@@ -49,8 +49,8 @@ struct LayoutResult {
 // --- Style ---
 struct StyleConfig {
     QColor textColor       = Qt::white;
-    QColor backgroundColor = QColor(51, 51, 51, 179);  // #333 with ~70% alpha
-    int    backgroundAlpha = 70;   // 0-100
+    QColor backgroundColor = QColor(51, 51, 51);   // #333, alpha from backgroundAlpha
+    int    backgroundAlpha = 70;                    // 0-100, single source for opacity
     int    borderRadius    = 6;
     QColor borderColor     = QColor(102, 102, 102);
     int    borderWidth     = 1;
