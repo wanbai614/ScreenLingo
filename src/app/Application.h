@@ -33,6 +33,8 @@ private slots:
     void onModeChanged(Mode mode);
     void onSnapshotRequested();
     void onAreaConfirmed(const QRect& area, int screenIndex);
+    void onAreaCleared();
+    void onAreaEnabledChanged(int id, bool enabled);
     void onGlobalVisibilityToggle();
     void onSettingsRequested();
     void onOcrCompleted(const OCRResult& result);

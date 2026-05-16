@@ -237,6 +237,25 @@ void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
     m_areas.append(sel);
 
     m_config->saveAreas(m_areas);
+    if (m_settings) m_settings->refreshAreas();
+}
+
+void Application::onAreaCleared() {
+    m_overlays->removeAll();
+    m_textToOverlay.clear();
+    m_areas.clear();
+    m_config->saveAreas(m_areas);
+    if (m_settings) m_settings->refreshAreas();
+}
+
+void Application::onAreaEnabledChanged(int id, bool enabled) {
+    for (auto& area : m_areas) {
+        if (area.id == id) {
+            area.enabled = enabled;
+            break;
+        }
+    }
+    m_config->saveAreas(m_areas);
 }
 
 void Application::onGlobalVisibilityToggle() {
@@ -251,11 +270,18 @@ void Application::onSettingsRequested() {
     if (!m_settings) {
         m_settings = new SettingsPanel(
             m_translator->plugins(),
-            m_hotkey, m_config, m_bus);
+            m_hotkey, m_config, m_bus,
+            &m_areas);
         connect(m_settings, &SettingsPanel::styleChanged,
                 this, &Application::onStyleChanged);
         connect(m_settings, &SettingsPanel::languageChangeRequested,
                 this, &Application::onLanguageChangeRequested);
+        connect(m_settings, &SettingsPanel::areaSelectRequested,
+                this, [this]() { onHotkeyTriggered("area_select"); });
+        connect(m_settings, &SettingsPanel::areaCleared,
+                this, &Application::onAreaCleared);
+        connect(m_settings, &SettingsPanel::areaEnabledChanged,
+                this, &Application::onAreaEnabledChanged);
     }
     m_settings->show();
     m_settings->raise();

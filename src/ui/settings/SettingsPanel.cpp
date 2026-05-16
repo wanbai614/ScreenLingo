@@ -12,9 +12,11 @@ SettingsPanel::SettingsPanel(const QVector<ITranslator*>& translators,
                                HotkeyManager* hotkeyMgr,
                                Config* config,
                                SignalBus* bus,
+                               const QVector<SelectionArea>* areas,
                                QWidget* parent)
     : QDialog(parent), m_bus(bus), m_config(config),
-      m_hotkeyMgr(hotkeyMgr), m_translators(translators) {
+      m_hotkeyMgr(hotkeyMgr), m_translators(translators),
+      m_areasPtr(areas) {
 
     setWindowTitle(tr("ScreenLingo Settings"));
     setMinimumSize(540, 460);
@@ -258,12 +260,76 @@ QWidget* SettingsPanel::createAreasTab() {
     auto* layout = new QVBoxLayout(page);
 
     layout->addWidget(new QLabel(tr("Translation Areas:")));
-    auto* areaList = new QLabel(tr("No areas configured.\nUse Ctrl+Shift+A "
-                                   "or the tray menu to select areas."));
-    areaList->setWordWrap(true);
-    layout->addWidget(areaList);
+
+    // Area info display
+    m_areaInfoLabel = new QLabel;
+    m_areaInfoLabel->setWordWrap(true);
+    m_areaInfoLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_areaInfoLabel->setAlignment(Qt::AlignLeft | Qt::AlignTop);
+    m_areaInfoLabel->setMinimumHeight(80);
+    layout->addWidget(m_areaInfoLabel);
+
+    // Enabled checkbox
+    m_areaEnableCb = new QCheckBox(tr("Enable this area"));
+    connect(m_areaEnableCb, &QCheckBox::toggled, this, [this](bool checked) {
+        if (m_areasPtr && !m_areasPtr->isEmpty()) {
+            emit areaEnabledChanged(m_areasPtr->first().id, checked);
+        }
+    });
+    layout->addWidget(m_areaEnableCb);
+
+    // Action buttons
+    auto* btnRow = new QHBoxLayout;
+    m_areaReselectBtn = new QPushButton(tr("Select Area (Ctrl+Shift+A)"));
+    connect(m_areaReselectBtn, &QPushButton::clicked, this, &SettingsPanel::areaSelectRequested);
+    btnRow->addWidget(m_areaReselectBtn);
+
+    m_areaClearBtn = new QPushButton(tr("Clear Area"));
+    connect(m_areaClearBtn, &QPushButton::clicked, this, [this]() {
+        emit areaCleared();
+        refreshAreas();
+    });
+    btnRow->addWidget(m_areaClearBtn);
+    layout->addLayout(btnRow);
+
     layout->addStretch();
+
+    refreshAreas();
     return page;
+}
+
+void SettingsPanel::refreshAreas() {
+    if (!m_areaInfoLabel || !m_areaEnableCb || !m_areaClearBtn) return;
+
+    if (!m_areasPtr || m_areasPtr->isEmpty()) {
+        m_areaInfoLabel->setText(tr("No areas configured.\n"
+                                    "Use Ctrl+Shift+A or the tray menu to select an area.\n\n"
+                                    "Select a translation area on screen — ScreenLingo will "
+                                    "only OCR and translate text within this region."));
+        m_areaInfoLabel->setStyleSheet("color: #888; background: #f5f5f5; padding: 8px;");
+        m_areaEnableCb->setChecked(false);
+        m_areaEnableCb->setEnabled(false);
+        m_areaClearBtn->setEnabled(false);
+        m_areaReselectBtn->setText(tr("Select Area (Ctrl+Shift+A)"));
+        return;
+    }
+
+    const auto& area = m_areasPtr->first();
+    m_areaEnableCb->setEnabled(true);
+    m_areaEnableCb->setChecked(area.enabled);
+    m_areaClearBtn->setEnabled(true);
+    m_areaReselectBtn->setText(tr("Reselect Area"));
+
+    m_areaInfoLabel->setStyleSheet("color: #333; background: #e8f5e9; padding: 8px;");
+    m_areaInfoLabel->setText(QString(
+        "Area #%1  |  Screen %2\n"
+        "Position: (%3, %4)\n"
+        "Size: %5 x %6  (%7 x %8 px)")
+        .arg(area.id)
+        .arg(area.screenIndex)
+        .arg(area.geometry.x()).arg(area.geometry.y())
+        .arg(area.geometry.width()).arg(area.geometry.height())
+        .arg(area.geometry.width()).arg(area.geometry.height()));
 }
 
 void SettingsPanel::loadStyle() {

@@ -30,11 +30,17 @@ public:
                   HotkeyManager* hotkeyMgr,
                   Config* config,
                   SignalBus* bus,
+                  const QVector<SelectionArea>* areas,
                   QWidget* parent = nullptr);
+
+    void refreshAreas();
 
 signals:
     void styleChanged(const StyleConfig& style);
     void languageChangeRequested(const QString& lang);
+    void areaSelectRequested();
+    void areaCleared();
+    void areaEnabledChanged(int id, bool enabled);
 
 public slots:
     void retranslateUi();
@@ -73,4 +79,10 @@ private:
     QPushButton* m_resetBtn     = nullptr;
     QPushButton* m_applyBtn     = nullptr;
     QPushButton* m_closeBtn     = nullptr;
+
+    const QVector<SelectionArea>* m_areasPtr = nullptr;
+    QLabel*     m_areaInfoLabel  = nullptr;
+    QCheckBox*  m_areaEnableCb   = nullptr;
+    QPushButton* m_areaReselectBtn = nullptr;
+    QPushButton* m_areaClearBtn    = nullptr;
 };
