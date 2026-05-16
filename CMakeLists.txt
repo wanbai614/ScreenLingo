@@ -12,6 +12,8 @@ find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Network)
 set(SOURCES
     src/main.cpp
     src/app/SignalBus.h
+    src/app/Application.h
+    src/app/Application.cpp
     src/common/Config.h
     src/common/Config.cpp
     src/core/translate/TranslatorManager.cpp
