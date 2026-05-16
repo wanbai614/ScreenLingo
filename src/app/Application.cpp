@@ -201,11 +201,13 @@ void Application::processRealtimeFrame() {
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
-    // captureRegion blocks up to 100ms waiting for a new frame.
-    // If none arrives (idle screen), returns null → skip OCR/translate.
+    // Guard: don't start new OCR while previous cycle is still translating
+    if (m_ocrBusy) return;
+
     QImage frame = m_capture->captureRegion(area.geometry, area.screenIndex);
     if (frame.isNull()) return;
 
+    m_ocrBusy = true;
     m_lastSourceRect = area.geometry;
     m_ocr->recognize(frame);
 }
@@ -293,20 +295,21 @@ void Application::onSettingsRequested() {
 }
 
 void Application::onOcrCompleted(const OCRResult& result) {
+    m_ocrBusy = false;
+
     if (result.fullText.isEmpty()) return;
 
     QString srcLang = m_config->sourceLang();
     QString tgtLang = m_config->targetLang();
 
-    // Clear active set for this frame
-    m_activeTextHashes.clear();
+    // Track new hashes for this frame (don't clear yet — old bubbles stay
+    // visible until we confirm translations for the new frame)
+    QSet<int> newHashes;
 
     if (!result.boxes.isEmpty()) {
-        // Translate each text block individually with its screen position
         QRect captureRect = m_lastSourceRect;
         for (const auto& box : result.boxes) {
             if (box.text.trimmed().isEmpty()) continue;
-            // Convert image-local rect to screen coordinates
             QRect screenRect(
                 captureRect.x() + box.boundingRect.x(),
                 captureRect.y() + box.boundingRect.y(),
@@ -315,12 +318,18 @@ void Application::onOcrCompleted(const OCRResult& result) {
             );
             m_textSourceRects[box.text] = screenRect;
             m_translator->translate(box.text, srcLang, tgtLang);
+            ++m_pendingTranslations;
+            newHashes.insert(qHash(box.text));
         }
     } else {
-        // No boxes, translate full text positioned over capture area
         m_textSourceRects[result.fullText] = m_lastSourceRect;
         m_translator->translate(result.fullText, srcLang, tgtLang);
+        ++m_pendingTranslations;
+        newHashes.insert(qHash(result.fullText));
     }
+
+    // Remember which hashes we expect this cycle
+    m_activeTextHashes = newHashes;
 }
 
 void Application::onTranslationReady(const QString& original,
@@ -335,7 +344,6 @@ void Application::onTranslationReady(const QString& original,
     }
 
     int textHash = qHash(original);
-    m_activeTextHashes.insert(textHash);
 
     LayoutRequest req;
     req.sourceRect        = sourceRect;
@@ -356,8 +364,10 @@ void Application::onTranslationReady(const QString& original,
         m_textToOverlay[textHash] = id;
     }
 
-    // Clean up stale overlays (text no longer on screen)
-    if (m_mode == Mode::RealTime) {
+    // Defer stale cleanup until ALL translations for this frame are done
+    if (m_pendingTranslations > 0) --m_pendingTranslations;
+
+    if (m_pendingTranslations == 0 && m_mode == Mode::RealTime) {
         QList<int> staleIds;
         for (auto it = m_textToOverlay.begin(); it != m_textToOverlay.end(); ++it) {
             if (!m_activeTextHashes.contains(it.key())) {
@@ -366,7 +376,6 @@ void Application::onTranslationReady(const QString& original,
         }
         for (int id : staleIds) {
             m_overlays->removeTranslation(id);
-            // Remove from hash
             for (auto it = m_textToOverlay.begin(); it != m_textToOverlay.end(); ) {
                 if (it.value() == id)
                     it = m_textToOverlay.erase(it);

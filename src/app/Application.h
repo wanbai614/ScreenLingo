@@ -78,4 +78,8 @@ private:
 
     // Map original text → screen position of source
     QHash<QString, QRect> m_textSourceRects;
+
+    // Prevent concurrent OCR/translation cycles
+    bool m_ocrBusy            = false;
+    int  m_pendingTranslations = 0;
 };
