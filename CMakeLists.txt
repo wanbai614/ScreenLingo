@@ -1,14 +1,6 @@
 cmake_minimum_required(VERSION 3.22)
 project(ScreenLingo VERSION 1.0.0 LANGUAGES CXX)
 
-# ScreenLingo requires MSVC for WinRT (Windows.Media.Ocr)
-if(NOT MSVC)
-    message(FATAL_ERROR "ScreenLingo requires Visual Studio 2022 with MSVC. "
-            "The Windows.Media.Ocr API uses C++/WinRT headers which are only "
-            "available with the MSVC compiler toolchain. "
-            "Please rebuild with: cmake -B build -G \"Visual Studio 17 2022\"")
-endif()
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -24,15 +16,20 @@ set(SOURCES
     src/app/Application.cpp
     src/common/Config.h
     src/common/Config.cpp
+    src/core/translate/ITranslator.h
     src/core/translate/TranslatorManager.cpp
+    src/core/translate/plugins/DeepLTranslator.h
     src/core/translate/plugins/DeepLTranslator.cpp
+    src/core/translate/plugins/OpenAITranslator.h
     src/core/translate/plugins/OpenAITranslator.cpp
-    src/core/ocr/WindowsOcrEngine.cpp
+    src/core/ocr/IOCREngine.h
     src/core/capture/ICaptureEngine.h
     src/core/capture/DxgiCaptureEngine.h
     src/core/capture/DxgiCaptureEngine.cpp
     src/engine/layout/LayoutEngine.cpp
+    src/ui/overlay/TranslationOverlay.h
     src/ui/overlay/TranslationOverlay.cpp
+    src/ui/overlay/OverlayManager.h
     src/ui/overlay/OverlayManager.cpp
     src/engine/hotkey/HotkeyManager.h
     src/engine/hotkey/HotkeyManager.cpp
@@ -44,11 +41,20 @@ set(SOURCES
     src/ui/settings/SettingsPanel.cpp
 )
 
+# Windows OCR: WinRT/MSVC for real OCR, stub for MinGW development
+if(MSVC)
+    list(APPEND SOURCES src/core/ocr/WindowsOcrEngine.h src/core/ocr/WindowsOcrEngine.cpp)
+else()
+    list(APPEND SOURCES src/core/ocr/WindowsOcrEngine.h src/core/ocr/WindowsOcrEngineStub.cpp)
+    message(WARNING "MinGW build: OCR engine will be a stub (no WinRT support). "
+                    "Use MSVC for full OCR functionality.")
+endif()
+
 qt_add_executable(ScreenLingo ${SOURCES})
 
 target_include_directories(ScreenLingo PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
-target_link_libraries(ScreenLingo PRIVATE
+set(LINK_LIBS
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets
@@ -57,8 +63,13 @@ target_link_libraries(ScreenLingo PRIVATE
     dxgi
     user32
     gdi32
-    WindowsApp
 )
+
+if(MSVC)
+    list(APPEND LINK_LIBS WindowsApp)
+endif()
+
+target_link_libraries(ScreenLingo PRIVATE ${LINK_LIBS})
 
 set_target_properties(ScreenLingo PROPERTIES
     WIN32_EXECUTABLE TRUE
@@ -67,7 +78,5 @@ set_target_properties(ScreenLingo PROPERTIES
 target_sources(ScreenLingo PRIVATE resources/dpiaware.manifest)
 
 if(MSVC)
-    target_compile_options(ScreenLingo PRIVATE /Zc:__cplusplus)
-    target_compile_options(ScreenLingo PRIVATE /utf-8)
-    target_compile_options(ScreenLingo PRIVATE /FS)
+    target_compile_options(ScreenLingo PRIVATE /Zc:__cplusplus /utf-8 /FS)
 endif()

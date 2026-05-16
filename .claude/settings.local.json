@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(cmake *)",
+      "Read(//d/QT/**)",
+      "Read(//c//**)",
+      "Bash(PATH=\"D:/QT/Tools/mingw1310_64/bin:$PATH\" cmake *)",
+      "Bash(git *)",
+      "Bash(mingw32-make)",
+      "Read(//mingw64/bin/**)",
+      "Bash(where make *)",
+      "Bash(cmd.exe /c \"where mingw32-make 2>nul\")",
+      "Bash(cmd.exe /c \"where ninja 2>nul\")",
+      "Bash(export PATH=\"/d/Qt/Tools/Ninja:$PATH\")",
+      "Bash(export PATH=\"/d/Qt/Tools/CMake_64/bin:$PATH\")",
+      "Bash(export PATH=\"/d/Qt/6.9.1/mingw_64/bin:$PATH\")",
+      "Bash(/d/Qt/Tools/CMake_64/bin/cmake.exe *)",
+      "Bash(where cl.exe)",
+      "Bash(dir \"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\")",
+      "Bash(find /mingw64 -name \"mingw32-make.exe\")",
+      "Bash(find /opt -name \"mingw32-make.exe\")",
+      "Bash(where g++)",
+      "Bash(cmd.exe *)",
+      "Bash(where qmake *)",
+      "Read(//e//**)",
+      "Bash(dir /s \"C:\\\\Qt\\\\6.9.1\\\\mingw_64\\\\bin\\\\g++.exe\")",
+      "Bash(dir \"C:\\\\Qt\\\\6.9.1\" /b)",
+      "Bash(./build/ScreenLingo.exe)",
+      "Bash(tasklist)"
+    ]
+  }
+}
