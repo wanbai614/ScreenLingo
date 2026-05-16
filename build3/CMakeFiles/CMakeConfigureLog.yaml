@@ -1,0 +1,870 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.22631 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+      鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:11銆?
+      
+      鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)銆?
+      PrepareForBuild:
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\鈥濄€?
+        宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\CompilerIdCXX.tlog\\鈥濄€?
+      InitializeBuildStatus:
+        姝ｅ湪鍒涘缓鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+      ClCompile:
+        D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        姝ｅ湪鍒犻櫎鏂囦欢鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+      宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+      
+      宸叉垚鍔熺敓鎴愩€?
+          0 涓鍛?
+          0 涓敊璇?
+      
+      宸茬敤鏃堕棿 00:00:01.55
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/3.31.6-msvc6/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-1y3dml"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-1y3dml"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-1y3dml'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_fe020.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:13銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-1y3dml\\cmTC_fe020.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_fe020.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-1y3dml\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_fe020.dir\\Debug\\cmTC_fe020.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_fe020.dir\\Debug\\cmTC_fe020.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_fe020.dir\\Debug\\cmTC_fe020.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_fe020.dir\\Debug\\\\" /Fd"cmTC_fe020.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "D:\\VS2022IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_fe020.dir\\Debug\\\\" /Fd"cmTC_fe020.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "D:\\VS2022IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-1y3dml\\Debug\\cmTC_fe020.exe" /INCREMENTAL /ILK:"cmTC_fe020.dir\\Debug\\cmTC_fe020.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-1y3dml/Debug/cmTC_fe020.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-1y3dml/Debug/cmTC_fe020.lib" /MACHINE:X64  /machine:x64 cmTC_fe020.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_fe020.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-1y3dml\\Debug\\cmTC_fe020.exe
+        FinalizeBuildStatus:
+          姝ｅ湪鍒犻櫎鏂囦欢鈥渃mTC_fe020.dir\\Debug\\cmTC_fe020.tlog\\unsuccessfulbuild鈥濄€?
+          姝ｅ湪瀵光€渃mTC_fe020.dir\\Debug\\cmTC_fe020.tlog\\cmTC_fe020.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-1y3dml\\cmTC_fe020.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+        
+        宸叉垚鍔熺敓鎴愩€?
+            0 涓鍛?
+            0 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:01.15
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': D:/VS2022IDE/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "D:/VS2022IDE/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.44.35223.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-un3f09"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-un3f09"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-un3f09'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7bc15.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:15銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\cmTC_7bc15.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_7bc15.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_7bc15.dir\\Debug\\cmTC_7bc15.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_7bc15.dir\\Debug\\cmTC_7bc15.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_7bc15.dir\\Debug\\cmTC_7bc15.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_7bc15.dir\\Debug\\\\" /Fd"cmTC_7bc15.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\src.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_7bc15.dir\\Debug\\\\" /Fd"cmTC_7bc15.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\src.cxx"
+          src.cxx
+        E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\src.cxx(1,10): error C1083: 鏃犳硶鎵撳紑鍖呮嫭鏂囦欢: 鈥減thread.h鈥? No such file or directory [E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\cmTC_7bc15.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\cmTC_7bc15.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\cmTC_7bc15.vcxproj鈥?榛樿鐩爣) (1) ->
+        (ClCompile 鐩爣) -> 
+          E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\src.cxx(1,10): error C1083: 鏃犳硶鎵撳紑鍖呮嫭鏂囦欢: 鈥減thread.h鈥? No such file or directory [E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-un3f09\\cmTC_7bc15.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.48
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-n4mlh8"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-n4mlh8"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-n4mlh8'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_6f397.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:16銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\cmTC_6f397.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_6f397.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_6f397.dir\\Debug\\cmTC_6f397.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_6f397.dir\\Debug\\cmTC_6f397.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_6f397.dir\\Debug\\cmTC_6f397.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_6f397.dir\\Debug\\\\" /Fd"cmTC_6f397.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\CheckFunctionExists.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_6f397.dir\\Debug\\\\" /Fd"cmTC_6f397.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\Debug\\cmTC_6f397.exe" /INCREMENTAL /ILK:"cmTC_6f397.dir\\Debug\\cmTC_6f397.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-n4mlh8/Debug/cmTC_6f397.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-n4mlh8/Debug/cmTC_6f397.lib" /MACHINE:X64  /machine:x64 cmTC_6f397.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減threads.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\cmTC_6f397.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\cmTC_6f397.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\cmTC_6f397.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減threads.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-n4mlh8\\cmTC_6f397.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.61
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-8m17al"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-8m17al"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-8m17al'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_c5520.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:17銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\cmTC_c5520.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_c5520.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_c5520.dir\\Debug\\cmTC_c5520.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_c5520.dir\\Debug\\cmTC_c5520.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_c5520.dir\\Debug\\cmTC_c5520.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_c5520.dir\\Debug\\\\" /Fd"cmTC_c5520.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\CheckFunctionExists.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_c5520.dir\\Debug\\\\" /Fd"cmTC_c5520.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\Debug\\cmTC_c5520.exe" /INCREMENTAL /ILK:"cmTC_c5520.dir\\Debug\\cmTC_c5520.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-8m17al/Debug/cmTC_c5520.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-8m17al/Debug/cmTC_c5520.lib" /MACHINE:X64  /machine:x64 cmTC_c5520.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減thread.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\cmTC_c5520.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\cmTC_c5520.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\cmTC_c5520.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減thread.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-8m17al\\cmTC_c5520.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.61
+        
+      exitCode: 1
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      The system is: Windows - 10.0.22631 - AMD64
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/FindWrapAtomic.cmake:36 (check_cxx_source_compiles)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreDependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake:45 (include)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:218 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Performing Test HAVE_STDATOMIC"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-y5fjlg"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-y5fjlg"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "HAVE_STDATOMIC"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-y5fjlg'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_b584d.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:18銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\cmTC_b584d.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_b584d.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_b584d.dir\\Debug\\cmTC_b584d.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_b584d.dir\\Debug\\cmTC_b584d.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_b584d.dir\\Debug\\cmTC_b584d.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_b584d.dir\\Debug\\\\" /Fd"cmTC_b584d.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\src.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_b584d.dir\\Debug\\\\" /Fd"cmTC_b584d.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\src.cxx"
+          src.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\Debug\\cmTC_b584d.exe" /INCREMENTAL /ILK:"cmTC_b584d.dir\\Debug\\cmTC_b584d.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-y5fjlg/Debug/cmTC_b584d.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-y5fjlg/Debug/cmTC_b584d.lib" /MACHINE:X64  /machine:x64 cmTC_b584d.dir\\Debug\\src.obj
+        LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\Debug\\cmTC_b584d.exe鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\cmTC_b584d.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\cmTC_b584d.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\cmTC_b584d.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\Debug\\cmTC_b584d.exe鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-y5fjlg\\cmTC_b584d.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.80
+        
+      exitCode: 1
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+      鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:20銆?
+      
+      鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)銆?
+      PrepareForBuild:
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\鈥濄€?
+        宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+        姝ｅ湪鍒涘缓鐩綍鈥淒ebug\\CompilerIdCXX.tlog\\鈥濄€?
+      InitializeBuildStatus:
+        姝ｅ湪鍒涘缓鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+      ClCompile:
+        D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        姝ｅ湪鍒犻櫎鏂囦欢鈥淒ebug\\CompilerIdCXX.tlog\\unsuccessfulbuild鈥濄€?
+        姝ｅ湪瀵光€淒ebug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+      宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\3.31.6-msvc6\\CompilerIdCXX\\CompilerIdCXX.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+      
+      宸叉垚鍔熺敓鎴愩€?
+          0 涓鍛?
+          0 涓敊璇?
+      
+      宸茬敤鏃堕棿 00:00:01.16
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/3.31.6-msvc6/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/FindWrapAtomic.cmake:41 (check_cxx_source_compiles)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreDependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake:45 (include)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:218 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Performing Test HAVE_STDATOMIC_WITH_LIB"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fanw68"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fanw68"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "HAVE_STDATOMIC_WITH_LIB"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fanw68'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_cedf7.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:20銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\cmTC_cedf7.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_cedf7.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_cedf7.dir\\Debug\\cmTC_cedf7.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_cedf7.dir\\Debug\\cmTC_cedf7.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_cedf7.dir\\Debug\\cmTC_cedf7.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC_WITH_LIB /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_cedf7.dir\\Debug\\\\" /Fd"cmTC_cedf7.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\src.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC_WITH_LIB /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_cedf7.dir\\Debug\\\\" /Fd"cmTC_cedf7.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\src.cxx"
+          src.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\Debug\\cmTC_cedf7.exe" /INCREMENTAL /ILK:"cmTC_cedf7.dir\\Debug\\cmTC_cedf7.ilk" /NOLOGO "-latomic" /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fanw68/Debug/cmTC_cedf7.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fanw68/Debug/cmTC_cedf7.lib" /MACHINE:X64  /machine:x64 cmTC_cedf7.dir\\Debug\\src.obj
+        LINK : warning LNK4044: 鏃犳硶璇嗗埆鐨勯€夐」鈥?latomic鈥濓紱宸插拷鐣?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\cmTC_cedf7.vcxproj]
+          cmTC_cedf7.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\Debug\\cmTC_cedf7.exe
+        FinalizeBuildStatus:
+          姝ｅ湪鍒犻櫎鏂囦欢鈥渃mTC_cedf7.dir\\Debug\\cmTC_cedf7.tlog\\unsuccessfulbuild鈥濄€?
+          姝ｅ湪瀵光€渃mTC_cedf7.dir\\Debug\\cmTC_cedf7.tlog\\cmTC_cedf7.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\cmTC_cedf7.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+        
+        宸叉垚鍔熺敓鎴愩€?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\cmTC_cedf7.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : warning LNK4044: 鏃犳硶璇嗗埆鐨勯€夐」鈥?latomic鈥濓紱宸插拷鐣?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fanw68\\cmTC_cedf7.vcxproj]
+        
+            1 涓鍛?
+            0 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:01.35
+        
+      exitCode: 0
+...
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fhbk58"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fhbk58"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fhbk58'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_7e1ab.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:22銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fhbk58\\cmTC_7e1ab.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_7e1ab.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fhbk58\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_7e1ab.dir\\Debug\\cmTC_7e1ab.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_7e1ab.dir\\Debug\\cmTC_7e1ab.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_7e1ab.dir\\Debug\\cmTC_7e1ab.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7e1ab.dir\\Debug\\\\" /Fd"cmTC_7e1ab.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "D:\\VS2022IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_7e1ab.dir\\Debug\\\\" /Fd"cmTC_7e1ab.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "D:\\VS2022IDE\\Common7\\IDE\\CommonExtensions\\Microsoft\\CMake\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fhbk58\\Debug\\cmTC_7e1ab.exe" /INCREMENTAL /ILK:"cmTC_7e1ab.dir\\Debug\\cmTC_7e1ab.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fhbk58/Debug/cmTC_7e1ab.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-fhbk58/Debug/cmTC_7e1ab.lib" /MACHINE:X64  /machine:x64 cmTC_7e1ab.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_7e1ab.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fhbk58\\Debug\\cmTC_7e1ab.exe
+        FinalizeBuildStatus:
+          姝ｅ湪鍒犻櫎鏂囦欢鈥渃mTC_7e1ab.dir\\Debug\\cmTC_7e1ab.tlog\\unsuccessfulbuild鈥濄€?
+          姝ｅ湪瀵光€渃mTC_7e1ab.dir\\Debug\\cmTC_7e1ab.tlog\\cmTC_7e1ab.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-fhbk58\\cmTC_7e1ab.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+        
+        宸叉垚鍔熺敓鎴愩€?
+            0 涓鍛?
+            0 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:01.01
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': D:/VS2022IDE/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:2 (project)"
+    message: |
+      Running the CXX compiler's linker: "D:/VS2022IDE/VC/Tools/MSVC/14.44.35207/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.44.35223.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:99 (CHECK_CXX_SOURCE_COMPILES)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-kh4acy"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-kh4acy"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-kh4acy'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_98de3.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:24銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\cmTC_98de3.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_98de3.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_98de3.dir\\Debug\\cmTC_98de3.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_98de3.dir\\Debug\\cmTC_98de3.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_98de3.dir\\Debug\\cmTC_98de3.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_98de3.dir\\Debug\\\\" /Fd"cmTC_98de3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\src.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_98de3.dir\\Debug\\\\" /Fd"cmTC_98de3.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\src.cxx"
+          src.cxx
+        E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\src.cxx(1,10): error C1083: 鏃犳硶鎵撳紑鍖呮嫭鏂囦欢: 鈥減thread.h鈥? No such file or directory [E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\cmTC_98de3.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\cmTC_98de3.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\cmTC_98de3.vcxproj鈥?榛樿鐩爣) (1) ->
+        (ClCompile 鐩爣) -> 
+          E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\src.cxx(1,10): error C1083: 鏃犳硶鎵撳紑鍖呮嫭鏂囦欢: 鈥減thread.h鈥? No such file or directory [E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-kh4acy\\cmTC_98de3.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.48
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-wlfzyc"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-wlfzyc"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-wlfzyc'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_75897.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:24銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\cmTC_75897.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_75897.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_75897.dir\\Debug\\cmTC_75897.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_75897.dir\\Debug\\cmTC_75897.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_75897.dir\\Debug\\cmTC_75897.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_75897.dir\\Debug\\\\" /Fd"cmTC_75897.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\CheckFunctionExists.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_75897.dir\\Debug\\\\" /Fd"cmTC_75897.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\Debug\\cmTC_75897.exe" /INCREMENTAL /ILK:"cmTC_75897.dir\\Debug\\cmTC_75897.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-wlfzyc/Debug/cmTC_75897.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-wlfzyc/Debug/cmTC_75897.lib" /MACHINE:X64  /machine:x64 cmTC_75897.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減threads.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\cmTC_75897.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\cmTC_75897.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\cmTC_75897.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減threads.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-wlfzyc\\cmTC_75897.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.58
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Dependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:168 (include)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-d84wr2"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-d84wr2"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-d84wr2'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_0822f.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:25銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\cmTC_0822f.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_0822f.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_0822f.dir\\Debug\\cmTC_0822f.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_0822f.dir\\Debug\\cmTC_0822f.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_0822f.dir\\Debug\\cmTC_0822f.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_0822f.dir\\Debug\\\\" /Fd"cmTC_0822f.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\CheckFunctionExists.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_0822f.dir\\Debug\\\\" /Fd"cmTC_0822f.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\CheckFunctionExists.cxx"
+          CheckFunctionExists.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\Debug\\cmTC_0822f.exe" /INCREMENTAL /ILK:"cmTC_0822f.dir\\Debug\\cmTC_0822f.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-d84wr2/Debug/cmTC_0822f.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-d84wr2/Debug/cmTC_0822f.lib" /MACHINE:X64  /machine:x64 cmTC_0822f.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減thread.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\cmTC_0822f.vcxproj]
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\cmTC_0822f.vcxproj鈥?榛樿鐩爣)鐨勬搷浣?- 澶辫触銆?
+        
+        鐢熸垚澶辫触銆?
+        
+        鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\cmTC_0822f.vcxproj鈥?榛樿鐩爣) (1) ->
+        (Link 鐩爣) -> 
+          LINK : fatal error LNK1104: 鏃犳硶鎵撳紑鏂囦欢鈥減thread.lib鈥?[E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-d84wr2\\cmTC_0822f.vcxproj]
+        
+            0 涓鍛?
+            1 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:00.63
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/FindWrapAtomic.cmake:36 (check_cxx_source_compiles)"
+      - "D:/VS2022IDE/Common7/IDE/CommonExtensions/Microsoft/CMake/CMake/share/cmake-3.31/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:36 (find_dependency)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreDependencies.cmake:35 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake:45 (include)"
+      - "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/Qt6Config.cmake:218 (find_package)"
+      - "CMakeLists.txt:10 (find_package)"
+    checks:
+      - "Performing Test HAVE_STDATOMIC"
+    directories:
+      source: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-t2x1fr"
+      binary: "E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-t2x1fr"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "D:/QT/6.9.1/mingw_64/lib/cmake/Qt6;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QT/6.9.1/mingw_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "HAVE_STDATOMIC"
+      cached: true
+      stdout: |
+        Change Dir: 'E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-t2x1fr'
+        
+        Run Build Command(s): D:/VS2022IDE/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_1cf80.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n
+        閫傜敤浜?.NET Framework MSBuild 鐗堟湰 17.14.40+3e7442088
+        鐢熸垚鍚姩鏃堕棿涓?2026/5/16 17:31:27銆?
+        
+        鑺傜偣 1 涓婄殑椤圭洰鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\cmTC_1cf80.vcxproj鈥?榛樿鐩爣)銆?
+        PrepareForBuild:
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_1cf80.dir\\Debug\\鈥濄€?
+          宸插惎鐢ㄧ粨鏋勫寲杈撳嚭銆傜紪璇戝櫒璇婃柇鐨勬牸寮忚缃皢鍙嶆槧閿欒灞傛缁撴瀯銆傛湁鍏宠缁嗕俊鎭紝璇峰弬闃?https://aka.ms/cpp/structured-output銆?
+          姝ｅ湪鍒涘缓鐩綍鈥淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\Debug\\鈥濄€?
+          姝ｅ湪鍒涘缓鐩綍鈥渃mTC_1cf80.dir\\Debug\\cmTC_1cf80.tlog\\鈥濄€?
+        InitializeBuildStatus:
+          姝ｅ湪鍒涘缓鈥渃mTC_1cf80.dir\\Debug\\cmTC_1cf80.tlog\\unsuccessfulbuild鈥濓紝鍥犱负宸叉寚瀹氣€淎lwaysCreate鈥濄€?
+          姝ｅ湪瀵光€渃mTC_1cf80.dir\\Debug\\cmTC_1cf80.tlog\\unsuccessfulbuild鈥濇墽琛?Touch 浠诲姟銆?
+        ClCompile:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\CL.exe /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_1cf80.dir\\Debug\\\\" /Fd"cmTC_1cf80.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\src.cxx"
+          鐢ㄤ簬 x64 鐨?Microsoft (R) C/C++ 浼樺寲缂栬瘧鍣?19.44.35223 鐗?
+          鐗堟潈鎵€鏈?C) Microsoft Corporation銆備繚鐣欐墍鏈夋潈鍒┿€?
+          cl /c /Zi /W1 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++20 /Fo"cmTC_1cf80.dir\\Debug\\\\" /Fd"cmTC_1cf80.dir\\Debug\\vc143.pdb" /external:W1 /Gd /TP /errorReport:queue "E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\src.cxx"
+          src.cxx
+        Link:
+          D:\\VS2022IDE\\VC\\Tools\\MSVC\\14.44.35207\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\Debug\\cmTC_1cf80.exe" /INCREMENTAL /ILK:"cmTC_1cf80.dir\\Debug\\cmTC_1cf80.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-t2x1fr/Debug/cmTC_1cf80.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"E:/AIAgentProject/ScreenLingo/build3/CMakeFiles/CMakeScratch/TryCompile-t2x1fr/Debug/cmTC_1cf80.lib" /MACHINE:X64  /machine:x64 cmTC_1cf80.dir\\Debug\\src.obj
+          cmTC_1cf80.vcxproj -> E:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\Debug\\cmTC_1cf80.exe
+        FinalizeBuildStatus:
+          姝ｅ湪鍒犻櫎鏂囦欢鈥渃mTC_1cf80.dir\\Debug\\cmTC_1cf80.tlog\\unsuccessfulbuild鈥濄€?
+          姝ｅ湪瀵光€渃mTC_1cf80.dir\\Debug\\cmTC_1cf80.tlog\\cmTC_1cf80.lastbuildstate鈥濇墽琛?Touch 浠诲姟銆?
+        宸插畬鎴愮敓鎴愰」鐩€淓:\\AIAgentProject\\ScreenLingo\\build3\\CMakeFiles\\CMakeScratch\\TryCompile-t2x1fr\\cmTC_1cf80.vcxproj鈥?榛樿鐩爣)鐨勬搷浣溿€?
+        
+        宸叉垚鍔熺敓鎴愩€?
+            0 涓鍛?
+            0 涓敊璇?
+        
+        宸茬敤鏃堕棿 00:00:01.07
+        
+      exitCode: 0
+...

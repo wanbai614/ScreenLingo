@@ -1,0 +1,1 @@
+-IE:/AIAgentProject/ScreenLingo/build_mingw/ScreenLingo_autogen/include -IE:/AIAgentProject/ScreenLingo/src -isystem D:/QT/6.9.1/mingw_64/include/QtCore -isystem D:/QT/6.9.1/mingw_64/include -isystem "D:/QT/6.9.1/mingw_64/mkspecs/win32-g++" -isystem D:/QT/6.9.1/mingw_64/include/QtGui -isystem D:/QT/6.9.1/mingw_64/include/QtWidgets -isystem D:/QT/6.9.1/mingw_64/include/QtNetwork

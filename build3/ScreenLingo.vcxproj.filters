@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\build3\ScreenLingo_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\common\Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\core\translate\TranslatorManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\core\translate\plugins\DeepLTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\core\translate\plugins\OpenAITranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\core\ocr\WindowsOcrEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\core\capture\DxgiCaptureEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\engine\layout\LayoutEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\ui\overlay\TranslationOverlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\ui\overlay\OverlayManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\engine\hotkey\HotkeyManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\ui\tray\TrayManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\src\ui\selector\AreaSelector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\build3\ScreenLingo_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\build3\ScreenLingo_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\AIAgentProject\ScreenLingo\build3\ScreenLingo_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\app\SignalBus.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\common\Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\core\capture\ICaptureEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\core\capture\DxgiCaptureEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\engine\hotkey\HotkeyManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\ui\tray\TrayManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\AIAgentProject\ScreenLingo\src\ui\selector\AreaSelector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\AIAgentProject\ScreenLingo\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{2FCA85CF-DD63-3DDA-B662-8D9FB71C6C1B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{A42AFDA9-EB85-331A-8952-6C17F423ABCE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

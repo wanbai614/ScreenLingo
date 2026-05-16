@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="E:\AIAgentProject\ScreenLingo\build3\CMakeFiles\5b71e1d576ff368ae2c00616f2bb0aa6\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{1849B929-F042-3F2C-965C-9A58DE78E7E3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,3 @@
+D:\VS2022IDE\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe -E rm -f CMakeFiles\ScreenLingo.dir/objects.a
+D:\QT\Tools\mingw1310_64\bin\ar.exe qc CMakeFiles\ScreenLingo.dir/objects.a @CMakeFiles\ScreenLingo.dir\objects1.rsp
+D:\Qt\Tools\mingw1310_64\bin\g++.exe -mwindows -Wl,--whole-archive CMakeFiles\ScreenLingo.dir/objects.a -Wl,--no-whole-archive -o ScreenLingo.exe -Wl,--out-implib,libScreenLingo.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\ScreenLingo.dir\linkLibs.rsp

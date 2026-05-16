@@ -43,6 +43,8 @@ struct LayoutResult {
     QPoint  position;
     int     fontSize;
     int     maxWidth;
+    int     bubbleWidth  = 0;
+    int     bubbleHeight = 0;
     bool    isTruncated;
 };
 

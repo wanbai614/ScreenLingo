@@ -229,6 +229,14 @@ void Application::onSnapshotRequested() {
 }
 
 void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
+    // Clear all previous state: overlays, tracking maps, busy flags
+    m_overlays->removeAll();
+    m_textToOverlay.clear();
+    m_textSourceRects.clear();
+    m_activeTextHashes.clear();
+    m_pendingTranslations = 0;
+    m_ocrBusy = false;
+
     m_areas.clear();
 
     static int nextAreaId = 1;
@@ -246,6 +254,10 @@ void Application::onAreaConfirmed(const QRect& area, int screenIndex) {
 void Application::onAreaCleared() {
     m_overlays->removeAll();
     m_textToOverlay.clear();
+    m_textSourceRects.clear();
+    m_activeTextHashes.clear();
+    m_pendingTranslations = 0;
+    m_ocrBusy = false;
     m_areas.clear();
     m_config->saveAreas(m_areas);
     if (m_settings) m_settings->refreshAreas();

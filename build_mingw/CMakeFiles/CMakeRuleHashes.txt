@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+b87fb38097058573388c5fee968d4fe8 CMakeFiles/ScreenLingo_autogen
+14f427320b70104fb90ab396552151ee ScreenLingo_autogen/timestamp

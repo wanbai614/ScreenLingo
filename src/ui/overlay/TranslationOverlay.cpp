@@ -30,14 +30,9 @@ void TranslationOverlay::showTranslation(const LayoutResult& layout,
     font.setPointSize(layout.fontSize);
     m_style.font = font;
 
-    QFontMetrics fm(font);
-    QRect br = fm.boundingRect(QRect(0, 0, layout.maxWidth, 10000),
-                                Qt::AlignLeft | Qt::TextWordWrap, text);
-
-    int w = std::min(br.width() + 24, layout.maxWidth);
-    int h = br.height() + 16;
-
-    setGeometry(layout.position.x(), layout.position.y(), w, h);
+    // Use exact dimensions computed by LayoutEngine to avoid mismatch
+    setGeometry(layout.position.x(), layout.position.y(),
+                layout.bubbleWidth, layout.bubbleHeight);
     show();
 }
 

@@ -29,7 +29,26 @@
       "Bash(dir /s \"C:\\\\Qt\\\\6.9.1\\\\mingw_64\\\\bin\\\\g++.exe\")",
       "Bash(dir \"C:\\\\Qt\\\\6.9.1\" /b)",
       "Bash(./build/ScreenLingo.exe)",
-      "Bash(tasklist)"
+      "Bash(tasklist)",
+      "Bash(taskkill //F //IM ScreenLingo.exe)",
+      "Bash(pip install *)",
+      "Bash(\"C:/Qt/MaintenanceTool.exe\" --help)",
+      "Bash(winget search *)",
+      "Bash(choco --version)",
+      "Bash(winget install *)",
+      "Bash(curl -s --connect-timeout 5 \"https://download.qt.io/official_releases/qt/6.9/6.9.1/\")",
+      "Bash(curl -s --connect-timeout 10 \"https://download.qt.io/official_releases/qt/6.9/6.9.1/\")",
+      "Bash(curl -s --connect-timeout 10 \"https://download.qt.io/online/qtsdkrepository/windows_x64/desktop/qt6_691/\")",
+      "Bash(curl -s --connect-timeout 10 \"https://download.qt.io/online/qtsdkrepository/windows_x64/desktop/\")",
+      "Bash(pip config *)",
+      "Bash(curl -s --connect-timeout 10 \"https://download.qt.io/official_releases/qt/6.9/6.9.1/submodules/\")",
+      "Bash(pip download *)",
+      "Bash(curl -sL \"https://files.pythonhosted.org/packages/\")",
+      "Bash(env)",
+      "Bash(reg query *)",
+      "Bash(powershell -Command \"Start-Process -FilePath 'C:\\\\Qt\\\\MaintenanceTool.exe' -ArgumentList '--al','install','qt.qt6.691.win64_msvc2022_64' -Wait -NoNewWindow\")",
+      "Bash(curl -sL \"https://download.qt.io/official_releases/online_installers/\")",
+      "Bash(curl -L \"https://download.qt.io/official_releases/online_installers/qt-online-installer-windows-x64-online.exe\" -o /tmp/qt-installer.exe)"
     ]
   }
 }

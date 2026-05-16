@@ -1,0 +1,5 @@
+E:/AIAgentProject/ScreenLingo/build_mingw/CMakeFiles/ScreenLingo.dir
+E:/AIAgentProject/ScreenLingo/build_mingw/CMakeFiles/edit_cache.dir
+E:/AIAgentProject/ScreenLingo/build_mingw/CMakeFiles/rebuild_cache.dir
+E:/AIAgentProject/ScreenLingo/build_mingw/CMakeFiles/ScreenLingo_autogen_timestamp_deps.dir
+E:/AIAgentProject/ScreenLingo/build_mingw/CMakeFiles/ScreenLingo_autogen.dir

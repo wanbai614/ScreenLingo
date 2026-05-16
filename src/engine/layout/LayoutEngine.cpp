@@ -29,9 +29,16 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
             if (overlapsExisting(candidateRect, existingBubbles)) continue;
 
             candidateRect = clampToScreen(candidateRect, screenBounds);
-            result.position = candidateRect.topLeft();
-            result.maxWidth = candidateRect.width();
-            result.fontSize  = fontSize;
+
+            // Re-check after clamping (screen edge clamping may shift into conflict)
+            if (overlapsSource(candidateRect, request.sourceRect)) continue;
+            if (overlapsExisting(candidateRect, existingBubbles)) continue;
+
+            result.position    = candidateRect.topLeft();
+            result.maxWidth    = candidateRect.width();
+            result.bubbleWidth = candidateRect.width();
+            result.bubbleHeight = candidateRect.height();
+            result.fontSize    = fontSize;
             placed = true;
             break;
         }
@@ -54,8 +61,10 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
     QPoint pos(request.sourceRect.right() + kGap, request.sourceRect.top());
     QRect candidateRect(pos, QSize(w, h));
     candidateRect = clampToScreen(candidateRect, screenBounds);
-    result.position = candidateRect.topLeft();
-    result.maxWidth = candidateRect.width();
+    result.position     = candidateRect.topLeft();
+    result.maxWidth     = candidateRect.width();
+    result.bubbleWidth  = candidateRect.width();
+    result.bubbleHeight = candidateRect.height();
 
     return result;
 }
