@@ -389,10 +389,15 @@ void Application::onTranslationReady(const QString& original,
 
     int textHash = qHash(original);
 
+    // Scale bubble font to match source text height
+    int autoSize = qBound(8, static_cast<int>(sourceRect.height() * 0.75), 48);
+    int userSize = m_config->loadStyle().font.pointSize();
+    int fontSize = qBound(8, (autoSize + userSize) / 2, 48);
+
     LayoutRequest req;
     req.sourceRect        = sourceRect;
     req.translatedText    = translated;
-    req.preferredFontSize = m_config->loadStyle().font.pointSize();
+    req.preferredFontSize = fontSize;
 
     QScreen* screen = QApplication::primaryScreen();
     QRect screenBounds = screen ? screen->geometry()
