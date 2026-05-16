@@ -14,9 +14,20 @@ set(SOURCES
     src/app/SignalBus.h
     src/common/Config.h
     src/common/Config.cpp
+    src/core/translate/TranslatorManager.cpp
+    src/core/ocr/WindowsOcrEngine.cpp
+    src/core/capture/ICaptureEngine.h
+    src/core/capture/DxgiCaptureEngine.h
+    src/core/capture/DxgiCaptureEngine.cpp
     src/engine/layout/LayoutEngine.cpp
+    src/ui/overlay/TranslationOverlay.cpp
+    src/ui/overlay/OverlayManager.cpp
     src/engine/hotkey/HotkeyManager.h
     src/engine/hotkey/HotkeyManager.cpp
+    src/ui/tray/TrayManager.h
+    src/ui/tray/TrayManager.cpp
+    src/ui/selector/AreaSelector.h
+    src/ui/selector/AreaSelector.cpp
 )
 
 qt_add_executable(ScreenLingo ${SOURCES})
@@ -32,6 +43,7 @@ target_link_libraries(ScreenLingo PRIVATE
     dxgi
     user32
     gdi32
+    WindowsApp
 )
 
 set_target_properties(ScreenLingo PROPERTIES
@@ -43,4 +55,5 @@ target_sources(ScreenLingo PRIVATE resources/dpiaware.manifest)
 if(MSVC)
     target_compile_options(ScreenLingo PRIVATE /Zc:__cplusplus)
     target_compile_options(ScreenLingo PRIVATE /utf-8)
+    target_compile_options(ScreenLingo PRIVATE /FS)
 endif()
