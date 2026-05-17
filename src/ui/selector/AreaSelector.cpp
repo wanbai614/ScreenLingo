@@ -4,7 +4,8 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainterPath>
-#include <QtCore/QTimer>
+#define NOMINMAX
+#include <Windows.h>
 
 AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     : QWidget(parent), m_screenIndex(screenIndex) {
@@ -19,12 +20,13 @@ AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     setFocus();
     activateWindow();
     grabMouse();
-    // Use global event filter for reliable Escape capture
-    QApplication::instance()->installEventFilter(this);
+
+    // Native event filter catches Escape even when Qt focus fails
+    QApplication::instance()->installNativeEventFilter(this);
 }
 
 AreaSelector::~AreaSelector() {
-    QApplication::instance()->removeEventFilter(this);
+    QApplication::instance()->removeNativeEventFilter(this);
 }
 
 QRect AreaSelector::selectionRect() const {
@@ -34,6 +36,22 @@ QRect AreaSelector::selectionRect() const {
         std::abs(m_dragEnd.x() - m_dragStart.x()),
         std::abs(m_dragEnd.y() - m_dragStart.y())
     );
+}
+
+void AreaSelector::doCancel() {
+    releaseMouse();
+    QApplication::instance()->removeNativeEventFilter(this);
+    emit cancelled();
+    close();
+}
+
+bool AreaSelector::nativeEventFilter(const QByteArray&, void* message, qintptr*) {
+    MSG* msg = static_cast<MSG*>(message);
+    if (msg->message == WM_KEYDOWN && msg->wParam == VK_ESCAPE) {
+        doCancel();
+        return true;
+    }
+    return false;
 }
 
 void AreaSelector::paintEvent(QPaintEvent*) {
@@ -90,7 +108,7 @@ int AreaSelector::handleAtPoint(const QPoint& pos) const {
                  kHandleSize * 2, kHandleSize * 2);
         if (hr.contains(pos)) return i;
     }
-    if (sel.contains(pos)) return -2;  // inside selection -> move
+    if (sel.contains(pos)) return -2;
     return -1;
 }
 
@@ -160,41 +178,18 @@ void AreaSelector::mouseReleaseEvent(QMouseEvent* event) {
         m_selection = selectionRect();
         m_confirmed = true;
         releaseMouse();
-        releaseKeyboard();
     }
-}
-
-bool AreaSelector::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::KeyPress) {
-        auto* ke = static_cast<QKeyEvent*>(event);
-        if (ke->key() == Qt::Key_Escape) {
-            releaseMouse();
-            QApplication::instance()->removeEventFilter(this);
-            emit cancelled();
-            close();
-            return true;
-        }
-    }
-    return QWidget::eventFilter(obj, event);
 }
 
 void AreaSelector::keyPressEvent(QKeyEvent* event) {
-    switch (event->key()) {
-    case Qt::Key_Return:
-    case Qt::Key_Enter:
+    if (event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) {
         if (!m_selection.isNull() && m_selection.width() > 10
             && m_selection.height() > 10) {
             releaseMouse();
-            releaseKeyboard();
+            QApplication::instance()->removeNativeEventFilter(this);
             emit areaConfirmed(m_selection, m_screenIndex);
             close();
         }
-        break;
-    case Qt::Key_Escape:
-        // Handled by eventFilter above; kept for safety
-        close();
-        break;
-    default:
-        QWidget::keyPressEvent(event);
     }
+    QWidget::keyPressEvent(event);
 }

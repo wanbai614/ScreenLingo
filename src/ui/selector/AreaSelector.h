@@ -2,9 +2,10 @@
 
 #include <QtWidgets/QWidget>
 #include <QtCore/QRect>
+#include <QtCore/QAbstractNativeEventFilter>
 #include <QtGui/QPainter>
 
-class AreaSelector : public QWidget {
+class AreaSelector : public QWidget, public QAbstractNativeEventFilter {
     Q_OBJECT
 
 public:
@@ -21,11 +22,13 @@ protected:
     void mouseMoveEvent(QMouseEvent*) override;
     void mouseReleaseEvent(QMouseEvent*) override;
     void keyPressEvent(QKeyEvent*) override;
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    bool nativeEventFilter(const QByteArray& eventType, void* message, qintptr* result) override;
 
 private:
     QRect selectionRect() const;
     int  handleAtPoint(const QPoint& pos) const;
+
+    void doCancel();
 
     int    m_screenIndex;
     QPoint m_dragStart;
