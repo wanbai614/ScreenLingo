@@ -4,6 +4,7 @@
 #include "common/Config.h"
 #include "common/LanguageManager.h"
 #include "app/SignalBus.h"
+#include "KeyCaptureDialog.h"
 #include <QtCore/QPair>
 #include <QtGui/QFontDatabase>
 #include <QtWidgets/QMessageBox>
@@ -233,15 +234,22 @@ QWidget* SettingsPanel::createHotkeysTab() {
         auto* keyBtn = new QPushButton(binding.currentKeys);
         keyBtn->setMinimumWidth(120);
 
-        connect(keyBtn, &QPushButton::clicked, this, [this, binding, keyBtn]() {
-            keyBtn->setText(tr("Press keys..."));
-            keyBtn->setEnabled(false);
-            QMessageBox::information(this, tr("Rebind"),
-                QString("Key capture for '%1'.\nCurrent: %2\n\n"
-                        "In production: press the new key combination.")
-                .arg(binding.label, binding.currentKeys));
-            keyBtn->setText(binding.currentKeys);
-            keyBtn->setEnabled(true);
+        connect(keyBtn, &QPushButton::clicked, this, [this, b = binding, keyBtn]() {
+            KeyCaptureDialog dlg(b.currentKeys, this);
+            if (dlg.exec() == QDialog::Accepted) {
+                QString newKeys = dlg.capturedKeys();
+                if (!newKeys.isEmpty() && newKeys != b.currentKeys) {
+                    // Check for conflicts
+                    if (m_hotkeyMgr->hasConflict(newKeys, b.id)) {
+                        QMessageBox::warning(this, tr("Conflict"),
+                            tr("Shortcut '%1' is already in use.").arg(newKeys));
+                        return;
+                    }
+                    m_hotkeyMgr->updateBinding(b.id, newKeys);
+                    keyBtn->setText(newKeys);
+                    m_config->saveHotkeys(m_hotkeyMgr->bindings());
+                }
+            }
         });
 
         row->addWidget(keyBtn);
@@ -250,6 +258,14 @@ QWidget* SettingsPanel::createHotkeysTab() {
     }
 
     auto* resetBtn = new QPushButton(tr("Reset All to Defaults"));
+    connect(resetBtn, &QPushButton::clicked, this, [this]() {
+        for (auto& b : m_hotkeyMgr->bindings()) {
+            m_hotkeyMgr->updateBinding(b.id, b.defaultKeys);
+        }
+        m_config->saveHotkeys(m_hotkeyMgr->bindings());
+        // Refresh UI: rebuild the hotkeys tab
+        retranslateUi();
+    });
     layout->addWidget(resetBtn);
     layout->addStretch();
     return page;

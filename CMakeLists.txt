@@ -44,6 +44,8 @@ set(SOURCES
     src/ui/selector/AreaSelector.cpp
     src/ui/settings/SettingsPanel.h
     src/ui/settings/SettingsPanel.cpp
+    src/ui/settings/KeyCaptureDialog.h
+    src/ui/settings/KeyCaptureDialog.cpp
 )
 
 # Windows OCR: WinRT/MSVC for real OCR, stub for MinGW development
