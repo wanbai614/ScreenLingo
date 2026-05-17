@@ -9,6 +9,7 @@ class AreaSelector : public QWidget {
 
 public:
     explicit AreaSelector(int screenIndex, QWidget* parent = nullptr);
+    ~AreaSelector() override;
 
 signals:
     void areaConfirmed(const QRect& area, int screenIndex);
@@ -20,6 +21,7 @@ protected:
     void mouseMoveEvent(QMouseEvent*) override;
     void mouseReleaseEvent(QMouseEvent*) override;
     void keyPressEvent(QKeyEvent*) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 private:
     QRect selectionRect() const;

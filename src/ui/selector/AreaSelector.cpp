@@ -19,11 +19,12 @@ AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     setFocus();
     activateWindow();
     grabMouse();
-    // Delay keyboard grab until window is fully active
-    QTimer::singleShot(0, this, [this]() {
-        grabKeyboard();
-        setFocus();
-    });
+    // Use global event filter for reliable Escape capture
+    QApplication::instance()->installEventFilter(this);
+}
+
+AreaSelector::~AreaSelector() {
+    QApplication::instance()->removeEventFilter(this);
 }
 
 QRect AreaSelector::selectionRect() const {
@@ -163,6 +164,20 @@ void AreaSelector::mouseReleaseEvent(QMouseEvent* event) {
     }
 }
 
+bool AreaSelector::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::KeyPress) {
+        auto* ke = static_cast<QKeyEvent*>(event);
+        if (ke->key() == Qt::Key_Escape) {
+            releaseMouse();
+            QApplication::instance()->removeEventFilter(this);
+            emit cancelled();
+            close();
+            return true;
+        }
+    }
+    return QWidget::eventFilter(obj, event);
+}
+
 void AreaSelector::keyPressEvent(QKeyEvent* event) {
     switch (event->key()) {
     case Qt::Key_Return:
@@ -176,9 +191,7 @@ void AreaSelector::keyPressEvent(QKeyEvent* event) {
         }
         break;
     case Qt::Key_Escape:
-        releaseMouse();
-        releaseKeyboard();
-        emit cancelled();
+        // Handled by eventFilter above; kept for safety
         close();
         break;
     default:
