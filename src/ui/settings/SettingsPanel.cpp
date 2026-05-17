@@ -63,6 +63,8 @@ SettingsPanel::SettingsPanel(const QVector<ITranslator*>& translators,
 
     connect(m_applyBtn,  &QPushButton::clicked, this, &SettingsPanel::applyStyle);
     connect(m_closeBtn,  &QPushButton::clicked, this, &QDialog::close);
+    // Auto-save when closing the dialog
+    connect(this, &QDialog::finished, this, &SettingsPanel::applyStyle);
     connect(m_resetBtn,  &QPushButton::clicked, this, [this]() {
         m_pendingStyle = StyleConfig{};
         loadStyle();
@@ -215,8 +217,15 @@ QWidget* SettingsPanel::createTranslationTab() {
         m_translatorConfigLayout->addWidget(group);
     });
 
-    if (m_translators.size() > 0)
-        m_serviceCombo->setCurrentIndex(0);
+    if (m_translators.size() > 0) {
+        // Restore saved active translator
+        QString saved = m_config->activeTranslator();
+        int idx = m_serviceCombo->findData(saved);
+        if (idx >= 0)
+            m_serviceCombo->setCurrentIndex(idx);
+        else
+            m_serviceCombo->setCurrentIndex(0);
+    }
 
     layout->addStretch();
     return page;
