@@ -4,8 +4,7 @@
 #include <QtWidgets/QPushButton>
 #include <QtCore/QPropertyAnimation>
 #include <QtCore/QTimer>
-#include <QtCore/QVector>
-#include "common/Types.h"
+#include <QtCore/QPoint>
 
 class FloatingToolbar : public QWidget {
     Q_OBJECT
@@ -13,7 +12,6 @@ class FloatingToolbar : public QWidget {
 
 public:
     explicit FloatingToolbar(QWidget* parent = nullptr);
-
     void setPaused(bool paused);
 
 signals:
@@ -27,9 +25,7 @@ protected:
     void paintEvent(QPaintEvent*) override;
     void enterEvent(QEnterEvent*) override;
     void leaveEvent(QEvent*) override;
-    void mousePressEvent(QMouseEvent*) override;
-    void mouseMoveEvent(QMouseEvent*) override;
-    void mouseReleaseEvent(QMouseEvent*) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
 private:
     void expand();
@@ -38,25 +34,26 @@ private:
     void setExpandWidth(int w);
     void fitToScreen();
 
-    QWidget*             m_btnContainer  = nullptr;
-    QPushButton*         m_toggleBtn     = nullptr;
-    QPushButton*         m_playBtn       = nullptr;
-    QPushButton*         m_pauseBtn      = nullptr;
-    QPushButton*         m_areaBtn       = nullptr;
-    QPushButton*         m_eyeBtn        = nullptr;
-    QPushButton*         m_settingsBtn   = nullptr;
+    QPushButton* m_toggleBtn    = nullptr;
+    QPushButton* m_playBtn      = nullptr;
+    QPushButton* m_pauseBtn     = nullptr;
+    QPushButton* m_areaBtn      = nullptr;
+    QPushButton* m_eyeBtn       = nullptr;
+    QPushButton* m_settingsBtn  = nullptr;
+    QWidget*     m_btnContainer = nullptr;
 
-    QPropertyAnimation*  m_anim = nullptr;
+    QPropertyAnimation* m_anim = nullptr;
     int  m_expandWidth  = 44;
     int  m_fullWidth    = 240;
     bool m_expanded     = false;
     bool m_paused       = false;
     bool m_dragging     = false;
-    QPoint m_dragOffset;
+    QPoint m_dragStartPos;
+    QPoint m_dragStartGeo;
 
     QTimer m_hoverDelay;
-    static constexpr int kBtnSize  = 36;
-    static constexpr int kGap      = 4;
-    static constexpr int kMargin   = 4;
+    static constexpr int kBtnSize    = 36;
+    static constexpr int kGap        = 4;
+    static constexpr int kMargin     = 4;
     static constexpr int kCollapsedW = 44;
 };

@@ -72,14 +72,14 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
 
     m_pauseBtn->hide();
 
-    connect(m_toggleBtn, &QPushButton::clicked, this, [this]() {
-        if (m_expanded) collapse(); else expand();
-    });
     connect(m_playBtn, &QPushButton::clicked, this, &FloatingToolbar::startRequested);
     connect(m_pauseBtn, &QPushButton::clicked, this, &FloatingToolbar::pauseRequested);
     connect(m_areaBtn, &QPushButton::clicked, this, &FloatingToolbar::areaSelectRequested);
     connect(m_eyeBtn, &QPushButton::clicked, this, &FloatingToolbar::visibilityToggleRequested);
     connect(m_settingsBtn, &QPushButton::clicked, this, &FloatingToolbar::settingsRequested);
+
+    // Install event filter on the toggle button to handle drag via the button
+    m_toggleBtn->installEventFilter(this);
 
     m_hoverDelay.setSingleShot(true);
     m_hoverDelay.setInterval(250);
@@ -91,7 +91,6 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_anim->setDuration(180);
     m_anim->setEasingCurve(QEasingCurve::OutCubic);
 
-    // Start at right edge, vertically centered
     fitToScreen();
 }
 
@@ -111,27 +110,25 @@ void FloatingToolbar::fitToScreen() {
 }
 
 void FloatingToolbar::setExpandWidth(int w) {
-    // Keep right edge anchored during animation
     int delta = m_expandWidth - w;
     m_expandWidth = w;
     setFixedWidth(w);
     m_btnContainer->setGeometry(0, 0, w, height());
     if (delta > 0) {
-        move(x() + delta, y());  // expand leftward
+        move(x() + delta, y());
     } else if (delta < 0) {
-        move(x() + delta, y());  // shrink rightward
+        move(x() + delta, y());
     }
 }
 
 void FloatingToolbar::expand() {
     if (m_expanded) return;
     m_expanded = true;
-    // Show all action buttons before expanding
     m_playBtn->show();
     m_areaBtn->show();
     m_eyeBtn->show();
     m_settingsBtn->show();
-    setPaused(m_paused);  // restore play/pause visibility
+    setPaused(m_paused);
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(m_fullWidth);
@@ -141,7 +138,6 @@ void FloatingToolbar::expand() {
 void FloatingToolbar::collapse() {
     if (!m_expanded) return;
     m_expanded = false;
-    // Hide action buttons immediately before shrinking
     m_playBtn->hide();
     m_pauseBtn->hide();
     m_areaBtn->hide();
@@ -166,34 +162,43 @@ void FloatingToolbar::leaveEvent(QEvent*) {
     }
 }
 
-void FloatingToolbar::mousePressEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        m_dragging = true;
-        m_dragOffset = event->globalPosition().toPoint() - frameGeometry().topLeft();
-        m_hoverDelay.stop();
-        setCursor(Qt::ClosedHandCursor);
-    }
-    QWidget::mousePressEvent(event);
-}
-
-void FloatingToolbar::mouseMoveEvent(QMouseEvent* event) {
-    if (m_dragging) {
-        QPoint newPos = event->globalPosition().toPoint() - m_dragOffset;
-        move(newPos);
-    }
-    QWidget::mouseMoveEvent(event);
-}
-
-void FloatingToolbar::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton && m_dragging) {
-        m_dragging = false;
-        if (m_dragOffset.manhattanLength() < 5) {
-            // Just a click, not a drag — toggle expand
-            if (m_expanded) collapse(); else expand();
+bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
+    // Handle drag via the SL toggle button
+    if (obj == m_toggleBtn) {
+        if (event->type() == QEvent::MouseButtonPress) {
+            auto* me = static_cast<QMouseEvent*>(event);
+            if (me->button() == Qt::LeftButton) {
+                m_dragging = true;
+                m_dragStartPos = me->globalPosition().toPoint();
+                m_dragStartGeo = frameGeometry().topLeft();
+                m_hoverDelay.stop();
+                m_toggleBtn->setCursor(Qt::ClosedHandCursor);
+                return true;  // absorb the press
+            }
         }
-        setCursor(Qt::ArrowCursor);
+        else if (event->type() == QEvent::MouseMove) {
+            if (m_dragging) {
+                auto* me = static_cast<QMouseEvent*>(event);
+                QPoint delta = me->globalPosition().toPoint() - m_dragStartPos;
+                move(m_dragStartGeo + delta);
+                return true;
+            }
+        }
+        else if (event->type() == QEvent::MouseButtonRelease) {
+            if (m_dragging) {
+                m_dragging = false;
+                m_toggleBtn->setCursor(Qt::OpenHandCursor);
+                auto* me = static_cast<QMouseEvent*>(event);
+                int dist = (me->globalPosition().toPoint() - m_dragStartPos).manhattanLength();
+                if (dist < 5) {
+                    // It was a click, not a drag → toggle
+                    if (m_expanded) collapse(); else expand();
+                }
+                return true;
+            }
+        }
     }
-    QWidget::mouseReleaseEvent(event);
+    return QWidget::eventFilter(obj, event);
 }
 
 void FloatingToolbar::paintEvent(QPaintEvent*) {
@@ -204,10 +209,5 @@ void FloatingToolbar::paintEvent(QPaintEvent*) {
         p.setBrush(QColor(30, 30, 30, 130));
         p.setPen(QPen(QColor(80, 80, 80, 80), 1));
         p.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 20, 20);
-    } else {
-        // Collapsed: small rounded background behind the SL button
-        p.setBrush(QColor(0, 0, 0, 1));  // nearly invisible, just for hit-test
-        p.setPen(Qt::NoPen);
-        p.drawRoundedRect(2, 2, kCollapsedW - 4, height() - 4, 18, 18);
     }
 }
