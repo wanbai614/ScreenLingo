@@ -29,7 +29,7 @@ QString DeepSeekTranslator::getConfig(const QString& key) const {
 
 void DeepSeekTranslator::translate(const TranslateRequest& req) {
     if (m_apiKey.isEmpty()) {
-        emit translationError("DeepSeek API key not configured");
+        emit translationError(tr("DeepSeek API key not configured"));
         return;
     }
 
@@ -73,7 +73,7 @@ void DeepSeekTranslator::translate(const TranslateRequest& req) {
         QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
         QJsonArray choices = doc.object().value("choices").toArray();
         if (choices.isEmpty()) {
-            emit translationError("Empty response from DeepSeek");
+            emit translationError(tr("Empty response from DeepSeek"));
             return;
         }
 

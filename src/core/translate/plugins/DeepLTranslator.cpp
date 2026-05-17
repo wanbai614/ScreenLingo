@@ -27,7 +27,7 @@ QString DeepLTranslator::getConfig(const QString& key) const {
 
 void DeepLTranslator::translate(const TranslateRequest& req) {
     if (m_apiKey.isEmpty()) {
-        emit translationError("DeepL API key not configured");
+        emit translationError(tr("DeepL API key not configured"));
         return;
     }
 
@@ -59,7 +59,7 @@ void DeepLTranslator::translate(const TranslateRequest& req) {
         QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
         QJsonArray translations = doc.object().value("translations").toArray();
         if (translations.isEmpty()) {
-            emit translationError("Empty translation result");
+            emit translationError(tr("Empty translation result"));
             return;
         }
 

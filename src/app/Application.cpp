@@ -49,14 +49,14 @@ bool Application::initialize() {
     m_capture = new DxgiCaptureEngine(this);
     if (!m_capture->initialize()) {
         QMessageBox::critical(nullptr, "ScreenLingo",
-            "Failed to initialize screen capture. DXGI may not be available.");
+            tr("Failed to initialize screen capture. DXGI may not be available."));
         return false;
     }
 
     m_ocr = new WindowsOcrEngine(this);
     if (!m_ocr->initialize("auto")) {
         QMessageBox::critical(nullptr, "ScreenLingo",
-            "Failed to initialize OCR engine. Windows 10 or language pack required.");
+            tr("Failed to initialize OCR engine. Windows 10 or language pack required."));
         return false;
     }
 
@@ -87,12 +87,12 @@ bool Application::initialize() {
 
     // Register hotkeys from config
     QVector<HotkeyBinding> defaultBindings = {
-        {"mode_toggle",   "Toggle Mode",           "Ctrl+Shift+T"},
-        {"area_select",   "Select Area",           "Ctrl+Shift+A"},
-        {"global_hide",   "Show/Hide All",         "Ctrl+Shift+H"},
-        {"long_press",    "Long-Press Translate",  "Ctrl+Shift+G"},
-        {"settings",      "Open Settings",         "Ctrl+Shift+S"},
-        {"snapshot_once", "Single Snapshot",       "Ctrl+Shift+Q"},
+        {"mode_toggle",   tr("Toggle Mode"),           "Ctrl+Shift+T"},
+        {"area_select",   tr("Select Area"),           "Ctrl+Shift+A"},
+        {"global_hide",   tr("Show/Hide All"),         "Ctrl+Shift+H"},
+        {"long_press",    tr("Long-Press Translate"),  "Ctrl+Shift+G"},
+        {"settings",      tr("Open Settings"),         "Ctrl+Shift+S"},
+        {"snapshot_once", tr("Single Snapshot"),       "Ctrl+Shift+Q"},
     };
     m_hotkey->setBindings(m_config->loadHotkeys(defaultBindings));
     for (const auto& b : m_hotkey->bindings()) {

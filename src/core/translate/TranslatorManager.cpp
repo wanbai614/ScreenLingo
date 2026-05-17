@@ -42,7 +42,7 @@ void TranslatorManager::setActive(const QString& name) {
 void TranslatorManager::translate(const QString& text, const QString& sourceLang,
                                    const QString& targetLang) {
     if (!m_active) {
-        emit translationError("No translation service configured");
+        emit translationError(tr("No translation service configured"));
         return;
     }
     TranslateRequest req{text, sourceLang, targetLang};

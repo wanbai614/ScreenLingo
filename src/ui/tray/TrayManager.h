@@ -36,7 +36,6 @@ private:
     QMenu*           m_langMenu = nullptr;
     QAction*         m_realtimeAction = nullptr;
     QAction*         m_snapshotAction = nullptr;
-    QAction*         m_pauseModeAction = nullptr;
     QAction*         m_startAction    = nullptr;
     QAction*         m_pauseAction    = nullptr;
     QAction*         m_langEnAction   = nullptr;

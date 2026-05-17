@@ -32,7 +32,7 @@ QString OpenAITranslator::getConfig(const QString& key) const {
 
 void OpenAITranslator::translate(const TranslateRequest& req) {
     if (m_apiKey.isEmpty()) {
-        emit translationError("OpenAI API key not configured");
+        emit translationError(tr("OpenAI API key not configured"));
         return;
     }
 
@@ -72,7 +72,7 @@ void OpenAITranslator::translate(const TranslateRequest& req) {
         QJsonDocument doc = QJsonDocument::fromJson(reply->readAll());
         QJsonArray choices = doc.object().value("choices").toArray();
         if (choices.isEmpty()) {
-            emit translationError("Empty LLM response");
+            emit translationError(tr("Empty LLM response"));
             return;
         }
 
