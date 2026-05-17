@@ -249,6 +249,14 @@ void Application::onSnapshotRequested() {
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
+    // Ensure translations are visible
+    if (!m_globalVisible) {
+        m_globalVisible = true;
+        if (m_floating) m_floating->setGlobalVisible(true);
+        m_tray->setGlobalVisible(true);
+        m_overlays->showAll();
+    }
+
     // Clear existing overlays for snapshot mode
     m_overlays->removeAll();
     m_textToOverlay.clear();
