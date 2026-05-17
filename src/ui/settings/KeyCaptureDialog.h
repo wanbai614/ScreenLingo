@@ -2,7 +2,7 @@
 
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QLabel>
-#include <QtGui/QKeySequence>
+#include <QtCore/QEvent>
 
 class KeyCaptureDialog : public QDialog {
     Q_OBJECT
@@ -12,15 +12,14 @@ public:
 
     QString capturedKeys() const { return m_capturedKeys; }
 
-protected:
-    void keyPressEvent(QKeyEvent* event) override;
-    void keyReleaseEvent(QKeyEvent* event) override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
-private:
+    void onKeyPressed(int qtKey, Qt::KeyboardModifiers mods);
     QString modifiersToString(Qt::KeyboardModifiers mods) const;
     QString keyToString(int qtKey) const;
 
     QLabel* m_label = nullptr;
     QString m_capturedKeys;
-    int     m_pressedKeys = 0;
+    QString m_originalKeys;
+    bool    m_readyToAccept = false;
 };
