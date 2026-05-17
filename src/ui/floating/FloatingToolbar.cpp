@@ -96,6 +96,7 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
 
 void FloatingToolbar::setPaused(bool paused) {
     m_paused = paused;
+    if (!m_expanded) return;  // controls are hidden anyway, will show correctly on expand
     m_playBtn->setVisible(paused);
     m_pauseBtn->setVisible(!paused);
 }
@@ -124,11 +125,11 @@ void FloatingToolbar::setExpandWidth(int w) {
 void FloatingToolbar::expand() {
     if (m_expanded) return;
     m_expanded = true;
-    m_playBtn->show();
+    // Show action buttons, but only the correct play/pause per current state
     m_areaBtn->show();
     m_eyeBtn->show();
     m_settingsBtn->show();
-    setPaused(m_paused);
+    setPaused(m_paused);  // show correct play/pause button
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(m_fullWidth);
