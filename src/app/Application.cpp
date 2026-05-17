@@ -384,12 +384,8 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
             // Use cached translation if available, otherwise call API
             if (m_translationCache.contains(text)) {
-                // Cached: increment count so stale cleanup fires after all are done
                 ++m_pendingTranslations;
-                QString cached = m_translationCache[text];
-                QTimer::singleShot(0, this, [this, text, cached]() {
-                    onTranslationReady(text, cached);
-                });
+                onTranslationReady(text, m_translationCache[text]);
             } else {
                 m_translator->translate(text, srcLang, tgtLang);
                 ++m_pendingTranslations;
@@ -402,10 +398,7 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
         if (m_translationCache.contains(result.fullText)) {
             ++m_pendingTranslations;
-            QString cached = m_translationCache[result.fullText];
-            QTimer::singleShot(0, this, [this, text = result.fullText, cached]() {
-                onTranslationReady(text, cached);
-            });
+            onTranslationReady(result.fullText, m_translationCache[result.fullText]);
         } else {
             m_translator->translate(result.fullText, srcLang, tgtLang);
             ++m_pendingTranslations;
