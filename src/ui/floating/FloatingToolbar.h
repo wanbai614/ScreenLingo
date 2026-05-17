@@ -12,14 +12,17 @@ class FloatingToolbar : public QWidget {
 
 public:
     explicit FloatingToolbar(QWidget* parent = nullptr);
+
     void setPaused(bool paused);
+    void setGlobalVisible(bool visible);
+    void setSettingsOpen(bool open);
 
 signals:
     void startRequested();
     void pauseRequested();
     void areaSelectRequested();
     void visibilityToggleRequested();
-    void settingsRequested();
+    void settingsToggleRequested();
 
 protected:
     void paintEvent(QPaintEvent*) override;
@@ -30,6 +33,8 @@ protected:
 private:
     void expand();
     void collapse();
+    void updateEyeButton();
+    void updateSettingsButton();
     int  expandWidth() const { return m_expandWidth; }
     void setExpandWidth(int w);
     void fitToScreen();
@@ -43,11 +48,13 @@ private:
     QWidget*     m_btnContainer = nullptr;
 
     QPropertyAnimation* m_anim = nullptr;
-    int  m_expandWidth  = 44;
-    int  m_fullWidth    = 240;
-    bool m_expanded     = false;
-    bool m_paused       = false;
-    bool m_dragging     = false;
+    int  m_expandWidth   = 44;
+    int  m_fullWidth     = 240;
+    bool m_expanded      = false;
+    bool m_paused        = false;
+    bool m_visible       = true;
+    bool m_settingsOpen  = false;
+    bool m_dragging      = false;
     QPoint m_dragStartPos;
     QPoint m_dragStartGeo;
 

@@ -154,8 +154,14 @@ bool Application::initialize() {
     });
     connect(m_floating, &FloatingToolbar::visibilityToggleRequested,
             this, &Application::onGlobalVisibilityToggle);
-    connect(m_floating, &FloatingToolbar::settingsRequested,
-            this, &Application::onSettingsRequested);
+    connect(m_floating, &FloatingToolbar::settingsToggleRequested,
+            this, [this]() {
+        if (m_settings && m_settings->isVisible()) {
+            m_settings->close();
+        } else {
+            onSettingsRequested();
+        }
+    });
     connect(m_tray, &TrayManager::settingsRequested,
             this, &Application::onSettingsRequested);
     connect(m_tray, &TrayManager::languageChangeRequested,
@@ -310,6 +316,7 @@ void Application::onAreaEnabledChanged(int id, bool enabled) {
 void Application::onGlobalVisibilityToggle() {
     m_globalVisible = !m_globalVisible;
     m_tray->setGlobalVisible(m_globalVisible);
+    if (m_floating) m_floating->setGlobalVisible(m_globalVisible);
     m_bus->globalVisibilityChanged(m_globalVisible);
     if (m_globalVisible) m_overlays->showAll();
     else                 m_overlays->removeAll();
@@ -336,6 +343,11 @@ void Application::onSettingsRequested() {
     m_settings->show();
     m_settings->raise();
     m_settings->activateWindow();
+    if (m_floating) m_floating->setSettingsOpen(true);
+    // Reset when settings is closed
+    connect(m_settings, &QDialog::finished, this, [this]() {
+        if (m_floating) m_floating->setSettingsOpen(false);
+    });
 #else
     qInfo() << "Settings panel not yet available (created in parallel task).";
 #endif

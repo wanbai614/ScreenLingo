@@ -76,7 +76,7 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     connect(m_pauseBtn, &QPushButton::clicked, this, &FloatingToolbar::pauseRequested);
     connect(m_areaBtn, &QPushButton::clicked, this, &FloatingToolbar::areaSelectRequested);
     connect(m_eyeBtn, &QPushButton::clicked, this, &FloatingToolbar::visibilityToggleRequested);
-    connect(m_settingsBtn, &QPushButton::clicked, this, &FloatingToolbar::settingsRequested);
+    connect(m_settingsBtn, &QPushButton::clicked, this, &FloatingToolbar::settingsToggleRequested);
 
     // Install event filter on the toggle button to handle drag via the button
     m_toggleBtn->installEventFilter(this);
@@ -96,9 +96,55 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
 
 void FloatingToolbar::setPaused(bool paused) {
     m_paused = paused;
-    if (!m_expanded) return;  // controls are hidden anyway, will show correctly on expand
+    if (!m_expanded) return;
     m_playBtn->setVisible(paused);
     m_pauseBtn->setVisible(!paused);
+}
+
+void FloatingToolbar::setGlobalVisible(bool visible) {
+    m_visible = visible;
+    updateEyeButton();
+}
+
+void FloatingToolbar::setSettingsOpen(bool open) {
+    m_settingsOpen = open;
+    updateSettingsButton();
+}
+
+void FloatingToolbar::updateEyeButton() {
+    if (m_visible) {
+        m_eyeBtn->setText("◉");
+        m_eyeBtn->setToolTip(tr("Hide All Translations"));
+        m_eyeBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(0,140,100,180); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(0,180,120,220); }"
+        ).arg(kBtnSize / 2));
+    } else {
+        m_eyeBtn->setText("◌");
+        m_eyeBtn->setToolTip(tr("Show All Translations"));
+        m_eyeBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(140,100,60,180); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(200,160,0,220); }"
+        ).arg(kBtnSize / 2));
+    }
+}
+
+void FloatingToolbar::updateSettingsButton() {
+    if (m_settingsOpen) {
+        m_settingsBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(0,120,200,200); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(200,40,40,220); }"
+        ).arg(kBtnSize / 2));
+    } else {
+        m_settingsBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(60,60,60,160); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(0,140,100,200); }"
+        ).arg(kBtnSize / 2));
+    }
 }
 
 void FloatingToolbar::fitToScreen() {
