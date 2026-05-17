@@ -27,30 +27,36 @@ protected:
     void paintEvent(QPaintEvent*) override;
     void enterEvent(QEnterEvent*) override;
     void leaveEvent(QEvent*) override;
-    bool eventFilter(QObject* obj, QEvent* event) override;
+    void mousePressEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
 
 private:
     void expand();
     void collapse();
     int  expandWidth() const { return m_expandWidth; }
     void setExpandWidth(int w);
-    void reposition();
+    void fitToScreen();
 
-    QWidget*             m_btnContainer = nullptr;
-    QPushButton*         m_toggleBtn    = nullptr;
-    QPushButton*         m_playBtn      = nullptr;
-    QPushButton*         m_pauseBtn     = nullptr;
-    QPushButton*         m_areaBtn      = nullptr;
-    QPushButton*         m_eyeBtn       = nullptr;
-    QPushButton*         m_settingsBtn  = nullptr;
+    QWidget*             m_btnContainer  = nullptr;
+    QPushButton*         m_toggleBtn     = nullptr;
+    QPushButton*         m_playBtn       = nullptr;
+    QPushButton*         m_pauseBtn      = nullptr;
+    QPushButton*         m_areaBtn       = nullptr;
+    QPushButton*         m_eyeBtn        = nullptr;
+    QPushButton*         m_settingsBtn   = nullptr;
 
     QPropertyAnimation*  m_anim = nullptr;
-    int  m_expandWidth  = 44;   // collapsed size
-    int  m_fullWidth    = 240;  // expanded size
+    int  m_expandWidth  = 44;
+    int  m_fullWidth    = 240;
     bool m_expanded     = false;
     bool m_paused       = false;
+    bool m_dragging     = false;
+    QPoint m_dragOffset;
 
     QTimer m_hoverDelay;
-    static constexpr int kBtnSize = 36;
-    static constexpr int kGap     = 4;
+    static constexpr int kBtnSize  = 36;
+    static constexpr int kGap      = 4;
+    static constexpr int kMargin   = 4;
+    static constexpr int kCollapsedW = 44;
 };

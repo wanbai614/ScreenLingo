@@ -1,6 +1,7 @@
 #include "FloatingToolbar.h"
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
+#include <QtGui/QMouseEvent>
 #include <QtGui/QEnterEvent>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QHBoxLayout>
@@ -14,30 +15,28 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     setAttribute(Qt::WA_TranslucentBackground, true);
     setAttribute(Qt::WA_ShowWithoutActivating, true);
 
-    // Win32 click-through when collapsed (only the button area is interactive)
     HWND hwnd = reinterpret_cast<HWND>(winId());
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
     exStyle |= WS_EX_LAYERED | WS_EX_NOACTIVATE;
     SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
 
-    setFixedHeight(kBtnSize + 4);
+    setFixedHeight(kBtnSize + kMargin);
     setFixedWidth(m_expandWidth);
 
-    // Container for action buttons
     m_btnContainer = new QWidget(this);
     m_btnContainer->setStyleSheet("background: transparent;");
     auto* btnLayout = new QHBoxLayout(m_btnContainer);
-    btnLayout->setContentsMargins(0, 0, 0, 0);
+    btnLayout->setContentsMargins(kMargin / 2, kMargin / 2, kMargin / 2, kMargin / 2);
     btnLayout->setSpacing(kGap);
 
-    auto makeBtn = [&](const QString& text, const QString& tooltip, const QString& icon) {
+    auto makeBtn = [&](const QString& text, const QString& tooltip) {
         auto* btn = new QPushButton(text, m_btnContainer);
         btn->setFixedSize(kBtnSize, kBtnSize);
         btn->setToolTip(tooltip);
         btn->setStyleSheet(QString(
             "QPushButton {"
-            "  background: rgba(60,60,60,160); color: white; border: none; border-radius: %1px;"
-            "  font-size: 14px; font-weight: bold;"
+            "  background: rgba(60,60,60,160); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold;"
             "}"
             "QPushButton:hover { background: rgba(0,140,100,200); }"
         ).arg(kBtnSize / 2));
@@ -45,24 +44,23 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
         return btn;
     };
 
-    // Toggle/collapse button (always visible)
     m_toggleBtn = new QPushButton("SL", m_btnContainer);
     m_toggleBtn->setFixedSize(kBtnSize, kBtnSize);
-    m_toggleBtn->setToolTip(tr("ScreenLingo"));
-    m_toggleBtn->setCursor(Qt::PointingHandCursor);
+    m_toggleBtn->setToolTip(tr("ScreenLingo — drag to move"));
+    m_toggleBtn->setCursor(Qt::OpenHandCursor);
     m_toggleBtn->setStyleSheet(QString(
         "QPushButton {"
-        "  background: rgba(0,150,100,180); color: white; border: none; border-radius: %1px;"
-        "  font-size: 11px; font-weight: bold;"
+        "  background: rgba(0,150,100,180); color: white; border: none;"
+        "  border-radius: %1px; font-size: 11px; font-weight: bold;"
         "}"
         "QPushButton:hover { background: rgba(0,180,120,220); }"
     ).arg(kBtnSize / 2));
 
-    m_playBtn    = makeBtn("▶", tr("Start Translation"), "play");
-    m_pauseBtn   = makeBtn("⏸", tr("Pause Translation"), "pause");
-    m_areaBtn    = makeBtn("◧", tr("Select Area"), "area");
-    m_eyeBtn     = makeBtn("👁", tr("Show/Hide Translations"), "eye");
-    m_settingsBtn= makeBtn("⚙", tr("Settings"), "settings");
+    m_playBtn    = makeBtn("▶", tr("Start Translation"));
+    m_pauseBtn   = makeBtn("⏸", tr("Pause Translation"));
+    m_areaBtn    = makeBtn("◧", tr("Select Area"));
+    m_eyeBtn     = makeBtn("👁", tr("Show/Hide Translations"));
+    m_settingsBtn= makeBtn("⚙", tr("Settings"));
 
     btnLayout->addWidget(m_toggleBtn);
     btnLayout->addWidget(m_playBtn);
@@ -72,10 +70,8 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     btnLayout->addWidget(m_settingsBtn);
     m_btnContainer->setLayout(btnLayout);
 
-    // Initial: show play, hide pause
     m_pauseBtn->hide();
 
-    // Connections
     connect(m_toggleBtn, &QPushButton::clicked, this, [this]() {
         if (m_expanded) collapse(); else expand();
     });
@@ -85,21 +81,18 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     connect(m_eyeBtn, &QPushButton::clicked, this, &FloatingToolbar::visibilityToggleRequested);
     connect(m_settingsBtn, &QPushButton::clicked, this, &FloatingToolbar::settingsRequested);
 
-    // Hover delay: expand only after 200ms hover
     m_hoverDelay.setSingleShot(true);
-    m_hoverDelay.setInterval(200);
+    m_hoverDelay.setInterval(250);
     connect(&m_hoverDelay, &QTimer::timeout, this, &FloatingToolbar::expand);
 
     setMouseTracking(true);
-    installEventFilter(this);
 
-    // Animation
     m_anim = new QPropertyAnimation(this, "expandWidth", this);
     m_anim->setDuration(180);
     m_anim->setEasingCurve(QEasingCurve::OutCubic);
 
-    // Position at right edge, vertical center
-    reposition();
+    // Start at right edge, vertically centered
+    fitToScreen();
 }
 
 void FloatingToolbar::setPaused(bool paused) {
@@ -108,20 +101,26 @@ void FloatingToolbar::setPaused(bool paused) {
     m_pauseBtn->setVisible(!paused);
 }
 
-void FloatingToolbar::reposition() {
+void FloatingToolbar::fitToScreen() {
     QScreen* screen = QApplication::primaryScreen();
     if (!screen) return;
     QRect avail = screen->availableGeometry();
-    int x = avail.right() - 4;  // 4px from right edge
+    int x = avail.right() - kCollapsedW - kMargin;
     int y = (avail.top() + avail.bottom()) / 2 - height() / 2;
-    move(x - (m_expanded ? m_fullWidth : kBtnSize), y);
+    move(x, y);
 }
 
 void FloatingToolbar::setExpandWidth(int w) {
+    // Keep right edge anchored during animation
+    int delta = m_expandWidth - w;
     m_expandWidth = w;
     setFixedWidth(w);
     m_btnContainer->setGeometry(0, 0, w, height());
-    reposition();
+    if (delta > 0) {
+        move(x() + delta, y());  // expand leftward
+    } else if (delta < 0) {
+        move(x() + delta, y());  // shrink rightward
+    }
 }
 
 void FloatingToolbar::expand() {
@@ -131,12 +130,6 @@ void FloatingToolbar::expand() {
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(m_fullWidth);
     m_anim->start();
-
-    // Make whole widget interactive when expanded
-    HWND hwnd = reinterpret_cast<HWND>(winId());
-    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    exStyle &= ~WS_EX_TRANSPARENT;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
 }
 
 void FloatingToolbar::collapse() {
@@ -144,34 +137,51 @@ void FloatingToolbar::collapse() {
     m_expanded = false;
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
-    m_anim->setEndValue(kBtnSize);
+    m_anim->setEndValue(kCollapsedW);
     m_anim->start();
-
-    // Make transparent to clicks when collapsed (only button area)
-    HWND hwnd = reinterpret_cast<HWND>(winId());
-    LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    exStyle |= WS_EX_TRANSPARENT;
-    SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
 }
 
 void FloatingToolbar::enterEvent(QEnterEvent*) {
-    m_hoverDelay.start();
+    if (!m_dragging) m_hoverDelay.start();
 }
 
 void FloatingToolbar::leaveEvent(QEvent*) {
     m_hoverDelay.stop();
     if (m_expanded) {
-        QTimer::singleShot(500, this, [this]() {
-            if (!underMouse()) collapse();
+        QTimer::singleShot(600, this, [this]() {
+            if (!underMouse() && !m_dragging) collapse();
         });
     }
 }
 
-bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
-    if (obj == this && event->type() == QEvent::MouseMove) {
-        m_hoverDelay.start();
+void FloatingToolbar::mousePressEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton) {
+        m_dragging = true;
+        m_dragOffset = event->globalPosition().toPoint() - frameGeometry().topLeft();
+        m_hoverDelay.stop();
+        setCursor(Qt::ClosedHandCursor);
     }
-    return QWidget::eventFilter(obj, event);
+    QWidget::mousePressEvent(event);
+}
+
+void FloatingToolbar::mouseMoveEvent(QMouseEvent* event) {
+    if (m_dragging) {
+        QPoint newPos = event->globalPosition().toPoint() - m_dragOffset;
+        move(newPos);
+    }
+    QWidget::mouseMoveEvent(event);
+}
+
+void FloatingToolbar::mouseReleaseEvent(QMouseEvent* event) {
+    if (event->button() == Qt::LeftButton && m_dragging) {
+        m_dragging = false;
+        if (m_dragOffset.manhattanLength() < 5) {
+            // Just a click, not a drag — toggle expand
+            if (m_expanded) collapse(); else expand();
+        }
+        setCursor(Qt::ArrowCursor);
+    }
+    QWidget::mouseReleaseEvent(event);
 }
 
 void FloatingToolbar::paintEvent(QPaintEvent*) {
@@ -179,10 +189,13 @@ void FloatingToolbar::paintEvent(QPaintEvent*) {
     p.setRenderHint(QPainter::Antialiasing);
 
     if (m_expanded) {
-        // Expanded: rounded pill background
-        p.setBrush(QColor(30, 30, 30, 120));
-        p.setPen(QPen(QColor(80, 80, 80, 60), 1));
-        p.drawRoundedRect(rect(), 20, 20);
+        p.setBrush(QColor(30, 30, 30, 130));
+        p.setPen(QPen(QColor(80, 80, 80, 80), 1));
+        p.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 20, 20);
+    } else {
+        // Collapsed: small rounded background behind the SL button
+        p.setBrush(QColor(0, 0, 0, 1));  // nearly invisible, just for hit-test
+        p.setPen(Qt::NoPen);
+        p.drawRoundedRect(2, 2, kCollapsedW - 4, height() - 4, 18, 18);
     }
-    // Collapsed: just the toggle button shows, no background needed
 }
