@@ -129,6 +129,12 @@ bool Application::initialize() {
             this, [this]() { onHotkeyTriggered("area_select"); });
     connect(m_tray, &TrayManager::globalVisibilityToggleRequested,
             this, &Application::onGlobalVisibilityToggle);
+    connect(m_tray, &TrayManager::startRequested, this, [this]() {
+        setMode(Mode::RealTime);
+    });
+    connect(m_tray, &TrayManager::pauseRequested, this, [this]() {
+        setMode(Mode::Pause);
+    });
     connect(m_tray, &TrayManager::settingsRequested,
             this, &Application::onSettingsRequested);
     connect(m_tray, &TrayManager::languageChangeRequested,
