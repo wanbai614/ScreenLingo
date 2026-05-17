@@ -4,6 +4,7 @@
 #include <QtGui/QMouseEvent>
 #include <QtGui/QKeyEvent>
 #include <QtGui/QPainterPath>
+#include <QtCore/QTimer>
 
 AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     : QWidget(parent), m_screenIndex(screenIndex) {
@@ -16,8 +17,13 @@ AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     if (screen) setGeometry(screen->geometry());
     showFullScreen();
     setFocus();
+    activateWindow();
     grabMouse();
-    grabKeyboard();
+    // Delay keyboard grab until window is fully active
+    QTimer::singleShot(0, this, [this]() {
+        grabKeyboard();
+        setFocus();
+    });
 }
 
 QRect AreaSelector::selectionRect() const {
