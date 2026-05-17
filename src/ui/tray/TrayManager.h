@@ -15,6 +15,7 @@ public:
 
 public slots:
     void retranslateUi();
+    void setGlobalVisible(bool visible);
 
 signals:
     void modeChangeRequested(Mode mode);
@@ -44,4 +45,5 @@ private:
     QAction*         m_toggleAction   = nullptr;
     QAction*         m_settingsAction = nullptr;
     QAction*         m_exitAction     = nullptr;
+    bool             m_globalVisible = true;
 };

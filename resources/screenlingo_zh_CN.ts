@@ -13,6 +13,8 @@
     <message><source>简体中文</source><translation>简体中文</translation></message>
     <message><source>Select Translation Area...</source><translation>选择翻译区域...</translation></message>
     <message><source>Show/Hide All Translations</source><translation>显示/隐藏全部译文</translation></message>
+    <message><source>Show All Translations</source><translation>显示全部译文</translation></message>
+    <message><source>Hide All Translations</source><translation>隐藏全部译文</translation></message>
     <message><source>Settings...</source><translation>设置...</translation></message>
     <message><source>Exit</source><translation>退出</translation></message>
 </context>

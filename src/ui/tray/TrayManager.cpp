@@ -85,12 +85,16 @@ void TrayManager::buildMenu() {
     });
 
     connect(m_areaAction, &QAction::triggered, this, &TrayManager::areaSelectRequested);
-    connect(m_toggleAction, &QAction::triggered, this, &TrayManager::globalVisibilityToggleRequested);
+    connect(m_toggleAction, &QAction::triggered, this, [this]() {
+        emit globalVisibilityToggleRequested();
+    });
     connect(m_settingsAction, &QAction::triggered, this, &TrayManager::settingsRequested);
     connect(m_exitAction, &QAction::triggered, this, &TrayManager::exitRequested);
 
     connect(LanguageManager::instance(), &LanguageManager::languageChanged,
             this, &TrayManager::retranslateUi);
+
+    setGlobalVisible(true);  // default state
 }
 
 void TrayManager::updateModeCheck(Mode mode) {
@@ -135,7 +139,14 @@ void TrayManager::retranslateUi() {
     m_langEnAction->setText(tr("English"));
     m_langZhAction->setText(tr("简体中文"));
     m_areaAction->setText(tr("Select Translation Area..."));
-    m_toggleAction->setText(tr("Show/Hide All Translations"));
+    m_toggleAction->setText(m_globalVisible
+        ? tr("Hide All Translations") : tr("Show All Translations"));
     m_settingsAction->setText(tr("Settings..."));
     m_exitAction->setText(tr("Exit"));
+}
+
+void TrayManager::setGlobalVisible(bool visible) {
+    m_globalVisible = visible;
+    m_toggleAction->setText(visible
+        ? tr("Hide All Translations") : tr("Show All Translations"));
 }

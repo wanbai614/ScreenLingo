@@ -287,6 +287,7 @@ void Application::onAreaEnabledChanged(int id, bool enabled) {
 
 void Application::onGlobalVisibilityToggle() {
     m_globalVisible = !m_globalVisible;
+    m_tray->setGlobalVisible(m_globalVisible);
     m_bus->globalVisibilityChanged(m_globalVisible);
     if (m_globalVisible) m_overlays->showAll();
     else                 m_overlays->removeAll();
