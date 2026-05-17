@@ -27,6 +27,8 @@ set(SOURCES
     src/core/translate/plugins/OpenAITranslator.cpp
     src/core/translate/plugins/DeepSeekTranslator.h
     src/core/translate/plugins/DeepSeekTranslator.cpp
+    src/core/translate/plugins/OllamaTranslator.h
+    src/core/translate/plugins/OllamaTranslator.cpp
     src/core/ocr/IOCREngine.h
     src/core/capture/ICaptureEngine.h
     src/core/capture/DxgiCaptureEngine.h

@@ -117,4 +117,8 @@ New: %2
     <name>TranslatorManager</name>
     <message><source>No translation service configured</source><translation>未配置翻译服务</translation></message>
 </context>
+<context>
+    <name>OllamaTranslator</name>
+    <message><source>Empty response from Ollama</source><translation>Ollama 返回空响应</translation></message>
+</context>
 </TS>

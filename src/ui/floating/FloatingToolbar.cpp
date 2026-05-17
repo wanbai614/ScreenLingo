@@ -126,6 +126,12 @@ void FloatingToolbar::setExpandWidth(int w) {
 void FloatingToolbar::expand() {
     if (m_expanded) return;
     m_expanded = true;
+    // Show all action buttons before expanding
+    m_playBtn->show();
+    m_areaBtn->show();
+    m_eyeBtn->show();
+    m_settingsBtn->show();
+    setPaused(m_paused);  // restore play/pause visibility
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(m_fullWidth);
@@ -135,6 +141,12 @@ void FloatingToolbar::expand() {
 void FloatingToolbar::collapse() {
     if (!m_expanded) return;
     m_expanded = false;
+    // Hide action buttons immediately before shrinking
+    m_playBtn->hide();
+    m_pauseBtn->hide();
+    m_areaBtn->hide();
+    m_eyeBtn->hide();
+    m_settingsBtn->hide();
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(kCollapsedW);
