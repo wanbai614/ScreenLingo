@@ -29,20 +29,16 @@ void TrayManager::initialize() {
 void TrayManager::buildMenu() {
     m_menu = new QMenu();
 
-    // Start / Pause toggle (top-level, most-used actions)
-    m_startAction = m_menu->addAction(tr("Start Translation"));
-    m_pauseAction = m_menu->addAction(tr("Pause Translation"));
-
+    // Dynamic trigger action (changes per mode)
+    m_triggerAction = m_menu->addAction(tr("Translate Now"));
     m_menu->addSeparator();
 
     // Mode submenu
     m_modeMenu = new QMenu(tr("Mode"), m_menu);
-
     m_realtimeAction = m_modeMenu->addAction(tr("Real-time Translation"));
     m_realtimeAction->setCheckable(true);
     m_snapshotAction = m_modeMenu->addAction(tr("Snapshot Translation"));
     m_snapshotAction->setCheckable(true);
-
     m_menu->addMenu(m_modeMenu);
 
     // Language submenu
@@ -64,11 +60,10 @@ void TrayManager::buildMenu() {
 
     m_exitAction = m_menu->addAction(tr("Exit"));
 
-    // Start/Pause connections
-    connect(m_startAction, &QAction::triggered, this, &TrayManager::startRequested);
-    connect(m_pauseAction, &QAction::triggered, this, &TrayManager::pauseRequested);
+    // Connections
+    connect(m_triggerAction, &QAction::triggered,
+            this, &TrayManager::triggerActionRequested);
 
-    // Mode connections
     connect(m_realtimeAction, &QAction::triggered, this, [this]() {
         emit modeChangeRequested(Mode::RealTime);
     });
@@ -76,7 +71,6 @@ void TrayManager::buildMenu() {
         emit modeChangeRequested(Mode::Snapshot);
     });
 
-    // Language connections
     connect(m_langEnAction, &QAction::triggered, this, [this]() {
         emit languageChangeRequested("en");
     });
@@ -94,16 +88,29 @@ void TrayManager::buildMenu() {
     connect(LanguageManager::instance(), &LanguageManager::languageChanged,
             this, &TrayManager::retranslateUi);
 
-    setGlobalVisible(true);  // default state
+    setGlobalVisible(true);
 }
 
 void TrayManager::updateModeCheck(Mode mode) {
+    m_currentMode = mode;
     m_realtimeAction->setChecked(mode == Mode::RealTime);
     m_snapshotAction->setChecked(mode == Mode::Snapshot);
 
-    // Show/hide start/pause based on current mode
-    m_startAction->setVisible(mode == Mode::Pause);
-    m_pauseAction->setVisible(mode != Mode::Pause);
+    // Update trigger action text and visibility based on mode
+    switch (mode) {
+    case Mode::RealTime:
+        m_triggerAction->setText(tr("Pause Translation"));
+        m_triggerAction->setVisible(true);
+        break;
+    case Mode::Snapshot:
+        m_triggerAction->setText(tr("Translate Now"));
+        m_triggerAction->setVisible(true);
+        break;
+    case Mode::Pause:
+        m_triggerAction->setText(tr("Start Translation"));
+        m_triggerAction->setVisible(true);
+        break;
+    }
 }
 
 void TrayManager::updateIcon(Mode mode) {
@@ -130,8 +137,8 @@ void TrayManager::retranslateUi() {
     m_langEnAction->setChecked(LanguageManager::instance()->currentLanguage() == "en");
     m_langZhAction->setChecked(LanguageManager::instance()->currentLanguage() == "zh_CN");
 
-    m_startAction->setText(tr("Start Translation"));
-    m_pauseAction->setText(tr("Pause Translation"));
+    updateModeCheck(m_currentMode);  // refresh trigger action text
+
     m_modeMenu->setTitle(tr("Mode"));
     m_realtimeAction->setText(tr("Real-time Translation"));
     m_snapshotAction->setText(tr("Snapshot Translation"));

@@ -56,34 +56,33 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
         "QPushButton:hover { background: rgba(0,180,120,220); }"
     ).arg(kBtnSize / 2));
 
-    m_playBtn    = makeBtn("▶", tr("Start Translation"));
-    m_pauseBtn   = makeBtn("⏸", tr("Pause Translation"));
+    m_triggerBtn = makeBtn("▶", tr("Translate Now"));
     m_areaBtn    = makeBtn("◧", tr("Select Area"));
-    m_eyeBtn     = makeBtn("👁", tr("Show/Hide Translations"));
+    m_eyeBtn     = makeBtn("◉", tr("Hide All Translations"));
     m_settingsBtn= makeBtn("⚙", tr("Settings"));
 
     btnLayout->addWidget(m_toggleBtn);
-    btnLayout->addWidget(m_playBtn);
-    btnLayout->addWidget(m_pauseBtn);
+    btnLayout->addWidget(m_triggerBtn);
     btnLayout->addWidget(m_areaBtn);
     btnLayout->addWidget(m_eyeBtn);
     btnLayout->addWidget(m_settingsBtn);
     m_btnContainer->setLayout(btnLayout);
 
-    // Start collapsed: only SL button visible
-    m_playBtn->hide();
-    m_pauseBtn->hide();
+    // Start collapsed
+    m_triggerBtn->hide();
     m_areaBtn->hide();
     m_eyeBtn->hide();
     m_settingsBtn->hide();
 
-    connect(m_playBtn, &QPushButton::clicked, this, &FloatingToolbar::startRequested);
-    connect(m_pauseBtn, &QPushButton::clicked, this, &FloatingToolbar::pauseRequested);
-    connect(m_areaBtn, &QPushButton::clicked, this, &FloatingToolbar::areaSelectRequested);
-    connect(m_eyeBtn, &QPushButton::clicked, this, &FloatingToolbar::visibilityToggleRequested);
-    connect(m_settingsBtn, &QPushButton::clicked, this, &FloatingToolbar::settingsToggleRequested);
+    connect(m_triggerBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::triggerActionRequested);
+    connect(m_areaBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::areaSelectRequested);
+    connect(m_eyeBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::visibilityToggleRequested);
+    connect(m_settingsBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::settingsToggleRequested);
 
-    // Install event filter on the toggle button to handle drag via the button
     m_toggleBtn->installEventFilter(this);
 
     m_hoverDelay.setSingleShot(true);
@@ -99,11 +98,9 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     fitToScreen();
 }
 
-void FloatingToolbar::setPaused(bool paused) {
-    m_paused = paused;
-    if (!m_expanded) return;
-    m_playBtn->setVisible(paused);
-    m_pauseBtn->setVisible(!paused);
+void FloatingToolbar::setMode(Mode mode) {
+    m_currentMode = mode;
+    updateTriggerButton();
 }
 
 void FloatingToolbar::setGlobalVisible(bool visible) {
@@ -114,6 +111,23 @@ void FloatingToolbar::setGlobalVisible(bool visible) {
 void FloatingToolbar::setSettingsOpen(bool open) {
     m_settingsOpen = open;
     updateSettingsButton();
+}
+
+void FloatingToolbar::updateTriggerButton() {
+    switch (m_currentMode) {
+    case Mode::RealTime:
+        m_triggerBtn->setText("⏸");
+        m_triggerBtn->setToolTip(tr("Pause Translation"));
+        break;
+    case Mode::Snapshot:
+        m_triggerBtn->setText("▶");
+        m_triggerBtn->setToolTip(tr("Translate Now"));
+        break;
+    case Mode::Pause:
+        m_triggerBtn->setText("▶");
+        m_triggerBtn->setToolTip(tr("Start Translation"));
+        break;
+    }
 }
 
 void FloatingToolbar::updateEyeButton() {
@@ -166,21 +180,20 @@ void FloatingToolbar::setExpandWidth(int w) {
     m_expandWidth = w;
     setFixedWidth(w);
     m_btnContainer->setGeometry(0, 0, w, height());
-    if (delta > 0) {
-        move(x() + delta, y());
-    } else if (delta < 0) {
-        move(x() + delta, y());
-    }
+    if (delta > 0) move(x() + delta, y());
+    else if (delta < 0) move(x() + delta, y());
 }
 
 void FloatingToolbar::expand() {
     if (m_expanded) return;
     m_expanded = true;
-    // Show action buttons, but only the correct play/pause per current state
+    m_triggerBtn->show();
     m_areaBtn->show();
     m_eyeBtn->show();
     m_settingsBtn->show();
-    setPaused(m_paused);  // show correct play/pause button
+    updateTriggerButton();
+    updateEyeButton();
+    updateSettingsButton();
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
     m_anim->setEndValue(m_fullWidth);
@@ -190,8 +203,7 @@ void FloatingToolbar::expand() {
 void FloatingToolbar::collapse() {
     if (!m_expanded) return;
     m_expanded = false;
-    m_playBtn->hide();
-    m_pauseBtn->hide();
+    m_triggerBtn->hide();
     m_areaBtn->hide();
     m_eyeBtn->hide();
     m_settingsBtn->hide();
@@ -215,7 +227,6 @@ void FloatingToolbar::leaveEvent(QEvent*) {
 }
 
 bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
-    // Handle drag via the SL toggle button
     if (obj == m_toggleBtn) {
         if (event->type() == QEvent::MouseButtonPress) {
             auto* me = static_cast<QMouseEvent*>(event);
@@ -225,7 +236,7 @@ bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
                 m_dragStartGeo = frameGeometry().topLeft();
                 m_hoverDelay.stop();
                 m_toggleBtn->setCursor(Qt::ClosedHandCursor);
-                return true;  // absorb the press
+                return true;
             }
         }
         else if (event->type() == QEvent::MouseMove) {
@@ -243,7 +254,6 @@ bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
                 auto* me = static_cast<QMouseEvent*>(event);
                 int dist = (me->globalPosition().toPoint() - m_dragStartPos).manhattanLength();
                 if (dist < 5) {
-                    // It was a click, not a drag → toggle
                     if (m_expanded) collapse(); else expand();
                 }
                 return true;
@@ -256,7 +266,6 @@ bool FloatingToolbar::eventFilter(QObject* obj, QEvent* event) {
 void FloatingToolbar::paintEvent(QPaintEvent*) {
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
-
     if (m_expanded) {
         p.setBrush(QColor(30, 30, 30, 130));
         p.setPen(QPen(QColor(80, 80, 80, 80), 1));

@@ -19,8 +19,7 @@ public slots:
 
 signals:
     void modeChangeRequested(Mode mode);
-    void startRequested();
-    void pauseRequested();
+    void triggerActionRequested();  // snapshot: translate once, realtime→pause, pause→realtime
     void areaSelectRequested();
     void globalVisibilityToggleRequested();
     void settingsRequested();
@@ -31,14 +30,15 @@ private:
     void buildMenu();
     void updateModeCheck(Mode mode);
 
+    Mode m_currentMode = Mode::Snapshot;
+
     QSystemTrayIcon* m_trayIcon = nullptr;
     QMenu*           m_menu     = nullptr;
     QMenu*           m_modeMenu = nullptr;
     QMenu*           m_langMenu = nullptr;
     QAction*         m_realtimeAction = nullptr;
     QAction*         m_snapshotAction = nullptr;
-    QAction*         m_startAction    = nullptr;
-    QAction*         m_pauseAction    = nullptr;
+    QAction*         m_triggerAction  = nullptr;   // dynamic: Start/Pause/Snapshot
     QAction*         m_langEnAction   = nullptr;
     QAction*         m_langZhAction   = nullptr;
     QAction*         m_areaAction     = nullptr;

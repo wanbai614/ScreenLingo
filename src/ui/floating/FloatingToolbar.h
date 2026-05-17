@@ -5,6 +5,7 @@
 #include <QtCore/QPropertyAnimation>
 #include <QtCore/QTimer>
 #include <QtCore/QPoint>
+#include "common/Types.h"
 
 class FloatingToolbar : public QWidget {
     Q_OBJECT
@@ -13,13 +14,12 @@ class FloatingToolbar : public QWidget {
 public:
     explicit FloatingToolbar(QWidget* parent = nullptr);
 
-    void setPaused(bool paused);
+    void setMode(Mode mode);
     void setGlobalVisible(bool visible);
     void setSettingsOpen(bool open);
 
 signals:
-    void startRequested();
-    void pauseRequested();
+    void triggerActionRequested();
     void areaSelectRequested();
     void visibilityToggleRequested();
     void settingsToggleRequested();
@@ -35,13 +35,13 @@ private:
     void collapse();
     void updateEyeButton();
     void updateSettingsButton();
+    void updateTriggerButton();
     int  expandWidth() const { return m_expandWidth; }
     void setExpandWidth(int w);
     void fitToScreen();
 
     QPushButton* m_toggleBtn    = nullptr;
-    QPushButton* m_playBtn      = nullptr;
-    QPushButton* m_pauseBtn     = nullptr;
+    QPushButton* m_triggerBtn   = nullptr;
     QPushButton* m_areaBtn      = nullptr;
     QPushButton* m_eyeBtn       = nullptr;
     QPushButton* m_settingsBtn  = nullptr;
@@ -49,9 +49,9 @@ private:
 
     QPropertyAnimation* m_anim = nullptr;
     int  m_expandWidth   = 44;
-    int  m_fullWidth     = 240;
+    int  m_fullWidth     = 200;
     bool m_expanded      = false;
-    bool m_paused        = false;
+    Mode m_currentMode   = Mode::Snapshot;
     bool m_visible       = true;
     bool m_settingsOpen  = false;
     bool m_dragging      = false;

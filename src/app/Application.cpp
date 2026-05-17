@@ -135,19 +135,21 @@ bool Application::initialize() {
             this, [this]() { onHotkeyTriggered("area_select"); });
     connect(m_tray, &TrayManager::globalVisibilityToggleRequested,
             this, &Application::onGlobalVisibilityToggle);
-    connect(m_tray, &TrayManager::startRequested, this, [this]() {
-        setMode(Mode::RealTime);
-    });
-    connect(m_tray, &TrayManager::pauseRequested, this, [this]() {
-        setMode(Mode::Pause);
+    connect(m_tray, &TrayManager::triggerActionRequested, this, [this]() {
+        switch (m_mode) {
+        case Mode::RealTime: setMode(Mode::Pause);    break;
+        case Mode::Pause:    setMode(Mode::RealTime); break;
+        case Mode::Snapshot: onSnapshotRequested();    break;
+        }
     });
 
     // Floating toolbar
-    connect(m_floating, &FloatingToolbar::startRequested, this, [this]() {
-        setMode(Mode::RealTime);
-    });
-    connect(m_floating, &FloatingToolbar::pauseRequested, this, [this]() {
-        setMode(Mode::Pause);
+    connect(m_floating, &FloatingToolbar::triggerActionRequested, this, [this]() {
+        switch (m_mode) {
+        case Mode::RealTime: setMode(Mode::Pause);    break;
+        case Mode::Pause:    setMode(Mode::RealTime); break;
+        case Mode::Snapshot: onSnapshotRequested();    break;
+        }
     });
     connect(m_floating, &FloatingToolbar::areaSelectRequested, this, [this]() {
         onHotkeyTriggered("area_select");
@@ -185,7 +187,7 @@ bool Application::initialize() {
 void Application::setMode(Mode mode) {
     m_mode = mode;
     m_tray->updateIcon(mode);
-    if (m_floating) m_floating->setPaused(mode == Mode::Pause);
+    if (m_floating) m_floating->setMode(mode);
     m_config->setLastMode(mode);
     m_bus->modeChanged(mode);
 

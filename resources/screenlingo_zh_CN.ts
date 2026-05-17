@@ -5,6 +5,7 @@
     <name>TrayManager</name>
     <message><source>Start Translation</source><translation>开始翻译</translation></message>
     <message><source>Pause Translation</source><translation>暂停翻译</translation></message>
+    <message><source>Translate Now</source><translation>立即翻译</translation></message>
     <message><source>Mode</source><translation>模式切换</translation></message>
     <message><source>Real-time Translation</source><translation>实时翻译</translation></message>
     <message><source>Snapshot Translation</source><translation>快照翻译</translation></message>
