@@ -10,6 +10,7 @@
 #include "engine/hotkey/HotkeyManager.h"
 #include "ui/overlay/OverlayManager.h"
 #include "ui/tray/TrayManager.h"
+#include "ui/floating/FloatingToolbar.h"
 #include "ui/selector/AreaSelector.h"
 #include "common/Config.h"
 #include "common/LanguageManager.h"
@@ -82,6 +83,9 @@ bool Application::initialize() {
     m_tray     = new TrayManager(this);
     m_tray->initialize();
 
+    m_floating = new FloatingToolbar();
+    m_floating->show();
+
     m_hotkey   = new HotkeyManager(this);
     QApplication::instance()->installNativeEventFilter(m_hotkey);
 
@@ -135,6 +139,21 @@ bool Application::initialize() {
     connect(m_tray, &TrayManager::pauseRequested, this, [this]() {
         setMode(Mode::Pause);
     });
+
+    // Floating toolbar
+    connect(m_floating, &FloatingToolbar::startRequested, this, [this]() {
+        setMode(Mode::RealTime);
+    });
+    connect(m_floating, &FloatingToolbar::pauseRequested, this, [this]() {
+        setMode(Mode::Pause);
+    });
+    connect(m_floating, &FloatingToolbar::areaSelectRequested, this, [this]() {
+        onHotkeyTriggered("area_select");
+    });
+    connect(m_floating, &FloatingToolbar::visibilityToggleRequested,
+            this, &Application::onGlobalVisibilityToggle);
+    connect(m_floating, &FloatingToolbar::settingsRequested,
+            this, &Application::onSettingsRequested);
     connect(m_tray, &TrayManager::settingsRequested,
             this, &Application::onSettingsRequested);
     connect(m_tray, &TrayManager::languageChangeRequested,
@@ -158,6 +177,7 @@ bool Application::initialize() {
 void Application::setMode(Mode mode) {
     m_mode = mode;
     m_tray->updateIcon(mode);
+    if (m_floating) m_floating->setPaused(mode == Mode::Pause);
     m_config->setLastMode(mode);
     m_bus->modeChanged(mode);
 

@@ -46,6 +46,8 @@ set(SOURCES
     src/ui/settings/SettingsPanel.cpp
     src/ui/settings/KeyCaptureDialog.h
     src/ui/settings/KeyCaptureDialog.cpp
+    src/ui/floating/FloatingToolbar.h
+    src/ui/floating/FloatingToolbar.cpp
 )
 
 # Windows OCR: WinRT/MSVC for real OCR, stub for MinGW development

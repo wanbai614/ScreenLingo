@@ -15,6 +15,7 @@ class LayoutEngine;
 class OverlayManager;
 class TrayManager;
 class HotkeyManager;
+class FloatingToolbar;
 class SettingsPanel;
 class Config;
 
@@ -56,6 +57,7 @@ private:
     OverlayManager*     m_overlays    = nullptr;
     TrayManager*        m_tray        = nullptr;
     HotkeyManager*      m_hotkey      = nullptr;
+    FloatingToolbar*    m_floating    = nullptr;
     SettingsPanel*      m_settings    = nullptr;
     Config*             m_config      = nullptr;
 
