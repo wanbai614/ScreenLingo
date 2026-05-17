@@ -70,7 +70,12 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     btnLayout->addWidget(m_settingsBtn);
     m_btnContainer->setLayout(btnLayout);
 
+    // Start collapsed: only SL button visible
+    m_playBtn->hide();
     m_pauseBtn->hide();
+    m_areaBtn->hide();
+    m_eyeBtn->hide();
+    m_settingsBtn->hide();
 
     connect(m_playBtn, &QPushButton::clicked, this, &FloatingToolbar::startRequested);
     connect(m_pauseBtn, &QPushButton::clicked, this, &FloatingToolbar::pauseRequested);
