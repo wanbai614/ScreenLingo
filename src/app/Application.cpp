@@ -1126,6 +1126,7 @@ void Application::onTranslationReady(const QString& original,
             QString seg = indexToTrans.value(i);
 
             bool bad = seg.isEmpty() || seg == "??" || seg == orig;
+            if (!bad && seg.contains(orig)) bad = true;
             if (!bad && seg.size() > orig.size() * 3 && seg.size() > 30) bad = true;
 
             if (bad && m_retryPerText.value(orig, 0) < 3) {
