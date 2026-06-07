@@ -22,7 +22,6 @@ signals:
     void modeChangeRequested(Mode mode);
     void triggerActionRequested();  // snapshot: translate once, realtime→pause, pause→realtime
     void areaSelectRequested();
-    void editAreaRequested();
     void globalVisibilityToggleRequested();
     void settingsRequested();
     void languageChangeRequested(const QString& lang);
@@ -46,7 +45,6 @@ private:
     QAction*         m_langEnAction   = nullptr;
     QAction*         m_langZhAction   = nullptr;
     QAction*         m_areaAction     = nullptr;
-    QAction*         m_editAreaAction = nullptr;
     QAction*         m_toggleAction   = nullptr;
     QAction*         m_stopAction     = nullptr;
     QAction*         m_selTransAction = nullptr;

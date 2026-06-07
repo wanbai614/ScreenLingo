@@ -411,8 +411,6 @@ bool Application::initialize() {
             this, &Application::onModeChanged);
     connect(m_tray, &TrayManager::areaSelectRequested,
             this, &Application::launchAreaSelector);
-    connect(m_tray, &TrayManager::editAreaRequested,
-            this, &Application::launchAreaSelector);
     connect(m_tray, &TrayManager::globalVisibilityToggleRequested,
             this, &Application::onGlobalVisibilityToggle);
     connect(m_tray, &TrayManager::triggerActionRequested, this, [this]() {

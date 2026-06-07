@@ -39,7 +39,6 @@ void TrayManager::buildMenu() {
     m_snapshotAction->setCheckable(true);
     m_menu->addMenu(m_modeMenu);
     m_areaAction = m_menu->addAction(tr("Select Translation Area..."));
-    m_editAreaAction = m_menu->addAction(tr("Edit Area"));
     m_menu->addSeparator();
 
     // --- Display ---
@@ -88,7 +87,6 @@ void TrayManager::buildMenu() {
     connect(m_selTransAction, &QAction::triggered, this, [this]() {
         emit selTranslateRequested();
     });
-    connect(m_editAreaAction, &QAction::triggered, this, &TrayManager::editAreaRequested);
     connect(m_settingsAction, &QAction::triggered, this, &TrayManager::settingsRequested);
     connect(m_exitAction, &QAction::triggered, this, &TrayManager::exitRequested);
 
@@ -158,7 +156,6 @@ void TrayManager::retranslateUi() {
     m_stopAction->setText(tr("Stop & Clear"));
     m_selTransAction->setText(m_selModeActive
         ? tr("√  Selection Translate") : tr("Selection Translate"));
-    m_editAreaAction->setText(tr("Edit Area"));
     m_settingsAction->setText(tr("Settings..."));
     m_exitAction->setText(tr("Exit"));
 }
