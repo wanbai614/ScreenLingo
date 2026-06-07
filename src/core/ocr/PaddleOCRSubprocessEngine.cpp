@@ -19,7 +19,6 @@ PaddleOCRSubprocessEngine::~PaddleOCRSubprocessEngine() {
 }
 
 bool PaddleOCRSubprocessEngine::initialize(const QString& /*languageTag*/) {
-    // Python executable — try venv first, then system Python
     m_pythonExe = QCoreApplication::applicationDirPath() + "/../paddle_venv_ocr/Scripts/python.exe";
     if (!QFile::exists(m_pythonExe))
         m_pythonExe = "E:/XITONGHUANCUN/paddle_venv/Scripts/python.exe";
@@ -38,6 +37,25 @@ bool PaddleOCRSubprocessEngine::initialize(const QString& /*languageTag*/) {
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
     env.insert("FLAGS_use_mkldnn", "0");
     m_process->setProcessEnvironment(env);
+
+    // Connect signals for async operation
+    connect(m_process, &QProcess::readyReadStandardOutput,
+            this, &PaddleOCRSubprocessEngine::onReadyRead);
+    connect(m_process, &QProcess::errorOccurred,
+            this, &PaddleOCRSubprocessEngine::onProcessError);
+    connect(m_process, &QProcess::finished,
+            this, &PaddleOCRSubprocessEngine::onProcessFinished);
+
+    // Watchdog timer — 30s max for any async recognition
+    m_watchdog = new QTimer(this);
+    m_watchdog->setSingleShot(true);
+    connect(m_watchdog, &QTimer::timeout, this, [this]() {
+        if (m_pending) {
+            m_pending = false;
+            emit recognitionError("PaddleOCR timeout");
+        }
+    });
+
     m_process->start(m_pythonExe, {m_serverScript});
 
     if (!m_process->waitForStarted(5000)) {
@@ -46,19 +64,17 @@ bool PaddleOCRSubprocessEngine::initialize(const QString& /*languageTag*/) {
         return false;
     }
 
-    // Async wait for "ready" — non-blocking on main thread (max 10s)
+    // Blocking wait for "ready" on stderr (only during init — brief)
     QTimer timer;
     timer.setSingleShot(true);
     QEventLoop loop;
     connect(m_process, &QProcess::readyReadStandardError, &loop, [&]() {
         m_stderrBuf += QString::fromUtf8(m_process->readAllStandardError());
-        if (m_stderrBuf.contains("ready"))
-            loop.quit();
+        if (m_stderrBuf.contains("ready")) loop.quit();
     });
-    // Also quit if process dies unexpectedly
     connect(m_process, &QProcess::finished, &loop, &QEventLoop::quit);
     connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    timer.start(10000); // 10s — Python should start quickly if venv is set up
+    timer.start(10000);
     loop.exec();
 
     if (!m_stderrBuf.contains("ready")) {
@@ -80,7 +96,6 @@ void PaddleOCRSubprocessEngine::recognize(const QImage& image) {
         return;
     }
 
-    // Encode image as PNG base64
     QByteArray pngData;
     QBuffer buffer(&pngData);
     buffer.open(QIODevice::WriteOnly);
@@ -90,19 +105,19 @@ void PaddleOCRSubprocessEngine::recognize(const QImage& image) {
     req["image"] = QString::fromLatin1(pngData.toBase64());
     QByteArray reqLine = QJsonDocument(req).toJson(QJsonDocument::Compact) + "\n";
 
+    m_pending = true;
+    m_watchdog->start(30000);  // 30s async timeout
     m_process->write(reqLine);
+    // Response will arrive in onReadyRead() — GUI thread stays responsive
+}
 
-    // Non-blocking wait with 15s timeout (was 30s)
-    if (!m_process->waitForReadyRead(15000)) {
-        emit recognitionError("PaddleOCR timeout");
-        return;
-    }
-
+void PaddleOCRSubprocessEngine::onReadyRead() {
+    if (!m_pending) return;
     QByteArray respLine = m_process->readLine();
-    if (respLine.isEmpty()) {
-        emit recognitionError("PaddleOCR empty response");
-        return;
-    }
+    if (respLine.isEmpty()) return;
+
+    m_pending = false;
+    m_watchdog->stop();
 
     QJsonDocument doc = QJsonDocument::fromJson(respLine);
     if (doc.isNull()) {
@@ -133,4 +148,24 @@ void PaddleOCRSubprocessEngine::recognize(const QImage& image) {
     result.fullText = all.join(' ');
 
     emit recognitionComplete(result);
+}
+
+void PaddleOCRSubprocessEngine::onProcessError(QProcess::ProcessError err) {
+    Q_UNUSED(err);
+    if (m_pending) {
+        m_pending = false;
+        m_watchdog->stop();
+        emit recognitionError("PaddleOCR process error: " + m_process->errorString());
+    }
+}
+
+void PaddleOCRSubprocessEngine::onProcessFinished(int exitCode, QProcess::ExitStatus status) {
+    Q_UNUSED(exitCode);
+    if (m_pending) {
+        m_pending = false;
+        m_watchdog->stop();
+        emit recognitionError(status == QProcess::CrashExit
+            ? "PaddleOCR process crashed" : "PaddleOCR process exited unexpectedly");
+    }
+    m_ready = false;
 }
