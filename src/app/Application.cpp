@@ -566,6 +566,13 @@ void Application::onSnapshotRequested() {
     const auto& area = m_areas.first();
     if (!area.enabled) { appLog("Snapshot: area disabled"); return; }
 
+    // If a batch is still in-flight, don't cancel — let it complete.
+    // Repeated snapshot presses on the same area just wait for results.
+    if (!m_batchMap.isEmpty()) {
+        appLog("Snapshot: batch in-flight, skipping re-dispatch");
+        return;
+    }
+
     // Ensure translations are visible
     if (!m_globalVisible) {
         m_globalVisible = true;
@@ -944,26 +951,33 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
             if (items.isEmpty()) { m_ocrBusy = false; return; }
 
-            // Merge ALL items into a single batch request — one Ollama inference
-            // outputs a JSON array, split back into individual bubbles on response.
-            QVector<QPair<QString, QRect>> batch = items;
-            QStringList lines;
-            for (int j = 0; j < batch.size(); ++j)
-                lines << QString("%1. %2").arg(j + 1).arg(batch[j].first);
+            // Merge into batches of up to 30 items. Small enough for the
+            // model to finish before the user's next snapshot, large enough
+            // to minimize Ollama request overhead.
+            constexpr int kBatchCap = 30;
+            for (int i = 0; i < items.size(); i += kBatchCap) {
+                int end = qMin(i + kBatchCap, items.size());
+                QVector<QPair<QString, QRect>> batch;
+                QStringList lines;
+                for (int j = i; j < end; ++j) {
+                    batch.append(items[j]);
+                    lines << QString("%1. %2").arg(j - i + 1).arg(items[j].first);
+                }
 
-            QString batchedText = lines.join('\n');
+                QString batchedText = lines.join('\n');
 
-            m_batchMap[batchedText] = batch;
-            for (const auto& item : batch) {
-                int hash = qHash(item.first);
-                newHashes.insert(hash);
-                m_textSourceRects[item.first] = item.second;
-                m_textToBatchKey[item.first] = batchedText;
+                m_batchMap[batchedText] = batch;
+                for (const auto& item : batch) {
+                    int hash = qHash(item.first);
+                    newHashes.insert(hash);
+                    m_textSourceRects[item.first] = item.second;
+                    m_textToBatchKey[item.first] = batchedText;
+                }
+
+                m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
+                ++m_pendingTranslations;
+                ++dispatched;
             }
-
-            m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
-            ++m_pendingTranslations;
-            ++dispatched;
 
             m_activeTextHashes = newHashes;
             goto ocrDone;
