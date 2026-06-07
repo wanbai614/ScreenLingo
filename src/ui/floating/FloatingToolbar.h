@@ -64,6 +64,7 @@ private:
     QWidget*     m_btnContainer = nullptr;
 
     QPropertyAnimation* m_anim = nullptr;
+    QTimer* m_pulseTimer = nullptr;     // pulse the toggle btn during translating
     int  m_expandWidth   = 44;
     int  m_fullWidth     = 344;
     bool m_expanded      = false;

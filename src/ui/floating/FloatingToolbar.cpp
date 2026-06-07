@@ -154,6 +154,7 @@ void FloatingToolbar::setHasArea(bool hasArea) {
 void FloatingToolbar::setPipelineStatus(const QString& status) {
     QString text;
     QString bgColor;
+    bool pulse = false;
 
     if (status == QStringLiteral("idle")) {
         text = "SL";          bgColor = "rgba(99,102,241,0.35)";
@@ -163,6 +164,7 @@ void FloatingToolbar::setPipelineStatus(const QString& status) {
     } else if (status == QStringLiteral("translating")) {
         text = QString::fromUtf8("\xe2\x9f\xb3");
         bgColor = "rgba(245,158,11,0.45)";            // amber
+        pulse = true;
     } else if (status == QStringLiteral("done")) {
         text = QString::fromUtf8("\xe2\x9c\x93");
         bgColor = "rgba(16,185,129,0.55)";            // mint
@@ -174,6 +176,26 @@ void FloatingToolbar::setPipelineStatus(const QString& status) {
         "  border-radius: %2px; font-size: 11px; font-weight: bold; }"
         "QPushButton:hover { background: rgba(0,180,120,220); }"
     ).arg(bgColor).arg(kBtnSize / 2));
+
+    // Pulse glow during translation
+    if (pulse && !m_pulseTimer) {
+        m_pulseTimer = new QTimer(this);
+        connect(m_pulseTimer, &QTimer::timeout, this, [this]() {
+            static bool on = false; on = !on;
+            m_toggleBtn->setStyleSheet(QString(
+                "QPushButton { background: rgba(245,158,11,%1); color: white;"
+                "  border: %2px solid rgba(255,200,50,180); border-radius: %3px;"
+                "  font-size: 11px; font-weight: bold; }"
+            ).arg(on ? 0.65 : 0.35)
+             .arg(on ? 2 : 0)
+             .arg(kBtnSize / 2));
+        });
+        m_pulseTimer->start(600);
+    } else if (!pulse && m_pulseTimer) {
+        m_pulseTimer->stop();
+        m_pulseTimer->deleteLater();
+        m_pulseTimer = nullptr;
+    }
 }
 
 void FloatingToolbar::updateTriggerButton() {
