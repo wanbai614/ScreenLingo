@@ -204,18 +204,47 @@ void FloatingToolbar::setPipelineStatus(const QString& status) {
         m_pulseTimer->deleteLater();
         m_pulseTimer = nullptr;
     }
+
+    // Keep trigger button in sync: active highlight during OCR/translation
+    bool busy = (status == QStringLiteral("recognizing")
+              || status == QStringLiteral("translating"));
+    if (busy && !m_busy) { m_busy = true;  updateTriggerButton(); }
+    if (!busy && m_busy) { m_busy = false; updateTriggerButton(); }
 }
 
 void FloatingToolbar::updateTriggerButton() {
     if (m_currentMode == Mode::RealTime) {
-        m_triggerBtn->setText(QString::fromUtf8("\xe2\x8f\xb8"));  // U+23F8 pause
+        m_triggerBtn->setText(QString::fromUtf8("\xe2\x8f\xb8"));  // pause
         m_triggerBtn->setToolTip(tr("Pause"));
+        m_triggerBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
     } else if (m_currentMode == Mode::Pause) {
         m_triggerBtn->setText(QString::fromUtf8("\xe2\x96\xb6"));  // play
         m_triggerBtn->setToolTip(tr("Resume"));
+        m_triggerBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
+    } else if (m_busy) {
+        // Snapshot mode + translating: show active/highlighted
+        m_triggerBtn->setText(QString::fromUtf8("\xe2\x9f\xb3"));  // spinner
+        m_triggerBtn->setToolTip(tr("Translating..."));
+        m_triggerBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(245,158,11,0.45); color: white; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+        ).arg(kBtnSize / 2));
     } else {
         m_triggerBtn->setText(QString::fromUtf8("\xe2\x96\xb6"));  // play
         m_triggerBtn->setToolTip(tr("Translate Now"));
+        m_triggerBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
     }
 }
 

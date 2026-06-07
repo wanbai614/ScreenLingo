@@ -391,6 +391,7 @@ bool Application::initialize() {
         qWarning() << "OCR error:" << msg;
         m_ocrBusy = false;
         if (m_floating) m_floating->setPipelineStatus("idle");
+        if (m_tray) m_tray->setBusy(false);
     });
 
     // Translation (TranslatorManager signal has only 2 params, no QRect)
@@ -561,6 +562,7 @@ void Application::processRealtimeFrame() {
     m_ocrBusy = true;
     m_lastSourceRect = area.geometry;
     if (m_floating) m_floating->setPipelineStatus("recognizing");
+    if (m_tray) m_tray->setBusy(true);
     m_ocr->recognize(frame);
 }
 
@@ -616,10 +618,12 @@ void Application::onSnapshotRequested() {
     if (m_config->vlmSnapshot()) {
         appLog(QString("Snapshot VLM: frame=%1x%2").arg(frame.width()).arg(frame.height()));
         if (m_floating) m_floating->setPipelineStatus("translating");
+        if (m_tray) m_tray->setBusy(true);
         m_translator->translateWithImage(frame,
             m_config->sourceLang(), m_config->targetLang());
     } else {
         if (m_floating) m_floating->setPipelineStatus("recognizing");
+        if (m_tray) m_tray->setBusy(true);
         m_ocr->recognize(frame);
         appLog(QString("Snapshot: OCR triggered, frame=%1x%2 mode=%3 vis=%4")
                .arg(frame.width()).arg(frame.height())
@@ -825,6 +829,7 @@ void Application::stopTranslation() {
     m_lastFrameHash = 0;
     m_ocrBusy = false;
     if (m_floating) m_floating->setPipelineStatus("idle");
+    if (m_tray) m_tray->setBusy(false);
     appLog("Stop: all translations cleared");
 }
 
@@ -869,6 +874,7 @@ void Application::switchOCREngine(const QString& name) {
         qWarning() << "OCR error:" << msg;
         m_ocrBusy = false;
         if (m_floating) m_floating->setPipelineStatus("idle");
+        if (m_tray) m_tray->setBusy(false);
     });
 }
 
@@ -1061,10 +1067,11 @@ void Application::onOcrCompleted(const OCRResult& result) {
     }
 
     ocrDone:
-    if (dispatched > 0 && m_floating)
-        m_floating->setPipelineStatus("translating");
-    if (dispatched > 0)
+    if (dispatched > 0) {
+        if (m_floating) m_floating->setPipelineStatus("translating");
+        if (m_tray) m_tray->setBusy(true);
         m_flushTimeout->start();
+    }
     m_ocrBusy = false;  // OCR done, gate on pending translations only
     appLog(QString("OCR: fullText=\"%1\" boxes=%2 groups=%3 dispatched=%4 pending=%5")
            .arg(result.fullText.left(60))
@@ -1400,6 +1407,7 @@ void Application::flushRowLayout() {
     }
 
     if (m_floating) m_floating->setPipelineStatus("done");
+    if (m_tray) m_tray->setBusy(false);
     // Reset to idle after a brief moment
     QTimer::singleShot(1200, this, [this]() {
         if (m_floating) m_floating->setPipelineStatus("idle");
@@ -1449,6 +1457,7 @@ void Application::onTextSelected(const QString& text, QPoint cursorPos) {
     m_selPopup->showTranslation(cursorPos, text.trimmed(),
                                 QStringLiteral("翻译中..."));
     if (m_floating) m_floating->setPipelineStatus("translating");
+    if (m_tray) m_tray->setBusy(true);
 
     // Signal main handler to skip overlay bubbles for this text
     m_pendingSelectionText = text.trimmed();
@@ -1463,6 +1472,7 @@ void Application::onTextSelected(const QString& text, QPoint cursorPos) {
         [this, text, cursorPos, conn](const QString& orig, const QString& trans) {
             if (orig.trimmed() == text.trimmed()) {
                 if (m_floating) m_floating->setPipelineStatus("done");
+                if (m_tray) m_tray->setBusy(false);
                 // Extract translation from JSON
                 QString result = trans.trimmed();
                 QJsonDocument jd = QJsonDocument::fromJson(result.toUtf8());

@@ -102,19 +102,22 @@ void TrayManager::updateModeCheck(Mode mode) {
     m_realtimeAction->setChecked(mode == Mode::RealTime);
     m_snapshotAction->setChecked(mode == Mode::Snapshot);
 
-    // Update trigger action text and visibility based on mode
+    // Update trigger action text — busy state overrides mode-specific text
+    if (m_busy) {
+        m_triggerAction->setText(tr("⟳ Translating..."));
+        m_triggerAction->setEnabled(false);
+        return;
+    }
+    m_triggerAction->setEnabled(true);
     switch (mode) {
     case Mode::RealTime:
         m_triggerAction->setText(tr("Pause Translation"));
-        m_triggerAction->setVisible(true);
         break;
     case Mode::Snapshot:
-        m_triggerAction->setText(tr("Translate Now"));
-        m_triggerAction->setVisible(true);
+        m_triggerAction->setText(tr("▶ Translate Now"));
         break;
     case Mode::Pause:
         m_triggerAction->setText(tr("Start Translation"));
-        m_triggerAction->setVisible(true);
         break;
     }
 }
@@ -172,4 +175,10 @@ void TrayManager::setSelectionMode(bool on) {
     m_selTransAction->setChecked(on);
     m_selTransAction->setText(on
         ? tr("√  Selection Translate") : tr("Selection Translate"));
+}
+
+void TrayManager::setBusy(bool busy) {
+    if (m_busy == busy) return;
+    m_busy = busy;
+    updateModeCheck(m_currentMode);
 }

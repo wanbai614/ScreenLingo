@@ -17,6 +17,7 @@ public slots:
     void retranslateUi();
     void setGlobalVisible(bool visible);
     void setSelectionMode(bool on);
+    void setBusy(bool busy);
 
 signals:
     void modeChangeRequested(Mode mode);
@@ -52,4 +53,5 @@ private:
     QAction*         m_exitAction     = nullptr;
     bool             m_globalVisible = true;
     bool             m_selModeActive = false;
+    bool             m_busy          = false;
 };

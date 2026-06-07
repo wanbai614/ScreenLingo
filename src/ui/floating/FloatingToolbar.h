@@ -74,6 +74,7 @@ private:
     bool m_hasArea       = false;
     bool m_selModeActive = false;
     bool m_dragModeActive = false;
+    bool m_busy           = false;  // OCR or translation in progress
     bool m_dragging      = false;
     QPoint m_dragStartPos;
     QPoint m_dragStartGeo;
