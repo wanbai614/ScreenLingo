@@ -159,9 +159,11 @@ static QVector<TextGroup> groupUIBoxes(const QVector<TextBox>& boxes,
     std::sort(heights.begin(), heights.end());
     int medianH = qBound(8, heights[heights.size() / 2], 80);
 
-    // Tighter thresholds for UI mode — only merge very close neighbors
-    const int kSameLine = qMax(medianH, 6);           // Y tolerance: 1 line height
-    const int kUIGap    = qMax(medianH / 2, 3);        // small gap → same UI element
+    // UI mode: merge words on the same line with reasonable inter-word spacing.
+    // kUIGap ≈ 2× font height handles typical UI word gaps (8-15 px) without
+    // merging separate buttons/menu items (usually 20+ px apart).
+    const int kSameLine = qMax(medianH, 6);
+    const int kUIGap    = qMax(medianH * 2, 16);
 
     auto screenRect = [&](const TextBox& b) {
         return QRect(captureRect.x() + b.boundingRect.x(),
