@@ -1131,6 +1131,8 @@ void Application::onTranslationReady(const QString& original,
             if (bad && m_retryPerText.value(orig, 0) < 3) {
                 ++m_retryPerText[orig];
                 retryItems.append({orig, srcRect});
+                // Show original text immediately as placeholder, update on retry
+                m_pendingResults.append({orig, orig, srcRect});
                 appLog(QString("BatchFail: \"%1\"").arg(orig.left(25)));
             } else if (bad) {
                 m_pendingResults.append({orig, QStringLiteral("??"), srcRect});
