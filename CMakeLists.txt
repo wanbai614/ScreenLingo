@@ -136,6 +136,8 @@ target_link_libraries(ScreenLingo PRIVATE ${LINK_LIBS})
 
 set_target_properties(ScreenLingo PROPERTIES
     WIN32_EXECUTABLE TRUE
+    # Output directly to package/ for Release builds
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_SOURCE_DIR}/package"
 )
 
 target_sources(ScreenLingo PRIVATE resources/dpiaware.manifest)
