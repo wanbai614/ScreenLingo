@@ -102,8 +102,18 @@ bool DxgiCaptureEngine::hasChanged(const QRect& /*region*/, int screenIndex) {
 QImage DxgiCaptureEngine::captureRegion(const QRect& region, int screenIndex) {
     if (!m_initialized || screenIndex < 0 || screenIndex >= m_duplicators.size())
         return QImage();
+    if (region.isEmpty()) return QImage();
 
     auto& dup = m_duplicators[screenIndex];
+
+    // Clamp region to monitor-local bounds (D3D11 texture origin is
+    // always (0,0) at the monitor top-left, unlike DesktopCoordinates
+    // which uses virtual-screen coordinates for multi-monitor setups).
+    RECT mon = dup.desc.DesktopCoordinates;
+    QRect monitorRect(0, 0,
+                      mon.right - mon.left, mon.bottom - mon.top);
+    QRect clamped = region.intersected(monitorRect);
+    if (clamped.isEmpty()) return QImage();
 
     DXGI_OUTDUPL_FRAME_INFO frameInfo{};
     ComPtr<IDXGIResource> resource;
@@ -124,8 +134,8 @@ QImage DxgiCaptureEngine::captureRegion(const QRect& region, int screenIndex) {
     texture->GetDesc(&texDesc);
 
     D3D11_TEXTURE2D_DESC stagingDesc = {};
-    stagingDesc.Width              = region.width();
-    stagingDesc.Height             = region.height();
+    stagingDesc.Width              = clamped.width();
+    stagingDesc.Height             = clamped.height();
     stagingDesc.MipLevels          = 1;
     stagingDesc.ArraySize          = 1;
     stagingDesc.Format             = texDesc.Format;
@@ -141,10 +151,10 @@ QImage DxgiCaptureEngine::captureRegion(const QRect& region, int screenIndex) {
     }
 
     D3D11_BOX box = {
-        static_cast<UINT>(region.x()),
-        static_cast<UINT>(region.y()), 0,
-        static_cast<UINT>(region.x() + region.width()),
-        static_cast<UINT>(region.y() + region.height()), 1
+        static_cast<UINT>(clamped.x()),
+        static_cast<UINT>(clamped.y()), 0,
+        static_cast<UINT>(clamped.x() + clamped.width()),
+        static_cast<UINT>(clamped.y() + clamped.height()), 1
     };
     dup.context->CopySubresourceRegion(stagingTexture.Get(), 0, 0, 0, 0,
                                        texture.Get(), 0, &box);
@@ -155,11 +165,11 @@ QImage DxgiCaptureEngine::captureRegion(const QRect& region, int screenIndex) {
     hr = dup.context->Map(stagingTexture.Get(), 0, D3D11_MAP_READ, 0, &mapped);
     if (FAILED(hr)) return QImage();
 
-    QImage img(region.width(), region.height(), QImage::Format_ARGB32);
+    QImage img(clamped.width(), clamped.height(), QImage::Format_ARGB32);
     auto* dst = img.bits();
     auto* src = static_cast<const uchar*>(mapped.pData);
-    for (int y = 0; y < region.height(); ++y) {
-        for (int x = 0; x < region.width(); ++x) {
+    for (int y = 0; y < clamped.height(); ++y) {
+        for (int x = 0; x < clamped.width(); ++x) {
             size_t offset = y * mapped.RowPitch + x * 4;
             int b = src[offset];
             int g = src[offset + 1];

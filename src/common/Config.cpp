@@ -53,11 +53,39 @@ void Config::setLastMode(Mode mode) {
     m_settings.setValue("App/mode", static_cast<int>(mode));
 }
 
+QString Config::theme() const {
+    return m_settings.value("App/theme", "dark").toString();
+}
+void Config::setTheme(const QString& theme) {
+    m_settings.setValue("App/theme", theme);
+}
+
 QString Config::activeTranslator() const {
     return m_settings.value("App/activeTranslator", "").toString();
 }
 void Config::setActiveTranslator(const QString& name) {
     m_settings.setValue("App/activeTranslator", name);
+}
+
+QString Config::ocrEngine() const {
+    return m_settings.value("App/ocrEngine", "windows").toString();
+}
+void Config::setOCREngine(const QString& name) {
+    m_settings.setValue("App/ocrEngine", name);
+}
+
+bool Config::vlmSnapshot() const {
+    return m_settings.value("App/vlmSnapshot", false).toBool();
+}
+void Config::setVlmSnapshot(bool enabled) {
+    m_settings.setValue("App/vlmSnapshot", enabled);
+}
+
+bool Config::uiTranslateMode() const {
+    return m_settings.value("App/uiTranslateMode", false).toBool();
+}
+void Config::setUITranslateMode(bool enabled) {
+    m_settings.setValue("App/uiTranslateMode", enabled);
 }
 
 QVector<SelectionArea> Config::loadAreas() {
@@ -106,6 +134,41 @@ void Config::saveHotkeys(const QVector<HotkeyBinding>& bindings) {
         m_settings.setValue(b.id, b.currentKeys);
     }
     m_settings.endGroup();
+}
+
+QVector<PromptPreset> Config::loadPromptPresets() const {
+    QVector<PromptPreset> presets;
+    int count = m_settings.beginReadArray("PromptPresets");
+    for (int i = 0; i < count; ++i) {
+        m_settings.setArrayIndex(i);
+        PromptPreset p;
+        p.id        = m_settings.value("id").toString();
+        p.name      = m_settings.value("name").toString();
+        p.prompt    = m_settings.value("prompt").toString();
+        p.isBuiltIn = m_settings.value("isBuiltIn", false).toBool();
+        presets.append(p);
+    }
+    m_settings.endArray();
+    return presets;
+}
+
+void Config::savePromptPresets(const QVector<PromptPreset>& presets) {
+    m_settings.beginWriteArray("PromptPresets", presets.size());
+    for (int i = 0; i < presets.size(); ++i) {
+        m_settings.setArrayIndex(i);
+        m_settings.setValue("id",        presets[i].id);
+        m_settings.setValue("name",      presets[i].name);
+        m_settings.setValue("prompt",    presets[i].prompt);
+        m_settings.setValue("isBuiltIn", presets[i].isBuiltIn);
+    }
+    m_settings.endArray();
+}
+
+QString Config::activePromptId() const {
+    return m_settings.value("App/activePromptId", "general").toString();
+}
+void Config::setActivePromptId(const QString& id) {
+    m_settings.setValue("App/activePromptId", id);
 }
 
 QString Config::translatorConfig(const QString& pluginName, const QString& key) const {

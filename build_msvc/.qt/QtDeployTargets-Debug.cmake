@@ -1,3 +1,0 @@
-set(__QT_DEPLOY_TARGET_ScreenLingo_FILE E:/AIAgentProject/ScreenLingo/build_msvc/Debug/ScreenLingo.exe)
-set(__QT_DEPLOY_TARGET_ScreenLingo_TYPE EXECUTABLE)
-set(__QT_DEPLOY_TARGET_ScreenLingo_RUNTIME_DLLS D:/QT/6.9.1/mingw_64/bin/Qt6Widgets.dll;D:/QT/6.9.1/mingw_64/bin/Qt6Network.dll;D:/QT/6.9.1/mingw_64/bin/Qt6Gui.dll;D:/QT/6.9.1/mingw_64/bin/Qt6Core.dll)

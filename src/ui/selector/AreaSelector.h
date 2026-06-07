@@ -11,6 +11,7 @@ class AreaSelector : public QWidget, public QAbstractNativeEventFilter {
 public:
     explicit AreaSelector(int screenIndex, QWidget* parent = nullptr);
     ~AreaSelector() override;
+    void setInitialRect(const QRect& r);
 
 signals:
     void areaConfirmed(const QRect& area, int screenIndex);

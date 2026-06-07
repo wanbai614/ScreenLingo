@@ -3,6 +3,7 @@
 #include <QtCore/QObject>
 #include <QtCore/QString>
 #include <QtCore/QVector>
+#include <QtGui/QImage>
 #include "common/Types.h"
 
 struct TranslatorConfigField {
@@ -23,6 +24,9 @@ public:
     virtual bool isAvailable() const = 0;
 
     virtual void translate(const TranslateRequest& req) = 0;
+    virtual void translateWithImage(const QImage& /*image*/,
+                                     const QString& /*sourceLang*/,
+                                     const QString& /*targetLang*/) {}
     virtual void cancelAll() = 0;
 
     virtual QVector<TranslatorConfigField> configFields() const = 0;
@@ -32,4 +36,6 @@ public:
 signals:
     void translationReady(const QString& original, const QString& translated);
     void translationError(const QString& error);
+    // Vision-mode: single response with JSON containing all text+positions
+    void visionResultReady(const QByteArray& json);
 };

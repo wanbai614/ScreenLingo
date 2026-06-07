@@ -2,6 +2,7 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QRegularExpression>
 
 OpenAITranslator::OpenAITranslator(QObject* parent)
     : ITranslator(parent), m_nam(new QNetworkAccessManager(this)) {}
@@ -79,6 +80,13 @@ void OpenAITranslator::translate(const TranslateRequest& req) {
         QString translated = choices[0].toObject()
             .value("message").toObject()
             .value("content").toString().trimmed();
+
+        // Strip <think>...</think> blocks from reasoning models
+        static const QRegularExpression thinkRx(
+            QStringLiteral(R"(<\s*think\s*>[\s\S]*?<\s*/\s*think\s*>)"),
+            QRegularExpression::CaseInsensitiveOption);
+        translated = translated.replace(thinkRx, QString()).trimmed();
+
         emit translationReady(original, translated);
     });
 }

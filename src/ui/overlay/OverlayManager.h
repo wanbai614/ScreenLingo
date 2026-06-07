@@ -18,6 +18,8 @@ public:
     void removeTranslation(int id);
     void removeAll();
     void showAll();
+    void hideAll();
+    void setInteractive(bool on);
     void updateAllStyles(const StyleConfig& style);
 
     QVector<QRect> existingBubbleRects() const;

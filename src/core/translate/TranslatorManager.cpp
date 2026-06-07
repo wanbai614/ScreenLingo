@@ -1,4 +1,5 @@
 #include "TranslatorManager.h"
+#include <QtCore/QDebug>
 
 TranslatorManager::TranslatorManager(QObject* parent)
     : QObject(parent) {}
@@ -9,6 +10,8 @@ void TranslatorManager::registerPlugin(std::unique_ptr<ITranslator> plugin) {
             this, &TranslatorManager::onPluginTranslationReady);
     connect(plugin.get(), &ITranslator::translationError,
             this, &TranslatorManager::onPluginTranslationError);
+    connect(plugin.get(), &ITranslator::visionResultReady,
+            this, &TranslatorManager::visionResultReady);
     if (!m_active) m_active = plugin.get();
     m_plugins.push_back(std::move(plugin));
 }
@@ -42,11 +45,24 @@ void TranslatorManager::setActive(const QString& name) {
 void TranslatorManager::translate(const QString& text, const QString& sourceLang,
                                    const QString& targetLang) {
     if (!m_active) {
+        qWarning() << "TranslatorManager: no active translator";
         emit translationError(tr("No translation service configured"));
         return;
     }
+    qDebug() << "TranslatorManager: dispatching to" << m_active->name()
+             << "text:" << text.left(40);
     TranslateRequest req{text, sourceLang, targetLang};
     m_active->translate(req);
+}
+
+void TranslatorManager::translateWithImage(const QImage& image,
+                                             const QString& sourceLang,
+                                             const QString& targetLang) {
+    if (!m_active) {
+        emit translationError(tr("No translation service configured"));
+        return;
+    }
+    m_active->translateWithImage(image, sourceLang, targetLang);
 }
 
 void TranslatorManager::cancelAll() {
@@ -56,6 +72,8 @@ void TranslatorManager::cancelAll() {
 
 void TranslatorManager::onPluginTranslationReady(const QString& original,
                                                   const QString& translated) {
+    qDebug() << "TranslatorManager: translationReady from plugin"
+             << "orig:" << original.left(40) << "trans:" << translated.left(40);
     emit translationReady(original, translated);
 }
 

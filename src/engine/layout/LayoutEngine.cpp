@@ -15,8 +15,8 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
         QFontMetrics fm(font);
         int textWidth  = fm.horizontalAdvance(request.translatedText);
         int textHeight = fm.height();
-        int bubbleW    = std::min(textWidth + 20, screenBounds.width() - 10);
-        int bubbleH    = textHeight + 12;
+        int bubbleW    = std::min(textWidth + 24, screenBounds.width() - 10);
+        int bubbleH    = textHeight + 16;
         QSize bubbleSize(bubbleW, bubbleH);
 
         // Candidates in priority order: right, right-above, right-below, below, left, above
@@ -72,8 +72,8 @@ LayoutResult LayoutEngine::compute(const LayoutRequest& request,
     QFontMetrics fm(minFont);
     QString truncated = fm.elidedText(request.translatedText, Qt::ElideRight,
                                        screenBounds.width() - 20);
-    int w = fm.horizontalAdvance(truncated) + 20;
-    int h = fm.height() + 12;
+    int w = fm.horizontalAdvance(truncated) + 24;
+    int h = fm.height() + 16;
 
     QPoint pos(request.sourceRect.right() + kGap, request.sourceRect.top());
     QRect cr(pos, QSize(w, h));

@@ -18,6 +18,16 @@ public:
     QString targetLang() const;
     void setTargetLang(const QString& lang);
 
+    // Theme
+    QString theme() const;
+    void setTheme(const QString& theme);
+
+    // Prompt presets
+    QVector<PromptPreset> loadPromptPresets() const;
+    void savePromptPresets(const QVector<PromptPreset>& presets);
+    QString activePromptId() const;
+    void setActivePromptId(const QString& id);
+
     // Mode
     Mode lastMode() const;
     void setLastMode(Mode mode);
@@ -25,6 +35,18 @@ public:
     // Active translator
     QString activeTranslator() const;
     void setActiveTranslator(const QString& name);
+
+    // OCR engine
+    QString ocrEngine() const;
+    void setOCREngine(const QString& name);
+
+    // VLM snapshot mode
+    bool vlmSnapshot() const;
+    void setVlmSnapshot(bool enabled);
+
+    // UI mode — no line grouping, each text element independent
+    bool uiTranslateMode() const;
+    void setUITranslateMode(bool enabled);
 
     // Selected areas
     QVector<SelectionArea> loadAreas();

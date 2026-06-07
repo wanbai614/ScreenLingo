@@ -45,14 +45,15 @@ struct LayoutResult {
     int     maxWidth;
     int     bubbleWidth  = 0;
     int     bubbleHeight = 0;
-    bool    isTruncated;
+    bool    isTruncated  = false;
+    bool    wordWrap     = false;
 };
 
 // --- Style ---
 struct StyleConfig {
     QColor textColor       = Qt::white;
     QColor backgroundColor = QColor(51, 51, 51);   // #333, alpha from backgroundAlpha
-    int    backgroundAlpha = 70;                    // 0-100, single source for opacity
+    int    backgroundAlpha = 100;                   // 0-100, fully opaque to block OCR feedback
     int    borderRadius    = 6;
     QColor borderColor     = QColor(102, 102, 102);
     int    borderWidth     = 1;
@@ -73,4 +74,12 @@ struct HotkeyBinding {
     QString label;
     QString defaultKeys;
     QString currentKeys;
+};
+
+// --- Prompt Preset (translator persona) ---
+struct PromptPreset {
+    QString id;
+    QString name;       // display name
+    QString prompt;     // system prompt content
+    bool    isBuiltIn = false;
 };

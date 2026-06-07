@@ -41,19 +41,30 @@ signals:
     void areaSelectRequested();
     void areaCleared();
     void areaEnabledChanged(int id, bool enabled);
+    void translatorChangeRequested(const QString& name);
 
 public slots:
     void retranslateUi();
 
 private:
-    QWidget* createAppearanceTab();
+    QWidget* createGeneralTab();
     QWidget* createTranslationTab();
     QWidget* createHotkeysTab();
     QWidget* createAreasTab();
+    QWidget* createModelsTab();
+
+    void checkModelStatus();
+    void startModelDownload();
 
     void applyStyle();
     void loadStyle();
     void updatePreview();
+    void applySettingsTheme();
+    void openPromptManager();
+
+    // Prompt presets
+    QVector<PromptPreset> loadOrInitPresets();
+    void applyActivePrompt();
 
     SignalBus*                   m_bus;
     Config*                      m_config;
@@ -71,11 +82,22 @@ private:
     QPushButton* m_borderColorBtn  = nullptr;
     QSpinBox*    m_borderWidthSpin = nullptr;
 
-    QComboBox*   m_serviceCombo = nullptr;
+    QComboBox*   m_onlineCombo  = nullptr;
+    QComboBox*   m_llmCombo     = nullptr;
+    QComboBox*   m_localCombo   = nullptr;
+    QCheckBox*   m_vlmCb        = nullptr;
+    QCheckBox*   m_uiModeCb     = nullptr;
+    QComboBox*   m_srcLangCombo = nullptr;
+    QComboBox*   m_tgtLangCombo = nullptr;
+    QComboBox*   m_promptCombo  = nullptr;
+    QPushButton* m_promptMgrBtn = nullptr;
+    QComboBox*   m_ocrCombo     = nullptr;
     QVBoxLayout* m_translatorConfigLayout = nullptr;
+    QGroupBox*   m_translatorConfigGroup  = nullptr; // current config group for retranslation
 
     QLabel*      m_previewLabel = nullptr;
     QComboBox*   m_langCombo    = nullptr;
+    QComboBox*   m_themeCombo   = nullptr;
     QPushButton* m_resetBtn     = nullptr;
     QPushButton* m_applyBtn     = nullptr;
     QPushButton* m_closeBtn     = nullptr;
@@ -85,4 +107,32 @@ private:
     QCheckBox*  m_areaEnableCb   = nullptr;
     QPushButton* m_areaReselectBtn = nullptr;
     QPushButton* m_areaClearBtn    = nullptr;
+    QLabel*     m_areasTitleLabel  = nullptr;
+
+    // Model download tab
+    QLabel*      m_detStatusLabel   = nullptr;
+    QLabel*      m_recStatusLabel   = nullptr;
+    QLabel*      m_keysStatusLabel  = nullptr;
+    QPushButton* m_downloadBtn      = nullptr;
+    QLabel*      m_dlProgressLabel  = nullptr;
+    QLabel*      m_modelsInfoLabel  = nullptr;
+    QGroupBox*   m_modelsStatusGroup = nullptr;
+    QLabel*      m_modelsDetFormLabel  = nullptr;
+    QLabel*      m_modelsRecFormLabel  = nullptr;
+    QLabel*      m_modelsKeysFormLabel = nullptr;
+    QString      m_modelDir;
+
+    // Hotkeys tab
+    QLabel*      m_hotkeysTitleLabel = nullptr;
+    QPushButton* m_hotkeysResetBtn  = nullptr;
+    QVector<QPair<QLabel*, QString>> m_hotkeyLabelIds; // label + bindingId
+
+    // Pointers for retranslateUi
+    QGroupBox*   m_generalGroup   = nullptr;
+    QLabel*      m_langLabel      = nullptr;
+    QLabel*      m_ocrLabel       = nullptr;
+    QVector<QPair<QLabel*, const char*>>     m_i18nLabels;
+    QVector<QPair<QGroupBox*, const char*>>  m_i18nGroups;
+    QVector<QPair<QCheckBox*, const char*>>  m_i18nCheckBoxes;
+    QVector<QPair<QPushButton*, const char*>> m_i18nButtons;
 };

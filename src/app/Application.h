@@ -4,20 +4,24 @@
 #include <QtCore/QTimer>
 #include <QtCore/QHash>
 #include <QtCore/QSet>
+#include <QtCore/QVector>
 #include <memory>
 #include "common/Types.h"
 
 class SignalBus;
 class DxgiCaptureEngine;
-class WindowsOcrEngine;
+class IOCREngine;
 class TranslatorManager;
 class LayoutEngine;
 class OverlayManager;
 class TrayManager;
 class HotkeyManager;
 class FloatingToolbar;
+class AreaOverlay;
 class SettingsPanel;
 class Config;
+class MouseSelectionMonitor;
+class TranslationPopup;
 
 class Application : public QObject {
     Q_OBJECT
@@ -34,6 +38,8 @@ private slots:
     void onModeChanged(Mode mode);
     void onSnapshotRequested();
     void onAreaConfirmed(const QRect& area, int screenIndex);
+    void onAreaOverlayChanged(const QRect& newArea);
+    void onAreaEditCancelled();
     void onAreaCleared();
     void onAreaEnabledChanged(int id, bool enabled);
     void onGlobalVisibilityToggle();
@@ -42,14 +48,23 @@ private slots:
     void onTranslationReady(const QString& original, const QString& translated);
     void onStyleChanged(const StyleConfig& style);
     void onLanguageChangeRequested(const QString& lang);
+    void stopTranslation();
+    void onVisionResultReady(const QByteArray& json);
+    void switchOCREngine(const QString& name);
+    void toggleSelectionMode();
+    void onTextSelected(const QString& text, QPoint cursorPos);
 
 private:
     void setMode(Mode mode);
+    void flushRowLayout();
+    void syncAreaOverlay();
+    void launchAreaSelector();
 
     // Core
     SignalBus*          m_bus         = nullptr;
     DxgiCaptureEngine*  m_capture     = nullptr;
-    WindowsOcrEngine*   m_ocr         = nullptr;
+    IOCREngine*         m_ocr         = nullptr;
+    QString              m_currentOcrEngine;
     TranslatorManager*  m_translator  = nullptr;
     LayoutEngine*       m_layout      = nullptr;
 
@@ -58,14 +73,18 @@ private:
     TrayManager*        m_tray        = nullptr;
     HotkeyManager*      m_hotkey      = nullptr;
     FloatingToolbar*    m_floating    = nullptr;
+    AreaOverlay*        m_areaOverlay = nullptr;
     SettingsPanel*      m_settings    = nullptr;
     Config*             m_config      = nullptr;
+    MouseSelectionMonitor* m_selMonitor = nullptr;
+    TranslationPopup*      m_selPopup   = nullptr;
 
     // State
     Mode                    m_mode = Mode::Snapshot;
     QVector<SelectionArea>  m_areas;
     QTimer*                 m_captureTimer = nullptr;
     bool                    m_globalVisible = true;
+    bool                    m_selectionMode = false;
 
     // Tracking: source rect of the last OCR/capture request,
     // used when translation completes since TranslatorManager signal
@@ -84,10 +103,31 @@ private:
     // Prevent concurrent OCR/translation cycles
     bool m_ocrBusy            = false;
     int  m_pendingTranslations = 0;
+    int  m_snapshotGen = 0;     // generation counter — reject stale responses
+    int  m_activeGen = 0;       // generation of current in-flight batch
+    QTimer* m_flushTimeout = nullptr;
 
     // Translation cache: original text → translated text (avoid re-translating)
     QHash<QString, QString> m_translationCache;
+    QSet<QString> m_translatedValues;  // quick lookup to skip OCR re-reading bubbles
+    QHash<QString, int> m_retryPerText; // per-text retry counter (reset each OCR cycle)
+    QString m_pendingSelectionText;    // text currently being translated for selection popup
+
+    // Batch translation: merge all texts → translate with context → split back
+    QVector<QPair<QString, QRect>> m_batchPending;  // (original text, source rect)
+    bool m_isBatched = false;    // current request is a batch
 
     // Last OCR full text (avoid re-processing identical frames)
     QString m_lastOcrText;
+
+    // Pixel-level frame dedup (more reliable than OCR text compare)
+    uint m_lastFrameHash = 0;
+
+    // Row-layout: accumulate results then flush together
+    struct Pending {
+        QString original;
+        QString translated;
+        QRect   sourceRect;
+    };
+    QVector<Pending> m_pendingResults;
 };

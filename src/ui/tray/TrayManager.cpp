@@ -28,36 +28,38 @@ void TrayManager::initialize() {
 
 void TrayManager::buildMenu() {
     m_menu = new QMenu();
+    m_menu->setMinimumWidth(220);
 
-    // Dynamic trigger action (changes per mode)
-    m_triggerAction = m_menu->addAction(tr("Translate Now"));
-    m_menu->addSeparator();
-
-    // Mode submenu
+    // --- Translation ---
+    m_triggerAction = m_menu->addAction(tr("▶  Translate Now"));
     m_modeMenu = new QMenu(tr("Mode"), m_menu);
     m_realtimeAction = m_modeMenu->addAction(tr("Real-time Translation"));
     m_realtimeAction->setCheckable(true);
     m_snapshotAction = m_modeMenu->addAction(tr("Snapshot Translation"));
     m_snapshotAction->setCheckable(true);
     m_menu->addMenu(m_modeMenu);
+    m_areaAction = m_menu->addAction(tr("Select Translation Area..."));
+    m_editAreaAction = m_menu->addAction(tr("Edit Area"));
+    m_menu->addSeparator();
 
-    // Language submenu
+    // --- Display ---
+    m_toggleAction = m_menu->addAction(tr("Show/Hide All Translations"));
+    m_menu->addSeparator();
+
+    // --- Tools ---
+    m_stopAction = m_menu->addAction(tr("Stop & Clear"));
+    m_selTransAction = m_menu->addAction(tr("Selection Translate"));
+    m_selTransAction->setCheckable(true);
     m_langMenu = new QMenu(tr("Language"), m_menu);
     m_langEnAction = m_langMenu->addAction(tr("English"));
     m_langEnAction->setCheckable(true);
     m_langZhAction = m_langMenu->addAction(tr("简体中文"));
     m_langZhAction->setCheckable(true);
     m_menu->addMenu(m_langMenu);
-
-    m_menu->addSeparator();
-
-    m_areaAction   = m_menu->addAction(tr("Select Translation Area..."));
-    m_toggleAction = m_menu->addAction(tr("Show/Hide All Translations"));
-    m_menu->addSeparator();
-
     m_settingsAction = m_menu->addAction(tr("Settings..."));
     m_menu->addSeparator();
 
+    // --- Exit ---
     m_exitAction = m_menu->addAction(tr("Exit"));
 
     // Connections
@@ -82,6 +84,11 @@ void TrayManager::buildMenu() {
     connect(m_toggleAction, &QAction::triggered, this, [this]() {
         emit globalVisibilityToggleRequested();
     });
+    connect(m_stopAction, &QAction::triggered, this, &TrayManager::stopRequested);
+    connect(m_selTransAction, &QAction::triggered, this, [this]() {
+        emit selTranslateRequested();
+    });
+    connect(m_editAreaAction, &QAction::triggered, this, &TrayManager::editAreaRequested);
     connect(m_settingsAction, &QAction::triggered, this, &TrayManager::settingsRequested);
     connect(m_exitAction, &QAction::triggered, this, &TrayManager::exitRequested);
 
@@ -148,6 +155,10 @@ void TrayManager::retranslateUi() {
     m_areaAction->setText(tr("Select Translation Area..."));
     m_toggleAction->setText(m_globalVisible
         ? tr("Hide All Translations") : tr("Show All Translations"));
+    m_stopAction->setText(tr("Stop & Clear"));
+    m_selTransAction->setText(m_selModeActive
+        ? tr("√  Selection Translate") : tr("Selection Translate"));
+    m_editAreaAction->setText(tr("Edit Area"));
     m_settingsAction->setText(tr("Settings..."));
     m_exitAction->setText(tr("Exit"));
 }
@@ -156,4 +167,11 @@ void TrayManager::setGlobalVisible(bool visible) {
     m_globalVisible = visible;
     m_toggleAction->setText(visible
         ? tr("Hide All Translations") : tr("Show All Translations"));
+}
+
+void TrayManager::setSelectionMode(bool on) {
+    m_selModeActive = on;
+    m_selTransAction->setChecked(on);
+    m_selTransAction->setText(on
+        ? tr("√  Selection Translate") : tr("Selection Translate"));
 }

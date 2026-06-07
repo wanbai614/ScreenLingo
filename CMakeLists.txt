@@ -29,6 +29,12 @@ set(SOURCES
     src/core/translate/plugins/DeepSeekTranslator.cpp
     src/core/translate/plugins/OllamaTranslator.h
     src/core/translate/plugins/OllamaTranslator.cpp
+    src/core/translate/plugins/LocalDictTranslator.h
+    src/core/translate/plugins/LocalDictTranslator.cpp
+    src/core/translate/plugins/BaiduTranslator.h
+    src/core/translate/plugins/BaiduTranslator.cpp
+    src/core/translate/plugins/GoogleTranslator.h
+    src/core/translate/plugins/GoogleTranslator.cpp
     src/core/ocr/IOCREngine.h
     src/core/capture/ICaptureEngine.h
     src/core/capture/DxgiCaptureEngine.h
@@ -38,6 +44,8 @@ set(SOURCES
     src/ui/overlay/TranslationOverlay.cpp
     src/ui/overlay/OverlayManager.h
     src/ui/overlay/OverlayManager.cpp
+    src/ui/overlay/AreaOverlay.h
+    src/ui/overlay/AreaOverlay.cpp
     src/engine/hotkey/HotkeyManager.h
     src/engine/hotkey/HotkeyManager.cpp
     src/ui/tray/TrayManager.h
@@ -48,9 +56,33 @@ set(SOURCES
     src/ui/settings/SettingsPanel.cpp
     src/ui/settings/KeyCaptureDialog.h
     src/ui/settings/KeyCaptureDialog.cpp
+    src/ui/settings/PromptManagerDialog.h
+    src/ui/settings/PromptManagerDialog.cpp
     src/ui/floating/FloatingToolbar.h
     src/ui/floating/FloatingToolbar.cpp
+    src/core/selection/MouseSelectionMonitor.h
+    src/core/selection/MouseSelectionMonitor.cpp
+    src/ui/popup/TranslationPopup.h
+    src/ui/popup/TranslationPopup.cpp
 )
+
+# --- PaddleOCR + ONNX Runtime (MSVC only) ---
+set(ONNXRUNTIME_ROOT "${CMAKE_SOURCE_DIR}/lib/onnxruntime")
+# PaddleOCR subprocess engine (always available — uses Python)
+list(APPEND SOURCES
+    src/core/ocr/PaddleOCRSubprocessEngine.h
+    src/core/ocr/PaddleOCRSubprocessEngine.cpp)
+
+# PaddleOCR ONNX engine (requires ONNX Runtime)
+if(MSVC AND EXISTS "${ONNXRUNTIME_ROOT}/include/onnxruntime_cxx_api.h")
+    message(STATUS "ONNX Runtime found at ${ONNXRUNTIME_ROOT}")
+    list(APPEND SOURCES
+        src/core/ocr/PaddleOCREngine.h src/core/ocr/PaddleOCREngine.cpp)
+    set(PADDLEOCR_AVAILABLE TRUE)
+else()
+    message(STATUS "ONNX Runtime not found — PaddleOCR ONNX disabled")
+    set(PADDLEOCR_AVAILABLE FALSE)
+endif()
 
 # Windows OCR: WinRT/MSVC for real OCR, stub for MinGW development
 if(MSVC)
@@ -65,6 +97,21 @@ qt_add_executable(ScreenLingo ${SOURCES})
 
 target_include_directories(ScreenLingo PRIVATE ${CMAKE_SOURCE_DIR}/src)
 
+# ONNX Runtime
+if(PADDLEOCR_AVAILABLE)
+    target_include_directories(ScreenLingo PRIVATE "${ONNXRUNTIME_ROOT}/include")
+    target_link_directories(ScreenLingo PRIVATE "${ONNXRUNTIME_ROOT}/lib")
+    # Copy ONNX Runtime DLL to output
+    add_custom_command(TARGET ScreenLingo POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${ONNXRUNTIME_ROOT}/lib/onnxruntime.dll"
+            $<TARGET_FILE_DIR:ScreenLingo>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${ONNXRUNTIME_ROOT}/lib/onnxruntime_providers_shared.dll"
+            $<TARGET_FILE_DIR:ScreenLingo>
+        COMMENT "Copying ONNX Runtime DLLs")
+endif()
+
 set(LINK_LIBS
     Qt6::Core
     Qt6::Gui
@@ -75,6 +122,11 @@ set(LINK_LIBS
     user32
     gdi32
 )
+
+if(PADDLEOCR_AVAILABLE)
+    list(APPEND LINK_LIBS onnxruntime)
+    target_compile_definitions(ScreenLingo PRIVATE HAS_PADDLE_OCR=1)
+endif()
 
 if(MSVC)
     list(APPEND LINK_LIBS WindowsApp)

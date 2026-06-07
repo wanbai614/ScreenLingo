@@ -5,14 +5,14 @@
 #include <QtCore/QVector>
 #include "core/translate/ITranslator.h"
 
-class OpenAITranslator : public ITranslator {
+class GoogleTranslator : public ITranslator {
     Q_OBJECT
 
 public:
-    explicit OpenAITranslator(QObject* parent = nullptr);
+    explicit GoogleTranslator(QObject* parent = nullptr);
 
-    QString name() const override { return "OpenAI"; }
-    QString category() const override { return "llm"; }
+    QString name() const override { return "Google"; }
+    QString category() const override { return "online"; }
     bool isAvailable() const override { return !m_apiKey.isEmpty(); }
 
     void translate(const TranslateRequest& req) override;
@@ -25,13 +25,6 @@ public:
 private:
     QNetworkAccessManager* m_nam;
     QString m_apiKey;
-    QString m_baseUrl    = "https://api.openai.com/v1";
-    QString m_model      = "gpt-4o";
-    QString m_systemPrompt =
-        "You are a professional translator. Translate the following text "
-        "naturally while preserving tone and meaning. "
-        "Each line is a separate text to translate. "
-        "Keep the same number of lines in your output."
-        "Output only the translation, nothing else.";
+    QString m_endpoint = "https://translation.googleapis.com/language/translate/v2";
     QVector<QNetworkReply*> m_pendingRequests;
 };

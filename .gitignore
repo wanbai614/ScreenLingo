@@ -1,15 +1,59 @@
+# Build outputs
 build/
+build3/
+build_msvc/
+build_mingw/
 cmake-build-*/
+out/
+
+# IDE
 .vs/
 .vscode/
 *.user
 *.autosave
+
+# Compiled outputs
 Debug/
 Release/
+x64/
 *.exe
 *.dll
 *.pdb
 *.ilk
 *.obj
+*.lib
+*.exp
+*.moc
+*.qm
+
+# Qt generated
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+*_autogen/
+
+# CMake generated
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+*.cmake
+!CMakeLists.txt
+
+# OS files
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Package directory (deployment artifacts, not source)
+package/
+
+# Logs
+*.log
+
+# Temp
+tmp/
+temp/
+
+# Codegraph
+.codegraph/

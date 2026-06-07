@@ -2,28 +2,32 @@
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 #include <QtCore/QJsonArray>
+#include <QtCore/QRegularExpression>
 
 DeepSeekTranslator::DeepSeekTranslator(QObject* parent)
     : ITranslator(parent), m_nam(new QNetworkAccessManager(this)) {}
 
 QVector<TranslatorConfigField> DeepSeekTranslator::configFields() const {
     return {
-        {"apiKey",  "API Key",  "",                       true,  true},
-        {"baseUrl", "Base URL", "https://api.deepseek.com/v1", false, false},
-        {"model",   "Model",    "deepseek-chat",          false, false},
+        {"apiKey",       "API Key",       "",                          true,  true},
+        {"baseUrl",      "Base URL",      "https://api.deepseek.com/v1", false, false},
+        {"model",        "Model",         "deepseek-chat",             false, false},
+        {"systemPrompt", "System Prompt", m_systemPrompt,              false, false},
     };
 }
 
 void DeepSeekTranslator::setConfig(const QString& key, const QString& value) {
-    if (key == "apiKey")  m_apiKey  = value;
-    if (key == "baseUrl") m_baseUrl = value;
-    if (key == "model")   m_model   = value;
+    if (key == "apiKey")       m_apiKey       = value;
+    if (key == "baseUrl")      m_baseUrl      = value;
+    if (key == "model")        m_model        = value;
+    if (key == "systemPrompt") m_systemPrompt = value;
 }
 
 QString DeepSeekTranslator::getConfig(const QString& key) const {
-    if (key == "apiKey")  return m_apiKey;
-    if (key == "baseUrl") return m_baseUrl;
-    if (key == "model")   return m_model;
+    if (key == "apiKey")       return m_apiKey;
+    if (key == "baseUrl")      return m_baseUrl;
+    if (key == "model")        return m_model;
+    if (key == "systemPrompt") return m_systemPrompt;
     return {};
 }
 
@@ -39,9 +43,7 @@ void DeepSeekTranslator::translate(const TranslateRequest& req) {
     QJsonArray messages;
     messages.append(QJsonObject{
         {"role", "system"},
-        {"content", QString("Translate the following text from %1 to %2. "
-                            "Output only the translation, nothing else.")
-                        .arg(req.sourceLang, req.targetLang)}
+        {"content", m_systemPrompt.arg(req.sourceLang, req.targetLang)}
     });
     messages.append(QJsonObject{
         {"role", "user"},
@@ -80,6 +82,13 @@ void DeepSeekTranslator::translate(const TranslateRequest& req) {
         QString translated = choices[0].toObject()
             .value("message").toObject()
             .value("content").toString().trimmed();
+
+        // Strip <think>...</think> blocks from reasoning models
+        static const QRegularExpression thinkRx(
+            QStringLiteral(R"(<\s*think\s*>[\s\S]*?<\s*/\s*think\s*>)"),
+            QRegularExpression::CaseInsensitiveOption);
+        translated = translated.replace(thinkRx, QString()).trimmed();
+
         emit translationReady(original, translated);
     });
 }

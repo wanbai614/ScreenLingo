@@ -21,11 +21,14 @@ public:
     void setActive(const QString& name);
     void translate(const QString& text, const QString& sourceLang,
                    const QString& targetLang);
+    void translateWithImage(const QImage& image, const QString& sourceLang,
+                            const QString& targetLang);
     void cancelAll();
 
 signals:
     void translationReady(const QString& original, const QString& translated);
     void translationError(const QString& error);
+    void visionResultReady(const QByteArray& json);
     void activeChanged(const QString& name);
 
 private:

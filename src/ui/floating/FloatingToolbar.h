@@ -17,12 +17,20 @@ public:
     void setMode(Mode mode);
     void setGlobalVisible(bool visible);
     void setSettingsOpen(bool open);
+    void setPipelineStatus(const QString& status);
+    void setHasArea(bool hasArea);
+    void setSelectionMode(bool on);
+
+public slots:
+    void retranslateUi();
 
 signals:
     void triggerActionRequested();
     void areaSelectRequested();
     void visibilityToggleRequested();
+    void stopRequested();
     void settingsToggleRequested();
+    void selTranslateRequested();
 
 protected:
     void paintEvent(QPaintEvent*) override;
@@ -36,6 +44,8 @@ private:
     void updateEyeButton();
     void updateSettingsButton();
     void updateTriggerButton();
+    void updateAreaButton();
+    void updateSelTransButton();
     int  expandWidth() const { return m_expandWidth; }
     void setExpandWidth(int w);
     void fitToScreen();
@@ -43,17 +53,21 @@ private:
     QPushButton* m_toggleBtn    = nullptr;
     QPushButton* m_triggerBtn   = nullptr;
     QPushButton* m_areaBtn      = nullptr;
+    QPushButton* m_stopBtn      = nullptr;
     QPushButton* m_eyeBtn       = nullptr;
     QPushButton* m_settingsBtn  = nullptr;
+    QPushButton* m_selTransBtn  = nullptr;
     QWidget*     m_btnContainer = nullptr;
 
     QPropertyAnimation* m_anim = nullptr;
     int  m_expandWidth   = 44;
-    int  m_fullWidth     = 200;
+    int  m_fullWidth     = 300;
     bool m_expanded      = false;
     Mode m_currentMode   = Mode::Snapshot;
     bool m_visible       = true;
     bool m_settingsOpen  = false;
+    bool m_hasArea       = false;
+    bool m_selModeActive = false;
     bool m_dragging      = false;
     QPoint m_dragStartPos;
     QPoint m_dragStartGeo;

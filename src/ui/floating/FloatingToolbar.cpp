@@ -1,4 +1,5 @@
 #include "FloatingToolbar.h"
+#include "common/LanguageManager.h"
 #include <QtGui/QPainter>
 #include <QtGui/QScreen>
 #include <QtGui/QMouseEvent>
@@ -35,10 +36,10 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
         btn->setToolTip(tooltip);
         btn->setStyleSheet(QString(
             "QPushButton {"
-            "  background: rgba(60,60,60,160); color: white; border: none;"
+            "  background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
             "  border-radius: %1px; font-size: 14px; font-weight: bold;"
             "}"
-            "QPushButton:hover { background: rgba(0,140,100,200); }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
         ).arg(kBtnSize / 2));
         btn->setCursor(Qt::PointingHandCursor);
         return btn;
@@ -50,38 +51,48 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_toggleBtn->setCursor(Qt::OpenHandCursor);
     m_toggleBtn->setStyleSheet(QString(
         "QPushButton {"
-        "  background: rgba(0,150,100,180); color: white; border: none;"
+        "  background: rgba(99,102,241,0.35); color: #dde0e8; border: none;"
         "  border-radius: %1px; font-size: 11px; font-weight: bold;"
         "}"
-        "QPushButton:hover { background: rgba(0,180,120,220); }"
+        "QPushButton:hover { background: rgba(129,140,248,0.55); }"
     ).arg(kBtnSize / 2));
 
-    m_triggerBtn = makeBtn("▶", tr("Translate Now"));
-    m_areaBtn    = makeBtn("◧", tr("Select Area"));
-    m_eyeBtn     = makeBtn("◉", tr("Hide All Translations"));
-    m_settingsBtn= makeBtn("⚙", tr("Settings"));
+    m_triggerBtn = makeBtn(QString::fromUtf8("\xe2\x96\xb6"), tr("Translate Now"));
+    m_areaBtn     = makeBtn(QString::fromUtf8("\xe2\x97\xa7"), tr("Select Area"));
+    m_stopBtn     = makeBtn(QString::fromUtf8("\xe2\x8f\xb9"), tr("Stop & Clear"));
+    m_eyeBtn     = makeBtn(QString::fromUtf8("\xe2\x97\x89"), tr("Hide All Translations"));
+    m_settingsBtn= makeBtn(QString::fromUtf8("\xe2\x9a\x99"), tr("Settings"));
+    m_selTransBtn= makeBtn(QString::fromUtf8("\xe2\x9c\x82"), tr("Selection Translate"));
 
     btnLayout->addWidget(m_toggleBtn);
     btnLayout->addWidget(m_triggerBtn);
     btnLayout->addWidget(m_areaBtn);
+    btnLayout->addWidget(m_stopBtn);
     btnLayout->addWidget(m_eyeBtn);
+    btnLayout->addWidget(m_selTransBtn);
     btnLayout->addWidget(m_settingsBtn);
     m_btnContainer->setLayout(btnLayout);
 
     // Start collapsed
     m_triggerBtn->hide();
     m_areaBtn->hide();
+    m_stopBtn->hide();
     m_eyeBtn->hide();
+    m_selTransBtn->hide();
     m_settingsBtn->hide();
 
     connect(m_triggerBtn, &QPushButton::clicked,
             this, &FloatingToolbar::triggerActionRequested);
     connect(m_areaBtn, &QPushButton::clicked,
             this, &FloatingToolbar::areaSelectRequested);
+    connect(m_stopBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::stopRequested);
     connect(m_eyeBtn, &QPushButton::clicked,
             this, &FloatingToolbar::visibilityToggleRequested);
     connect(m_settingsBtn, &QPushButton::clicked,
             this, &FloatingToolbar::settingsToggleRequested);
+    connect(m_selTransBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::selTranslateRequested);
 
     m_toggleBtn->installEventFilter(this);
 
@@ -96,6 +107,9 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_anim->setEasingCurve(QEasingCurve::OutCubic);
 
     fitToScreen();
+
+    connect(LanguageManager::instance(), &LanguageManager::languageChanged,
+            this, &FloatingToolbar::retranslateUi);
 }
 
 void FloatingToolbar::setMode(Mode mode) {
@@ -113,39 +127,85 @@ void FloatingToolbar::setSettingsOpen(bool open) {
     updateSettingsButton();
 }
 
+void FloatingToolbar::setHasArea(bool hasArea) {
+    m_hasArea = hasArea;
+    updateAreaButton();
+}
+
+void FloatingToolbar::setPipelineStatus(const QString& status) {
+    QString text;
+    QString bgColor;
+
+    if (status == QStringLiteral("idle")) {
+        text = "SL";          bgColor = "rgba(99,102,241,0.35)";
+    } else if (status == QStringLiteral("recognizing")) {
+        text = QString::fromUtf8("\xe2\x9f\xb3");
+        bgColor = "rgba(59,130,246,0.45)";           // blue
+    } else if (status == QStringLiteral("translating")) {
+        text = QString::fromUtf8("\xe2\x9f\xb3");
+        bgColor = "rgba(245,158,11,0.45)";            // amber
+    } else if (status == QStringLiteral("done")) {
+        text = QString::fromUtf8("\xe2\x9c\x93");
+        bgColor = "rgba(16,185,129,0.55)";            // mint
+    }
+
+    m_toggleBtn->setText(text);
+    m_toggleBtn->setStyleSheet(QString(
+        "QPushButton { background: %1; color: white; border: none;"
+        "  border-radius: %2px; font-size: 11px; font-weight: bold; }"
+        "QPushButton:hover { background: rgba(0,180,120,220); }"
+    ).arg(bgColor).arg(kBtnSize / 2));
+}
+
 void FloatingToolbar::updateTriggerButton() {
-    switch (m_currentMode) {
-    case Mode::RealTime:
-        m_triggerBtn->setText("⏸");
-        m_triggerBtn->setToolTip(tr("Pause Translation"));
-        break;
-    case Mode::Snapshot:
-        m_triggerBtn->setText("▶");
+    if (m_currentMode == Mode::RealTime) {
+        m_triggerBtn->setText(QString::fromUtf8("\xe2\x8f\xb8"));  // U+23F8 pause
+        m_triggerBtn->setToolTip(tr("Pause"));
+    } else if (m_currentMode == Mode::Pause) {
+        m_triggerBtn->setText(QString::fromUtf8("\xe2\x96\xb6"));  // play
+        m_triggerBtn->setToolTip(tr("Resume"));
+    } else {
+        m_triggerBtn->setText(QString::fromUtf8("\xe2\x96\xb6"));  // play
         m_triggerBtn->setToolTip(tr("Translate Now"));
-        break;
-    case Mode::Pause:
-        m_triggerBtn->setText("▶");
-        m_triggerBtn->setToolTip(tr("Start Translation"));
-        break;
+    }
+}
+
+void FloatingToolbar::updateAreaButton() {
+    if (m_hasArea) {
+        m_areaBtn->setText(QString::fromUtf8("\xe2\x96\xa3"));
+        m_areaBtn->setToolTip(tr("Adjust Area"));
+        m_areaBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(59,130,246,0.40); color: #dde0e8; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background: rgba(59,130,246,0.60); }"
+        ).arg(kBtnSize / 2));
+    } else {
+        m_areaBtn->setText(QString::fromUtf8("\xe2\x97\xa7"));
+        m_areaBtn->setToolTip(tr("Select Area"));
+        m_areaBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; font-weight: bold; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
     }
 }
 
 void FloatingToolbar::updateEyeButton() {
     if (m_visible) {
-        m_eyeBtn->setText("◉");
+        m_eyeBtn->setText(QString::fromUtf8("\xe2\x97\x89"));
         m_eyeBtn->setToolTip(tr("Hide All Translations"));
         m_eyeBtn->setStyleSheet(QString(
-            "QPushButton { background: rgba(0,140,100,180); color: white; border: none;"
+            "QPushButton { background: rgba(16,185,129,0.30); color: #dde0e8; border: none;"
             "  border-radius: %1px; font-size: 14px; }"
-            "QPushButton:hover { background: rgba(0,180,120,220); }"
+            "QPushButton:hover { background: rgba(16,185,129,0.50); }"
         ).arg(kBtnSize / 2));
     } else {
-        m_eyeBtn->setText("◌");
+        m_eyeBtn->setText(QString::fromUtf8("\xe2\x97\x8c"));
         m_eyeBtn->setToolTip(tr("Show All Translations"));
         m_eyeBtn->setStyleSheet(QString(
-            "QPushButton { background: rgba(140,100,60,180); color: white; border: none;"
+            "QPushButton { background: rgba(245,158,11,0.25); color: #dde0e8; border: none;"
             "  border-radius: %1px; font-size: 14px; }"
-            "QPushButton:hover { background: rgba(200,160,0,220); }"
+            "QPushButton:hover { background: rgba(245,158,11,0.45); }"
         ).arg(kBtnSize / 2));
     }
 }
@@ -153,17 +213,49 @@ void FloatingToolbar::updateEyeButton() {
 void FloatingToolbar::updateSettingsButton() {
     if (m_settingsOpen) {
         m_settingsBtn->setStyleSheet(QString(
-            "QPushButton { background: rgba(0,120,200,200); color: white; border: none;"
+            "QPushButton { background: rgba(99,102,241,0.40); color: #dde0e8; border: none;"
             "  border-radius: %1px; font-size: 14px; }"
-            "QPushButton:hover { background: rgba(200,40,40,220); }"
+            "QPushButton:hover { background: rgba(239,68,68,0.50); }"
         ).arg(kBtnSize / 2));
     } else {
         m_settingsBtn->setStyleSheet(QString(
-            "QPushButton { background: rgba(60,60,60,160); color: white; border: none;"
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
             "  border-radius: %1px; font-size: 14px; }"
-            "QPushButton:hover { background: rgba(0,140,100,200); }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
         ).arg(kBtnSize / 2));
     }
+}
+
+void FloatingToolbar::setSelectionMode(bool on) {
+    m_selModeActive = on;
+    updateSelTransButton();
+}
+
+void FloatingToolbar::updateSelTransButton() {
+    if (m_selModeActive) {
+        m_selTransBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(16,185,129,0.35); color: #dde0e8; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(16,185,129,0.55); }"
+        ).arg(kBtnSize / 2));
+    } else {
+        m_selTransBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
+    }
+}
+
+void FloatingToolbar::retranslateUi() {
+    m_toggleBtn->setToolTip(tr("ScreenLingo — drag to move"));
+    m_stopBtn->setToolTip(tr("Stop & Clear"));
+    m_settingsBtn->setToolTip(tr("Settings"));
+    m_selTransBtn->setToolTip(tr("Selection Translate"));
+    updateTriggerButton();
+    updateAreaButton();
+    updateEyeButton();
+    updateSelTransButton();
 }
 
 void FloatingToolbar::fitToScreen() {
@@ -189,9 +281,12 @@ void FloatingToolbar::expand() {
     m_expanded = true;
     m_triggerBtn->show();
     m_areaBtn->show();
+    m_stopBtn->show();
     m_eyeBtn->show();
+    m_selTransBtn->show();
     m_settingsBtn->show();
     updateTriggerButton();
+    updateAreaButton();
     updateEyeButton();
     updateSettingsButton();
     m_anim->stop();
@@ -205,7 +300,9 @@ void FloatingToolbar::collapse() {
     m_expanded = false;
     m_triggerBtn->hide();
     m_areaBtn->hide();
+    m_stopBtn->hide();
     m_eyeBtn->hide();
+    m_selTransBtn->hide();
     m_settingsBtn->hide();
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);
@@ -267,8 +364,9 @@ void FloatingToolbar::paintEvent(QPaintEvent*) {
     QPainter p(this);
     p.setRenderHint(QPainter::Antialiasing);
     if (m_expanded) {
-        p.setBrush(QColor(30, 30, 30, 130));
-        p.setPen(QPen(QColor(80, 80, 80, 80), 1));
+        // Glass background with subtle border
+        p.setBrush(QColor(24, 26, 32, 220));
+        p.setPen(QPen(QColor(255, 255, 255, 20), 1));
         p.drawRoundedRect(rect().adjusted(0, 0, -1, -1), 20, 20);
     }
 }

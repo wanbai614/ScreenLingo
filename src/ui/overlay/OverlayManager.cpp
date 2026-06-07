@@ -46,6 +46,17 @@ void OverlayManager::showAll() {
         overlay->show();
 }
 
+void OverlayManager::hideAll() {
+    m_globalVisible = false;
+    for (auto* overlay : m_overlays)
+        overlay->hide();
+}
+
+void OverlayManager::setInteractive(bool on) {
+    for (auto* overlay : m_overlays)
+        overlay->setInteractive(on);
+}
+
 void OverlayManager::updateAllStyles(const StyleConfig& style) {
     m_currentStyle = style;
     for (auto* overlay : m_overlays)

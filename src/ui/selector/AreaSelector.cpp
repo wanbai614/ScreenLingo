@@ -25,6 +25,13 @@ AreaSelector::AreaSelector(int screenIndex, QWidget* parent)
     QApplication::instance()->installNativeEventFilter(this);
 }
 
+void AreaSelector::setInitialRect(const QRect& r) {
+    m_selection = r;
+    m_confirmed = true;   // show handles immediately for re-edit
+    m_dragging  = false;
+    update();
+}
+
 AreaSelector::~AreaSelector() {
     QApplication::instance()->removeNativeEventFilter(this);
 }
@@ -56,24 +63,26 @@ bool AreaSelector::nativeEventFilter(const QByteArray&, void* message, qintptr*)
 
 void AreaSelector::paintEvent(QPaintEvent*) {
     QPainter p(this);
-    p.setRenderHint(QPainter::Antialiasing);
+    p.setRenderHint(QPainter::Antialiasing, false);  // disable AA for better drag perf
 
+    // Fill entire screen with semi-transparent dim
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
     p.fillRect(rect(), QColor(0, 0, 0, 128));
 
     if (m_dragging || m_confirmed) {
         QRect sel = m_confirmed ? m_selection : selectionRect();
 
-        QPainterPath path;
-        path.addRect(rect());
-        path.addRect(sel);
+        // Clear the selection rectangle (punch hole) — simpler & faster than QPainterPath
         p.setCompositionMode(QPainter::CompositionMode_Clear);
-        p.fillPath(path, Qt::black);
+        p.fillRect(sel, Qt::black);
         p.setCompositionMode(QPainter::CompositionMode_SourceOver);
 
+        // Border
         p.setPen(QPen(QColor(0, 120, 255), 2));
         p.setBrush(Qt::NoBrush);
         p.drawRect(sel);
 
+        // Handles
         p.setBrush(QColor(0, 120, 255));
         p.setPen(Qt::white);
         QVector<QPoint> handles = {
@@ -88,6 +97,7 @@ void AreaSelector::paintEvent(QPaintEvent*) {
                              kHandleSize, kHandleSize));
         }
 
+        // Size info
         QString info = QString("%1 x %2").arg(sel.width()).arg(sel.height());
         p.setPen(Qt::white);
         p.drawText(sel.adjusted(4, 4, -4, -4), Qt::AlignLeft | Qt::AlignTop, info);

@@ -8,30 +8,51 @@
 #include <winrt/Windows.Storage.Streams.h>
 #include <winrt/Windows.Globalization.h>
 
+#include <QtCore/QMutexLocker>
 #include <QBuffer>
 
 using namespace winrt::Windows::Media::Ocr;
 using namespace winrt::Windows::Graphics::Imaging;
 using namespace winrt::Windows::Storage::Streams;
+using namespace winrt::Windows::Globalization;
+
+// --- File-scope cached engine (created once, reused across frames) ---
+static QMutex            s_engineMutex;
+static OcrEngine         s_cachedEngine{ nullptr };
+
+static OcrEngine createCachedEngine(const QString& languageTag) {
+    auto available = OcrEngine::AvailableRecognizerLanguages();
+    if (available.Size() == 0) return nullptr;
+
+    if (languageTag != QStringLiteral("auto")) {
+        Language lang(languageTag.toStdWString());
+        auto engine = OcrEngine::TryCreateFromLanguage(lang);
+        if (engine) return engine;
+    }
+    return OcrEngine::TryCreateFromLanguage(available.First().Current());
+}
+
+// =============================================================
 
 WindowsOcrEngine::WindowsOcrEngine(QObject* parent)
     : IOCREngine(parent) {
     m_watcher = new QFutureWatcher<OCRResult>(this);
     connect(m_watcher, &QFutureWatcher<OCRResult>::finished, this, [this]() {
-        OCRResult result = m_watcher->result();
-        emit recognitionComplete(result);
+        emit recognitionComplete(m_watcher->result());
     });
 }
 
 bool WindowsOcrEngine::initialize(const QString& languageTag) {
     m_languageTag = languageTag;
     try {
-        auto langs = OcrEngine::AvailableRecognizerLanguages();
-        if (langs.Size() == 0) {
+        if (OcrEngine::AvailableRecognizerLanguages().Size() == 0) {
             emit recognitionError("No OCR languages available");
             return false;
         }
-        return true;
+        // Pre-warm the cache on main thread
+        QMutexLocker lock(&s_engineMutex);
+        s_cachedEngine = createCachedEngine(languageTag);
+        return (s_cachedEngine != nullptr);
     } catch (winrt::hresult_error const& e) {
         emit recognitionError(QString::fromWCharArray(e.message().c_str()));
         return false;
@@ -48,9 +69,7 @@ void WindowsOcrEngine::recognize(const QImage& image) {
 OCRResult WindowsOcrEngine::recognizeSync(const QImage& image) {
     OCRResult result;
     try {
-        // Encode QImage as PNG into an in-memory buffer, then decode it
-        // via BitmapDecoder to produce a SoftwareBitmap. This avoids manual
-        // IMemoryBufferByteAccess COM interop for copying raw pixels.
+        // PNG encoding → in-memory stream (reliable, portable)
         QByteArray pngBytes;
         QBuffer pngBuffer(&pngBytes);
         pngBuffer.open(QIODevice::WriteOnly);
@@ -71,21 +90,13 @@ OCRResult WindowsOcrEngine::recognizeSync(const QImage& image) {
         SoftwareBitmap bitmap = decoder.GetFrameAsync(0).get()
                                     .GetSoftwareBitmapAsync().get();
 
-        // Resolve language tag and create OcrEngine.
-        // Language has no default constructor, so both resolution and
-        // engine creation are folded into one block.
-        OcrEngine engine(nullptr);
-        auto const availableLangs = OcrEngine::AvailableRecognizerLanguages();
-
-        if (m_languageTag != "auto") {
-            winrt::Windows::Globalization::Language lang(
-                m_languageTag.toStdWString());
-            engine = OcrEngine::TryCreateFromLanguage(lang);
-        }
-
-        if (!engine && availableLangs.Size() > 0) {
-            engine = OcrEngine::TryCreateFromLanguage(
-                availableLangs.First().Current());
+        // Fast path: use cached engine. Slow path: create on demand.
+        OcrEngine engine = s_cachedEngine;
+        if (!engine) {
+            QMutexLocker lock(&s_engineMutex);
+            if (!s_cachedEngine)
+                s_cachedEngine = createCachedEngine(m_languageTag);
+            engine = s_cachedEngine;
         }
 
         if (!engine) {
@@ -105,8 +116,7 @@ OCRResult WindowsOcrEngine::recognizeSync(const QImage& image) {
                     static_cast<int>(rect.X),
                     static_cast<int>(rect.Y),
                     static_cast<int>(rect.Width),
-                    static_cast<int>(rect.Height)
-                );
+                    static_cast<int>(rect.Height));
                 result.boxes.append(box);
             }
         }
