@@ -1078,15 +1078,24 @@ void Application::onTranslationReady(const QString& original,
         const auto& batch = m_batchMap[original];
         QStringList parts;
 
-        // Parse JSON array from response
+        // Parse JSON response — handle array, object, and broken formats
         QString t = translated.trimmed();
         QJsonDocument doc = QJsonDocument::fromJson(t.toUtf8());
         if (doc.isArray()) {
+            // ["t1","t2",...]
             for (const auto& v : doc.array())
                 parts.append(v.toString().trimmed());
-        } else if (doc.isObject() && doc.object().contains("translations")) {
-            for (const auto& v : doc.object()["translations"].toArray())
-                parts.append(v.toString().trimmed());
+        } else if (doc.isObject()) {
+            QJsonObject obj = doc.object();
+            if (obj.contains("translations") && obj["translations"].isArray()) {
+                // {"translations":["t1","t2",...]}
+                for (const auto& v : obj["translations"].toArray())
+                    parts.append(v.toString().trimmed());
+            } else {
+                // {"key1":"val1","key2":"val2",...} — model output object, extract values in order
+                for (auto it = obj.begin(); it != obj.end(); ++it)
+                    parts.append(it.value().toString().trimmed());
+            }
         } else {
             // Fallback: try splitting by newlines
             parts = t.split('\n', Qt::SkipEmptyParts);
