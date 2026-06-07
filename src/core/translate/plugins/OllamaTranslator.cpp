@@ -70,14 +70,14 @@ void OllamaTranslator::sendRequest(const QueuedReq& r) {
         images.append(b64);
         body["images"] = images;
     } else if (r.batchMode) {
-        // Batch mode: model MUST output a JSON array (not an object!)
+        // Batch mode: minimal system prompt — avoid verbose persona presets
+        // that add 2000+ chars of glossary and cause the model to over-think.
         int count = r.text.count('\n') + 1;
-        QString prompt = m_systemPrompt.arg(r.srcLang, r.tgtLang)
-            + QStringLiteral("\n\nTranslate these %1 items from %2 to %3.\n"
-                             "Output a JSON ARRAY with %1 strings. NOT an object.\n"
-                             "Example: [\"译1\",\"译2\",\"译3\"]\n\n")
-                .arg(count).arg(r.srcLang, r.tgtLang)
-            + r.text;
+        QString prompt = QStringLiteral(
+            "Translate these %1 items from %2 to %3. "
+            "Output ONLY a JSON array with %1 strings. Nothing else.\n"
+            "Format: [\"t1\",\"t2\",...,\"t%1\"]\n\n%4")
+            .arg(count).arg(r.srcLang, r.tgtLang).arg(r.text);
         body["messages"] = QJsonArray{
             QJsonObject{{"role", "user"}, {"content", prompt}}
         };
@@ -97,7 +97,7 @@ void OllamaTranslator::sendRequest(const QueuedReq& r) {
                << (r.isVlm ? "VLM" : "text") << "len:" << (r.isVlm ? 0 : r.text.size());
     QNetworkRequest request{url};
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request.setTransferTimeout(r.batchMode ? 120000 : (r.isVlm ? 60000 : 15000));  // batch 120s, VLM 60s, text 15s
+    request.setTransferTimeout(r.batchMode ? 180000 : (r.isVlm ? 60000 : 15000));  // batch 180s, VLM 60s, text 15s
 
     QNetworkReply* reply = m_nam->post(request,
         QJsonDocument(body).toJson(QJsonDocument::Compact));
