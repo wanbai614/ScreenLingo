@@ -116,6 +116,7 @@ QWidget* SettingsPanel::createGeneralTab() {
 #if HAS_PADDLE_OCR
     m_ocrCombo->addItem("PaddleOCR (offline, high accuracy)", "paddle");
 #endif
+    m_ocrCombo->addItem("GLM-OCR (cloud, GLM-4V vision)", "glmocr");
     QString savedOCR = m_config->ocrEngine();
     int ocrIdx = m_ocrCombo->findData(savedOCR);
     if (ocrIdx >= 0) m_ocrCombo->setCurrentIndex(ocrIdx);

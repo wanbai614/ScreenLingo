@@ -68,10 +68,12 @@ set(SOURCES
 
 # --- PaddleOCR + ONNX Runtime (MSVC only) ---
 set(ONNXRUNTIME_ROOT "${CMAKE_SOURCE_DIR}/lib/onnxruntime")
-# PaddleOCR subprocess engine (always available — uses Python)
+# OCR subprocess engines (always available — uses Python)
 list(APPEND SOURCES
     src/core/ocr/PaddleOCRSubprocessEngine.h
-    src/core/ocr/PaddleOCRSubprocessEngine.cpp)
+    src/core/ocr/PaddleOCRSubprocessEngine.cpp
+    src/core/ocr/GlmOcrEngine.h
+    src/core/ocr/GlmOcrEngine.cpp)
 
 # PaddleOCR ONNX engine (requires ONNX Runtime)
 if(MSVC AND EXISTS "${ONNXRUNTIME_ROOT}/include/onnxruntime_cxx_api.h")

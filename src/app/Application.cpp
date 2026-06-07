@@ -7,6 +7,7 @@
 #include "core/ocr/PaddleOCREngine.h"
 #endif
 #include "core/ocr/PaddleOCRSubprocessEngine.h"
+#include "core/ocr/GlmOcrEngine.h"
 #include "core/translate/TranslatorManager.h"
 #include "core/translate/plugins/DeepLTranslator.h"
 #include "core/translate/plugins/OpenAITranslator.h"
@@ -861,6 +862,19 @@ void Application::switchOCREngine(const QString& name) {
         } else {
             delete paddle;
             qWarning() << "PaddleOCR subprocess init failed, falling back to Windows OCR";
+            m_ocr = new WindowsOcrEngine(this);
+            m_ocr->initialize("auto");
+            m_currentOcrEngine = "windows";
+        }
+    } else if (name == QStringLiteral("glmocr")) {
+        auto* glmocr = new GlmOcrEngine(this);
+        if (glmocr->initialize("auto")) {
+            m_ocr = glmocr;
+            m_currentOcrEngine = name;
+            appLog("OCR engine switched to GLM-OCR");
+        } else {
+            delete glmocr;
+            qWarning() << "GLM-OCR init failed, falling back to Windows OCR";
             m_ocr = new WindowsOcrEngine(this);
             m_ocr->initialize("auto");
             m_currentOcrEngine = "windows";
