@@ -96,7 +96,7 @@ void OllamaTranslator::sendRequest(const QueuedReq& r) {
                << (r.isVlm ? "VLM" : "text") << "len:" << (r.isVlm ? 0 : r.text.size());
     QNetworkRequest request{url};
     request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
-    request.setTransferTimeout(r.isVlm ? 60000 : 15000);  // 60s VLM, 15s text
+    request.setTransferTimeout(r.batchMode ? 90000 : (r.isVlm ? 60000 : 15000));  // batch 90s, VLM 60s, text 15s
 
     QNetworkReply* reply = m_nam->post(request,
         QJsonDocument(body).toJson(QJsonDocument::Compact));

@@ -470,7 +470,7 @@ bool Application::initialize() {
     // Flush timeout: if translations don't all arrive within 15s, flush partial
     m_flushTimeout = new QTimer(this);
     m_flushTimeout->setSingleShot(true);
-    m_flushTimeout->setInterval(15000);
+    m_flushTimeout->setInterval(60000);  // 60s — enough for batch Ollama requests
     connect(m_flushTimeout, &QTimer::timeout, this, [this]() {
         appLog("Flush timeout: forcing partial flush");
         flushRowLayout();
