@@ -558,6 +558,7 @@ void Application::processRealtimeFrame() {
 
     m_ocrBusy = true;
     m_lastSourceRect = area.geometry;
+    if (m_floating) m_floating->setPipelineStatus("recognizing");
     m_ocr->recognize(frame);
 }
 
@@ -1440,6 +1441,7 @@ void Application::onTextSelected(const QString& text, QPoint cursorPos) {
     // Show "translating..." placeholder immediately
     m_selPopup->showTranslation(cursorPos, text.trimmed(),
                                 QStringLiteral("翻译中..."));
+    if (m_floating) m_floating->setPipelineStatus("translating");
 
     // Signal main handler to skip overlay bubbles for this text
     m_pendingSelectionText = text.trimmed();
@@ -1453,6 +1455,7 @@ void Application::onTextSelected(const QString& text, QPoint cursorPos) {
     *conn = connect(m_translator, &TranslatorManager::translationReady, this,
         [this, text, cursorPos, conn](const QString& orig, const QString& trans) {
             if (orig.trimmed() == text.trimmed()) {
+                if (m_floating) m_floating->setPipelineStatus("done");
                 // Extract translation from JSON
                 QString result = trans.trimmed();
                 QJsonDocument jd = QJsonDocument::fromJson(result.toUtf8());
