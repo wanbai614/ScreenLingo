@@ -1,5 +1,0 @@
-*** Begin Patch
-*** Update File: src/app/Application.cpp
-@@ #include "ui/selector/AreaSelector.h"
-+#include "ui/overlay/AreaOverlay.h"
-*** End Patch

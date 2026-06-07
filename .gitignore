@@ -54,6 +54,10 @@ package/
 # Temp
 tmp/
 temp/
+*.patch
+*.zip
+lib/
+models/
 
 # Codegraph
 .codegraph/
