@@ -946,54 +946,42 @@ void Application::onOcrCompleted(const OCRResult& result) {
         QRect captureRect = m_lastSourceRect;
 
         if (m_config->uiTranslateMode()) {
-            // UI mode: group → batch into groups → translate concurrently
+            // UI mode: OCR determines positions → batch translate → create bubbles
             auto groups = groupUIBoxes(result.boxes, captureRect);
 
-            // Collect valid items (skip garbage, duplicates, and already-target-language text)
             auto isAlreadyTargetLang = [&](const QString& t) {
                 if (tgtLang == "zh" && t.contains(QRegularExpression("\\p{Han}"))) return true;
                 if (tgtLang == "en" && t.contains(QRegularExpression("^[a-zA-Z0-9\\s]+$"))) return true;
                 return false;
             };
 
+            // Collect valid items with their OCR-determined positions
             QVector<QPair<QString, QRect>> items;
+            QStringList lines;
             for (const auto& g : groups) {
                 QString text = g.text.trimmed();
                 if (text.isEmpty() || m_translatedValues.contains(text)) continue;
                 if (isLikelyGarbage(text) || isMostlyGarbage(text)) continue;
-                if (isAlreadyTargetLang(text)) continue;  // skip text already in target language
+                if (isAlreadyTargetLang(text)) continue;
+
                 items.append({text, g.rect});
+                lines << QString("%1. %2").arg(items.size()).arg(text);
+                m_textSourceRects[text] = g.rect;
+                newHashes.insert(qHash(text));
             }
 
             if (items.isEmpty()) { m_ocrBusy = false; return; }
+            m_activeTextHashes = newHashes;
 
-            // Merge into batches of up to 30 items. Small enough for the
-            // model to finish before the user's next snapshot, large enough
-            // to minimize Ollama request overhead.
-            constexpr int kBatchCap = 200;
-            for (int i = 0; i < items.size(); i += kBatchCap) {
-                int end = qMin(i + kBatchCap, items.size());
-                QVector<QPair<QString, QRect>> batch;
-                QStringList lines;
-                for (int j = i; j < end; ++j) {
-                    batch.append(items[j]);
-                    lines << QString("%1. %2").arg(j - i + 1).arg(items[j].first);
-                }
+            // Single batch request — one Ollama call for all items
+            QString batchedText = lines.join('\n');
+            m_batchMap[batchedText] = items;
+            for (const auto& item : items)
+                m_textToBatchKey[item.first] = batchedText;
 
-                QString batchedText = lines.join('\n');
-
-                m_batchMap[batchedText] = batch;
-                for (const auto& item : batch) {
-                    int hash = qHash(item.first);
-                    newHashes.insert(hash);
-                    m_textSourceRects[item.first] = item.second;
-                    m_textToBatchKey[item.first] = batchedText;
-                }
-
-                m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
-                ++m_pendingTranslations;
-                ++dispatched;
-            }
+            m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
+            ++m_pendingTranslations;
+            ++dispatched;
 
             m_activeTextHashes = newHashes;
             goto ocrDone;
@@ -1088,33 +1076,29 @@ void Application::onTranslationReady(const QString& original,
         return;
     }
 
-    // Handle batch response: JSON array → split into individual translations
+    // Handle batch response: parse → validate → create Pending entries with
+    // OCR-determined source rects → flushRowLayout creates overlays at correct positions
     if (m_batchMap.contains(original)) {
         if (m_pendingTranslations > 0) --m_pendingTranslations;
 
         const auto& batch = m_batchMap[original];
         QStringList parts;
 
-        // Parse JSON response — handle array, object, and broken formats
         QString t = translated.trimmed();
         QJsonDocument doc = QJsonDocument::fromJson(t.toUtf8());
         if (doc.isArray()) {
-            // ["t1","t2",...]
             for (const auto& v : doc.array())
                 parts.append(v.toString().trimmed());
         } else if (doc.isObject()) {
             QJsonObject obj = doc.object();
             if (obj.contains("translations") && obj["translations"].isArray()) {
-                // {"translations":["t1","t2",...]}
                 for (const auto& v : obj["translations"].toArray())
                     parts.append(v.toString().trimmed());
             } else {
-                // {"key1":"val1","key2":"val2",...} — model output object, extract values in order
                 for (auto it = obj.begin(); it != obj.end(); ++it)
                     parts.append(it.value().toString().trimmed());
             }
         } else {
-            // Fallback: try splitting by newlines
             parts = t.split('\n', Qt::SkipEmptyParts);
             for (auto& p : parts) p = p.trimmed();
         }
@@ -1122,15 +1106,13 @@ void Application::onTranslationReady(const QString& original,
         int goodCount = 0;
         for (int i = 0; i < batch.size(); ++i) {
             QString orig = batch[i].first;
-            QRect srcRect = batch[i].second;
+            QRect srcRect = batch[i].second;  // OCR-determined position
             QString seg = (i < parts.size()) ? parts[i] : QString();
 
-            // Quick validation for batch items
             bool bad = seg.isEmpty() || seg == "??" || seg == orig;
             if (!bad && seg.size() > orig.size() * 3 && seg.size() > 30) bad = true;
 
             if (bad && m_retryPerText.value(orig, 0) < 3) {
-                // Self-healing: retry individually (not in batch)
                 ++m_retryPerText[orig];
                 ++m_pendingTranslations;
                 m_translator->translate(orig, m_config->sourceLang(), m_config->targetLang());
@@ -1325,19 +1307,16 @@ void Application::flushRowLayout() {
             layout.maxWidth     = r.sourceRect.width();
             layout.wordWrap     = true;
         } else if (uiMode) {
-            // UI mode: bubble auto-fits translation text width
+            // UI mode: position from OCR, width from translation text
             int baseFontSize = m_config->loadStyle().font.pointSize();
             QFont font("Microsoft YaHei", baseFontSize);
             QFontMetrics fm(font);
-            int textW = fm.horizontalAdvance(r.translated);
-            int textH = fm.height();
-
             layout.position     = r.sourceRect.topLeft();
-            layout.bubbleWidth  = textW + 16;
-            layout.bubbleHeight = textH + 10;
+            layout.bubbleWidth  = fm.horizontalAdvance(r.translated) + 16;
+            layout.bubbleHeight = fm.height() + 10;
             layout.fontSize     = baseFontSize;
-            layout.maxWidth     = textW + 16;
-            layout.wordWrap     = false;  // single-line for UI elements
+            layout.maxWidth     = layout.bubbleWidth;
+            layout.wordWrap     = false;
         } else {
             LayoutRequest req;
             req.sourceRect       = r.sourceRect;
