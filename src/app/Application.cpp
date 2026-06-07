@@ -1119,19 +1119,19 @@ void Application::onTranslationReady(const QString& original,
         }
 
         int goodCount = 0;
+        QVector<QPair<QString, QRect>> retryItems;
         for (int i = 0; i < batch.size(); ++i) {
             QString orig = batch[i].first;
             QRect srcRect = batch[i].second;
-            QString seg = indexToTrans.value(i);  // keyed by exact index
+            QString seg = indexToTrans.value(i);
 
             bool bad = seg.isEmpty() || seg == "??" || seg == orig;
             if (!bad && seg.size() > orig.size() * 3 && seg.size() > 30) bad = true;
 
             if (bad && m_retryPerText.value(orig, 0) < 3) {
                 ++m_retryPerText[orig];
-                ++m_pendingTranslations;
-                m_translator->translate(orig, m_config->sourceLang(), m_config->targetLang());
-                appLog(QString("BatchRetry: \"%1\"").arg(orig.left(25)));
+                retryItems.append({orig, srcRect});
+                appLog(QString("BatchFail: \"%1\"").arg(orig.left(25)));
             } else if (bad) {
                 m_pendingResults.append({orig, QStringLiteral("??"), srcRect});
             } else {
@@ -1139,6 +1139,19 @@ void Application::onTranslationReady(const QString& original,
                 m_translationCache[orig] = seg;
                 ++goodCount;
             }
+        }
+
+        // Retry ALL failed items as a single batch (recursive retry)
+        if (!retryItems.isEmpty()) {
+            QStringList retryLines;
+            for (int j = 0; j < retryItems.size(); ++j)
+                retryLines << QString("%1. %2").arg(j + 1).arg(retryItems[j].first);
+            QString retryBatchText = retryLines.join('\n');
+            m_batchMap[retryBatchText] = retryItems;
+            ++m_pendingTranslations;
+            m_translator->translate(retryBatchText, m_config->sourceLang(),
+                                    m_config->targetLang(), /*batchMode=*/true);
+            appLog(QString("BatchRetry: %1 items in 1 request").arg(retryItems.size()));
         }
 
         m_batchMap.remove(original);
