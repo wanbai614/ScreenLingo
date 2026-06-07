@@ -573,13 +573,19 @@ void Application::onSnapshotRequested() {
     const auto& area = m_areas.first();
     if (!area.enabled) { appLog("Snapshot: area disabled"); return; }
 
-    // Block re-entry: OCR in progress OR translations still in-flight
+    // Block re-entry
     if (m_ocrBusy) {
         appLog("Snapshot: OCR busy, skipping");
         return;
     }
-    if (m_pendingTranslations > 0 || !m_batchMap.isEmpty()) {
-        appLog("Snapshot: translation in-flight, skipping");
+    // Batch in-flight → block (retries from previous batch don't block)
+    if (!m_batchMap.isEmpty()) {
+        appLog("Snapshot: batch in-flight, skipping");
+        return;
+    }
+    // Non-UI mode: individual translations still running → block
+    if (!m_config->uiTranslateMode() && m_pendingTranslations > 0) {
+        appLog("Snapshot: translations in-flight, skipping");
         return;
     }
 
