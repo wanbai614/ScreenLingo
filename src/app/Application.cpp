@@ -386,9 +386,11 @@ bool Application::initialize() {
     // OCR (use IOCREngine base type for both WindowsOcrEngine and PaddleOCREngine)
     connect(m_ocr, &IOCREngine::recognitionComplete,
             this, &Application::onOcrCompleted);
-    connect(m_ocr, &IOCREngine::recognitionError, this, [](const QString& msg) {
+    connect(m_ocr, &IOCREngine::recognitionError, this, [this](const QString& msg) {
         appLog("OCR ERROR: " + msg);
         qWarning() << "OCR error:" << msg;
+        m_ocrBusy = false;
+        if (m_floating) m_floating->setPipelineStatus("idle");
     });
 
     // Translation (TranslatorManager signal has only 2 params, no QRect)
@@ -859,9 +861,11 @@ void Application::switchOCREngine(const QString& name) {
     // Reconnect signals
     connect(m_ocr, &IOCREngine::recognitionComplete,
             this, &Application::onOcrCompleted);
-    connect(m_ocr, &IOCREngine::recognitionError, this, [](const QString& msg) {
+    connect(m_ocr, &IOCREngine::recognitionError, this, [this](const QString& msg) {
         appLog("OCR ERROR: " + msg);
         qWarning() << "OCR error:" << msg;
+        m_ocrBusy = false;
+        if (m_floating) m_floating->setPipelineStatus("idle");
     });
 }
 
