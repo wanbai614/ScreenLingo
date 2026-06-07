@@ -915,104 +915,116 @@ void SettingsPanel::retranslateUi() {
 QVector<PromptPreset> SettingsPanel::loadOrInitPresets() {
     auto presets = m_config->loadPromptPresets();
 
-    // If no presets exist, seed with built-in defaults
-    if (presets.isEmpty()) {
-        struct BuiltIn { QString id; QString name; QString prompt; };
-        QVector<BuiltIn> builtins = {
-            {"general", tr("General Translation"),
-                "You are a professional translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Keep the translation accurate, natural, and fluent."},
+    // Built-in preset definitions (single source of truth)
+    struct BuiltIn { QString id; QString name; QString prompt; };
+    QVector<BuiltIn> builtins = {
+        {"general", tr("General Translation"),
+            "You are a professional translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Keep the translation accurate, natural, and fluent."},
 
-            {"programming", tr("Programming & Tech"),
-                "You are a senior software engineer and technical translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Keep ALL code, variable names, function names, and API names in English.\n"
-                "- Keep technical terms accurate (e.g., 'dependency injection', 'middleware').\n"
-                "- Translate comments and documentation naturally.\n"
-                "- Prefer industry-standard Chinese translations for well-known terms."},
+        {"programming", tr("Programming & Tech"),
+            "You are a senior software engineer and technical translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Keep ALL code, variable names, function names, and API names in English.\n"
+            "- Keep technical terms accurate (e.g., 'dependency injection', 'middleware').\n"
+            "- Translate comments and documentation naturally.\n"
+            "- Prefer industry-standard Chinese translations for well-known terms."},
 
-            {"literature", tr("Literature & Novel"),
-                "You are an award-winning literary translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Preserve the author's tone, emotion, and stylistic voice.\n"
-                "- Pay attention to rhythm, pacing, and imagery.\n"
-                "- Use elegant, natural language — not word-for-word.\n"
-                "- Cultural references may be adapted for understanding."},
+        {"literature", tr("Literature & Novel"),
+            "You are an award-winning literary translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Preserve the author's tone, emotion, and stylistic voice.\n"
+            "- Pay attention to rhythm, pacing, and imagery.\n"
+            "- Use elegant, natural language — not word-for-word.\n"
+            "- Cultural references may be adapted for understanding."},
 
-            {"subtitles", tr("Film & Subtitles"),
-                "You are a professional subtitler for films and TV shows.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Keep each line short and readable (max 20 characters per line).\n"
-                "- Use natural spoken language, not written style.\n"
-                "- Convey tone and emotion concisely.\n"
-                "- Avoid literal translations that sound unnatural when spoken."},
+        {"subtitles", tr("Film & Subtitles"),
+            "You are a professional subtitler for films and TV shows.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Keep each line short and readable (max 20 characters per line).\n"
+            "- Use natural spoken language, not written style.\n"
+            "- Convey tone and emotion concisely.\n"
+            "- Avoid literal translations that sound unnatural when spoken."},
 
-            {"academic", tr("Academic & Research"),
-                "You are a research paper translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Use formal, precise academic language.\n"
-                "- Keep discipline-specific terminology accurate.\n"
-                "- Maintain the logical structure and argument flow.\n"
-                "- Do NOT simplify or summarize — preserve full meaning."},
+        {"academic", tr("Academic & Research"),
+            "You are a research paper translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Use formal, precise academic language.\n"
+            "- Keep discipline-specific terminology accurate.\n"
+            "- Maintain the logical structure and argument flow.\n"
+            "- Do NOT simplify or summarize — preserve full meaning."},
 
-            {"game", tr("Game Localization"),
-                "You are a video game localization specialist.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Use creative, immersive language fitting the game's world.\n"
-                "- UI text: short, punchy, consistent (e.g., 'Settings' → '设置').\n"
-                "- Dialogue: natural, character-appropriate voice.\n"
-                "- Lore/descriptions: vivid and atmospheric.\n"
-                "- Keep placeholder formats like {0}, %s, <color=...> unchanged."},
+        {"game", tr("Game Localization"),
+            "You are a video game localization specialist.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Use creative, immersive language fitting the game's world.\n"
+            "- UI text: short, punchy, consistent (e.g., 'Settings' → '设置').\n"
+            "- Dialogue: natural, character-appropriate voice.\n"
+            "- Lore/descriptions: vivid and atmospheric.\n"
+            "- Keep placeholder formats like {0}, %s, <color=...> unchanged."},
 
-            {"business", tr("Business & Legal"),
-                "You are a corporate communications translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Use formal business language appropriate for the context.\n"
-                "- Legal terms must be precise and standard.\n"
-                "- Maintain professional tone throughout.\n"
-                "- Numbers, dates, and currency formats should follow target locale conventions."},
+        {"business", tr("Business & Legal"),
+            "You are a corporate communications translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Use formal business language appropriate for the context.\n"
+            "- Legal terms must be precise and standard.\n"
+            "- Maintain professional tone throughout.\n"
+            "- Numbers, dates, and currency formats should follow target locale conventions."},
 
-            {"unreal", tr("Unreal Engine Dev"),
-                "You are an Unreal Engine 5 technical translator.\n"
-                "Translate the following text from %1 to %2.\n"
-                "Rules:\n"
-                "- Keep ALL class names, function names, variable names, macros, and API symbols in English.\n"
-                "- Translate UI labels, tooltips, menu items, and editor text naturally.\n"
-                "- UE-specific glossary:\n"
-                "  Actor → Actor, Pawn → Pawn, Character → 角色, Controller → 控制器,\n"
-                "  GameMode → 游戏模式, GameState → 游戏状态, PlayerState → 玩家状态,\n"
-                "  Viewport/VP → 视口, Blueprint → 蓝图, Widget → 控件,\n"
-                "  Level → 关卡, World → 世界, Scene → 场景, Asset → 资产,\n"
-                "  Material → 材质, Texture → 贴图, Mesh → 网格体, Skeleton → 骨架,\n"
-                "  Animation → 动画, Montage → 蒙太奇, Blend Space → 混合空间,\n"
-                "  Behavior Tree → 行为树, Blackboard → 黑板, EQS → 环境查询系统,\n"
-                "  Niagara → Niagara, Cascade → Cascade, Particle → 粒子,\n"
-                "  Collision → 碰撞, Trigger → 触发器, Volume → 体积,\n"
-                "  Lightmass → Lightmass, LOD → LOD, Nanite → Nanite, Lumen → Lumen,\n"
-                "  Sequencer → Sequencer, Take → Take, Cinematic → 过场动画,\n"
-                "  Gameplay Ability System/GAS → GAS 技能系统,\n"
-                "  Replication → 复制, Network → 网络, RPC → RPC,\n"
-                "- For editor UI: prefer short, standard translations used in Epic's official Chinese docs.\n"
-                "- If a term has no standard translation, keep it in English."},
-        };
+        {"unreal", tr("Unreal Engine Dev"),
+            "You are an Unreal Engine 5 technical translator.\n"
+            "Translate the following text from %1 to %2.\n"
+            "Rules:\n"
+            "- Keep ALL class names, function names, variable names, macros, and API symbols in English.\n"
+            "- Translate UI labels, tooltips, menu items, and editor text naturally.\n"
+            "- UE-specific glossary:\n"
+            "  Actor → Actor, Pawn → Pawn, Character → 角色, Controller → 控制器,\n"
+            "  GameMode → 游戏模式, GameState → 游戏状态, PlayerState → 玩家状态,\n"
+            "  Viewport/VP → 视口, Blueprint → 蓝图, Widget → 控件,\n"
+            "  Level → 关卡, World → 世界, Scene → 场景, Asset → 资产,\n"
+            "  Material → 材质, Texture → 贴图, Mesh → 网格体, Skeleton → 骨架,\n"
+            "  Animation → 动画, Montage → 蒙太奇, Blend Space → 混合空间,\n"
+            "  Behavior Tree → 行为树, Blackboard → 黑板, EQS → 环境查询系统,\n"
+            "  Niagara → Niagara, Cascade → Cascade, Particle → 粒子,\n"
+            "  Collision → 碰撞, Trigger → 触发器, Volume → 体积,\n"
+            "  Lightmass → Lightmass, LOD → LOD, Nanite → Nanite, Lumen → Lumen,\n"
+            "  Sequencer → Sequencer, Take → Take, Cinematic → 过场动画,\n"
+            "  Gameplay Ability System/GAS → GAS 技能系统,\n"
+            "  Replication → 复制, Network → 网络, RPC → RPC,\n"
+            "- For editor UI: prefer short, standard translations used in Epic's official Chinese docs.\n"
+            "- If a term has no standard translation, keep it in English."},
+    };
 
-        for (const auto& b : builtins) {
+    // Build set of existing built-in IDs
+    QSet<QString> existingIds;
+    for (const auto& p : presets) {
+        if (p.isBuiltIn)
+            existingIds.insert(p.id);
+    }
+
+    // Add any missing built-in presets (supports adding new presets in future versions)
+    bool added = false;
+    for (const auto& b : builtins) {
+        if (!existingIds.contains(b.id)) {
             PromptPreset p;
             p.id        = b.id;
             p.name      = b.name;
             p.prompt    = b.prompt;
             p.isBuiltIn = true;
             presets.append(p);
+            added = true;
         }
-        m_config->savePromptPresets(presets);
     }
+
+    if (added)
+        m_config->savePromptPresets(presets);
 
     return presets;
 }
