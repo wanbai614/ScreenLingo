@@ -93,6 +93,7 @@ void TrayManager::buildMenu() {
     connect(LanguageManager::instance(), &LanguageManager::languageChanged,
             this, &TrayManager::retranslateUi);
 
+    retranslateUi();        // set initial checkmarks (language signal already fired)
     setGlobalVisible(true);
 }
 
