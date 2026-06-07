@@ -1141,17 +1141,25 @@ void Application::onTranslationReady(const QString& original,
             }
         }
 
-        // Retry ALL failed items as a single batch (recursive retry)
+        // Retry failed items in small batches (max 15 per batch → manageable size)
         if (!retryItems.isEmpty()) {
-            QStringList retryLines;
-            for (int j = 0; j < retryItems.size(); ++j)
-                retryLines << QString("%1. %2").arg(j + 1).arg(retryItems[j].first);
-            QString retryBatchText = retryLines.join('\n');
-            m_batchMap[retryBatchText] = retryItems;
-            ++m_pendingTranslations;
-            m_translator->translate(retryBatchText, m_config->sourceLang(),
-                                    m_config->targetLang(), /*batchMode=*/true);
-            appLog(QString("BatchRetry: %1 items in 1 request").arg(retryItems.size()));
+            constexpr int kRetryCap = 15;
+            for (int ri = 0; ri < retryItems.size(); ri += kRetryCap) {
+                int end = qMin(ri + kRetryCap, retryItems.size());
+                QVector<QPair<QString, QRect>> sub(retryItems.begin() + ri,
+                                                     retryItems.begin() + end);
+                QStringList retryLines;
+                for (int j = 0; j < sub.size(); ++j)
+                    retryLines << QString("%1. %2").arg(j + 1).arg(sub[j].first);
+                QString retryText = retryLines.join('\n');
+                m_batchMap[retryText] = sub;
+                ++m_pendingTranslations;
+                m_translator->translate(retryText, m_config->sourceLang(),
+                                        m_config->targetLang(), /*batchMode=*/true);
+            }
+            appLog(QString("BatchRetry: %1 items in %2 request(s)")
+                   .arg(retryItems.size())
+                   .arg((retryItems.size() + kRetryCap - 1) / kRetryCap));
         }
 
         m_batchMap.remove(original);
