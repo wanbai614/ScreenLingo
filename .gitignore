@@ -56,7 +56,7 @@ tmp/
 temp/
 *.patch
 *.zip
-lib/
+lib/onnxruntime/lib/
 models/
 
 # Codegraph

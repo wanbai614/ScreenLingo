@@ -84,7 +84,7 @@
 
 ### 直接运行
 
-从 [Releases](https://github.com/niceai2008/ScreenLingo/releases) 下载最新版本，解压后运行 `ScreenLingo.exe`。
+从 [Releases](https://github.com/wanbai614/ScreenLingo/releases) 下载最新版本，解压后运行 `ScreenLingo.exe`。
 
 **首次启动后**：
 1. 在系统托盘中右键 ScreenLingo 图标 → 设置
@@ -98,12 +98,14 @@
 
 ```bash
 # 安装 Qt 6.5+ (MSVC 2022 64-bit)
-# 克隆项目
-git clone https://github.com/niceai2008/ScreenLingo.git
+git clone https://github.com/wanbai614/ScreenLingo.git
 cd ScreenLingo
 
+# 一键下载依赖（ONNX Runtime + PaddleOCR 模型）
+powershell -File setup.ps1
+
 # CMake 构建
-cmake -B build -G "Visual Studio 17 2022" -A x64
+cmake -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_PREFIX_PATH=D:/Qt/6.9.1/msvc2022_64
 cmake --build build --config Release
 ```
 
