@@ -1057,9 +1057,9 @@ void Application::onOcrCompleted(const OCRResult& result) {
         }
     }
 
+    ocrDone:
     if (dispatched > 0 && m_floating)
         m_floating->setPipelineStatus("translating");
-    ocrDone:
     if (dispatched > 0)
         m_flushTimeout->start();
     m_ocrBusy = false;  // OCR done, gate on pending translations only
