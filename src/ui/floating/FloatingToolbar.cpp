@@ -177,20 +177,28 @@ void FloatingToolbar::setPipelineStatus(const QString& status) {
         "QPushButton:hover { background: rgba(0,180,120,220); }"
     ).arg(bgColor).arg(kBtnSize / 2));
 
-    // Pulse glow during translation
+    // Pulse glow during translation — instant start, 400ms interval
     if (pulse && !m_pulseTimer) {
+        // Show bright state immediately (don't wait for first timer tick)
+        m_toggleBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,170,20,0.75); color: white;"
+            "  border: 2px solid rgba(255,220,80,200); border-radius: %1px;"
+            "  font-size: 11px; font-weight: bold; }"
+        ).arg(kBtnSize / 2));
+
         m_pulseTimer = new QTimer(this);
+        m_pulseTimer->setInterval(450);
         connect(m_pulseTimer, &QTimer::timeout, this, [this]() {
-            static bool on = false; on = !on;
-            m_toggleBtn->setStyleSheet(QString(
-                "QPushButton { background: rgba(245,158,11,%1); color: white;"
-                "  border: %2px solid rgba(255,200,50,180); border-radius: %3px;"
-                "  font-size: 11px; font-weight: bold; }"
-            ).arg(on ? 0.65 : 0.35)
-             .arg(on ? 2 : 0)
-             .arg(kBtnSize / 2));
+            static bool dim = false; dim = !dim;
+            m_toggleBtn->setStyleSheet(dim
+                ? QString("QPushButton { background: rgba(180,100,0,0.50); color: #ccc;"
+                          "  border: none; border-radius: %1px;"
+                          "  font-size: 11px; font-weight: bold; }").arg(kBtnSize / 2)
+                : QString("QPushButton { background: rgba(255,170,20,0.75); color: white;"
+                          "  border: 2px solid rgba(255,220,80,200); border-radius: %1px;"
+                          "  font-size: 11px; font-weight: bold; }").arg(kBtnSize / 2));
         });
-        m_pulseTimer->start(600);
+        m_pulseTimer->start();
     } else if (!pulse && m_pulseTimer) {
         m_pulseTimer->stop();
         m_pulseTimer->deleteLater();
