@@ -571,10 +571,13 @@ void Application::onSnapshotRequested() {
     const auto& area = m_areas.first();
     if (!area.enabled) { appLog("Snapshot: area disabled"); return; }
 
-    // If a batch is still in-flight, don't cancel — let it complete.
-    // Repeated snapshot presses on the same area just wait for results.
-    if (!m_batchMap.isEmpty()) {
-        appLog("Snapshot: batch in-flight, skipping re-dispatch");
+    // Block re-entry: OCR in progress OR translations still in-flight
+    if (m_ocrBusy) {
+        appLog("Snapshot: OCR busy, skipping");
+        return;
+    }
+    if (m_pendingTranslations > 0 || !m_batchMap.isEmpty()) {
+        appLog("Snapshot: translation in-flight, skipping");
         return;
     }
 
