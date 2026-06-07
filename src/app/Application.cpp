@@ -1180,7 +1180,9 @@ void Application::onTranslationReady(const QString& original,
         }
 
         m_batchMap.remove(original);
-        if (goodCount > 0) flushRowLayout();
+        // Flush even if all failed (to show "??" for exhausted retries)
+        if (goodCount > 0 || !m_pendingResults.isEmpty())
+            flushRowLayout();
         return;
     }
 
