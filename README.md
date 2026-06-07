@@ -33,15 +33,15 @@
 ### OCR 引擎
 
 - **Windows OCR**（默认）— Windows 11 内置 OCR，零配置
-- **PaddleOCR**（可选）— 基于 ONNX Runtime 的高精度 OCR
-- **PaddleOCR 子进程**（可选）— 通过 Python 进程调用 PaddleOCR
+- **PaddleOCR**（可选）— 基于 ONNX Runtime 的离线 OCR
+- **GLM-OCR**（可选）— 基于智谱 GLM-4V 的云端 VLM 文档解析，支持本地 Ollama 部署
 
 ### 翻译官角色（提示词预设）
 
-内置 7 种行业翻译官，支持自定义新增：
+内置 8 种行业翻译官，支持自定义新增：
 
 - 通用翻译 · 编程术语 · 文学翻译 · 影视字幕
-- 学术论文 · 游戏本地化 · 商务文档
+- 学术论文 · 游戏本地化 · Unreal Engine 开发 · 商务文档
 
 ### 视觉自定义
 
