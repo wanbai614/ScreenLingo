@@ -114,9 +114,10 @@ private:
     QHash<QString, int> m_retryPerText; // per-text retry counter (reset each OCR cycle)
     QString m_pendingSelectionText;    // text currently being translated for selection popup
 
-    // Batch translation: merge all texts → translate with context → split back
-    QVector<QPair<QString, QRect>> m_batchPending;  // (original text, source rect)
-    bool m_isBatched = false;    // current request is a batch
+    // Batch translation: batched text → list of (individual text, source rect)
+    QHash<QString, QVector<QPair<QString, QRect>>> m_batchMap;
+    // Track which batch each original text belongs to (for cleanup)
+    QHash<QString, QString> m_textToBatchKey;
 
     // Last OCR full text (avoid re-processing identical frames)
     QString m_lastOcrText;

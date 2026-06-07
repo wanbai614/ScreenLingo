@@ -30,6 +30,7 @@ struct TranslateRequest {
     QString text;
     QString sourceLang;  // "auto" for auto-detect
     QString targetLang;
+    bool    batchMode = false;  // true → JSON array output expected
 };
 
 // --- Layout ---

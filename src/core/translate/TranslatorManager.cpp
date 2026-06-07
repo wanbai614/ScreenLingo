@@ -43,15 +43,15 @@ void TranslatorManager::setActive(const QString& name) {
 }
 
 void TranslatorManager::translate(const QString& text, const QString& sourceLang,
-                                   const QString& targetLang) {
+                                   const QString& targetLang, bool batchMode) {
     if (!m_active) {
         qWarning() << "TranslatorManager: no active translator";
         emit translationError(tr("No translation service configured"));
         return;
     }
     qDebug() << "TranslatorManager: dispatching to" << m_active->name()
-             << "text:" << text.left(40);
-    TranslateRequest req{text, sourceLang, targetLang};
+             << (batchMode ? "BATCH" : "text") << ":" << text.left(40);
+    TranslateRequest req{text, sourceLang, targetLang, batchMode};
     m_active->translate(req);
 }
 

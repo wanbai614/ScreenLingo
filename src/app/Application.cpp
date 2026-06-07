@@ -586,8 +586,8 @@ void Application::onSnapshotRequested() {
     m_translatedValues.clear();
     m_pendingTranslations = 0;
     m_pendingResults.clear();
-    m_batchPending.clear();
-    m_isBatched = false;
+    m_batchMap.clear();
+    m_textToBatchKey.clear();
     m_translator->cancelAll();  // clear stale queue before new snapshot
     m_flushTimeout->stop();
 
@@ -803,8 +803,8 @@ void Application::stopTranslation() {
     m_activeTextHashes.clear();
     m_pendingTranslations = 0;
     m_pendingResults.clear();
-    m_batchPending.clear();
-    m_isBatched = false;
+    m_batchMap.clear();
+    m_textToBatchKey.clear();
     m_translatedValues.clear();
     m_lastOcrText.clear();
     m_lastFrameHash = 0;
@@ -923,25 +923,53 @@ void Application::onOcrCompleted(const OCRResult& result) {
         QRect captureRect = m_lastSourceRect;
 
         if (m_config->uiTranslateMode()) {
-            // UI mode: light same-line grouping — merge close neighbors,
-            // but keep independent UI elements (buttons, labels) separate.
+            // UI mode: group → batch into groups → translate concurrently
             auto groups = groupUIBoxes(result.boxes, captureRect);
+
+            // Collect valid items (skip garbage, duplicates, and already-target-language text)
+            auto isAlreadyTargetLang = [&](const QString& t) {
+                if (tgtLang == "zh" && t.contains(QRegularExpression("\\p{Han}"))) return true;
+                if (tgtLang == "en" && t.contains(QRegularExpression("^[a-zA-Z0-9\\s]+$"))) return true;
+                return false;
+            };
+
+            QVector<QPair<QString, QRect>> items;
             for (const auto& g : groups) {
                 QString text = g.text.trimmed();
                 if (text.isEmpty() || m_translatedValues.contains(text)) continue;
-                if (isLikelyGarbage(text)) continue;   // skip single-word noise
-                if (isMostlyGarbage(text)) continue;   // skip groups of garbage words
-                m_textSourceRects[text] = g.rect;
-                int hash = qHash(text);
-                newHashes.insert(hash);
-                if (m_translationCache.contains(text)) {
-                    ++m_pendingTranslations; ++dispatched;
-                    onTranslationReady(text, m_translationCache[text]);
-                } else {
-                    m_translator->translate(text, srcLang, tgtLang);
-                    ++m_pendingTranslations; ++dispatched;
-                }
+                if (isLikelyGarbage(text) || isMostlyGarbage(text)) continue;
+                if (isAlreadyTargetLang(text)) continue;  // skip text already in target language
+                items.append({text, g.rect});
             }
+
+            if (items.isEmpty()) { m_ocrBusy = false; return; }
+
+            // Batch into groups of up to kBatchSize items
+            constexpr int kBatchSize = 12;
+            for (int i = 0; i < items.size(); i += kBatchSize) {
+                int end = qMin(i + kBatchSize, items.size());
+                QVector<QPair<QString, QRect>> batch;
+                QStringList lines;
+                for (int j = i; j < end; ++j) {
+                    batch.append(items[j]);
+                    lines << QString("%1. %2").arg(j - i + 1).arg(items[j].first);
+                }
+
+                QString batchedText = lines.join('\n');
+
+                m_batchMap[batchedText] = batch;
+                for (const auto& item : batch) {
+                    int hash = qHash(item.first);
+                    newHashes.insert(hash);
+                    m_textSourceRects[item.first] = item.second;
+                    m_textToBatchKey[item.first] = batchedText;
+                }
+
+                m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
+                ++m_pendingTranslations;
+                ++dispatched;
+            }
+
             m_activeTextHashes = newHashes;
             goto ocrDone;
         }
@@ -1034,69 +1062,55 @@ void Application::onTranslationReady(const QString& original,
         return;
     }
 
-    // Handle numbered batch response: per-segment validation + selective retry
-    if (m_isBatched && !m_batchPending.isEmpty()) {
+    // Handle batch response: JSON array → split into individual translations
+    if (m_batchMap.contains(original)) {
         if (m_pendingTranslations > 0) --m_pendingTranslations;
 
-        // Parse response: prefer JSON object with "translations" array
+        const auto& batch = m_batchMap[original];
         QStringList parts;
-        QJsonDocument doc = QJsonDocument::fromJson(translated.trimmed().toUtf8());
-        if (doc.isObject() && doc.object().contains("translations")) {
-            for (const auto& v : doc.object()["translations"].toArray())
-                parts.append(v.toString());
-        } else if (doc.isArray()) {
+
+        // Parse JSON array from response
+        QString t = translated.trimmed();
+        QJsonDocument doc = QJsonDocument::fromJson(t.toUtf8());
+        if (doc.isArray()) {
             for (const auto& v : doc.array())
-                parts.append(v.toString());
+                parts.append(v.toString().trimmed());
+        } else if (doc.isObject() && doc.object().contains("translations")) {
+            for (const auto& v : doc.object()["translations"].toArray())
+                parts.append(v.toString().trimmed());
         } else {
-            parts = translated.trimmed().split(QStringLiteral("|-|"));
+            // Fallback: try splitting by newlines
+            parts = t.split('\n', Qt::SkipEmptyParts);
+            for (auto& p : parts) p = p.trimmed();
         }
 
-        int goodCount = 0, retried = 0;
-        for (int i = 0; i < m_batchPending.size(); ++i) {
-            QString seg = (i < parts.size()) ? parts[i].trimmed() : QString();
-            QRegularExpression numPrefix(R"(^\[\d+\]\s*)");
-            seg.remove(numPrefix);
+        int goodCount = 0;
+        for (int i = 0; i < batch.size(); ++i) {
+            QString orig = batch[i].first;
+            QRect srcRect = batch[i].second;
+            QString seg = (i < parts.size()) ? parts[i] : QString();
 
-            QString orig = m_batchPending[i].first;
-            QRect srcRect = m_batchPending[i].second;
-
-            // Per-segment validation
-            bool bad = false;
-            if (seg.isEmpty() || seg == "??" || seg == "???")         bad = true;
-            else if (seg == orig)                                       bad = true;
-            else if (seg.size() > orig.size() * 3 && seg.size() > 30)  bad = true;
-            else if (seg.contains(orig) && seg != orig)                 bad = true;
-            else {
-                int sym = 0, alpha = 0;
-                for (const QChar& c : seg) {
-                    if (c.isLetterOrNumber()) ++alpha; else if (!c.isSpace()) ++sym;
-                }
-                if (alpha == 0 && sym > 0) bad = true;
-            }
+            // Quick validation for batch items
+            bool bad = seg.isEmpty() || seg == "??" || seg == orig;
+            if (!bad && seg.size() > orig.size() * 3 && seg.size() > 30) bad = true;
 
             if (bad && m_retryPerText.value(orig, 0) < 3) {
-                // Self-healing: retry just this one segment individually
+                // Self-healing: retry individually (not in batch)
                 ++m_retryPerText[orig];
                 ++m_pendingTranslations;
-                m_translator->translate(orig,
-                    m_config->sourceLang(), m_config->targetLang());
-                ++retried;
-                appLog(QString("Batch seg[%1] RETRY").arg(i));
+                m_translator->translate(orig, m_config->sourceLang(), m_config->targetLang());
+                appLog(QString("BatchRetry: \"%1\"").arg(orig.left(25)));
             } else if (bad) {
-                // Exhausted retries → give up
                 m_pendingResults.append({orig, QStringLiteral("??"), srcRect});
-                m_translationCache[orig] = QStringLiteral("??");
             } else {
-                // Good → show immediately
                 m_pendingResults.append({orig, seg, srcRect});
                 m_translationCache[orig] = seg;
                 ++goodCount;
             }
         }
 
+        m_batchMap.remove(original);
         if (goodCount > 0) flushRowLayout();
-        m_isBatched = (retried > 0);
-        if (!m_isBatched) m_batchPending.clear();
         return;
     }
 

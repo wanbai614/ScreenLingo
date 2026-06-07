@@ -40,6 +40,7 @@ private:
     struct QueuedReq {
         QString text; QString srcLang; QString tgtLang;
         QImage image; bool isVlm = false;
+        bool batchMode = false;
     };
     QVector<QueuedReq> m_queue;
     int m_activeRequests = 0;

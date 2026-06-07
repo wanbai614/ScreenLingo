@@ -20,7 +20,7 @@ public:
 
     void setActive(const QString& name);
     void translate(const QString& text, const QString& sourceLang,
-                   const QString& targetLang);
+                   const QString& targetLang, bool batchMode = false);
     void translateWithImage(const QImage& image, const QString& sourceLang,
                             const QString& targetLang);
     void cancelAll();

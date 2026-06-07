@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "deny": ["Workflow"],
     "allow": [
       "Bash(git add *)",
       "Bash(git commit *)",

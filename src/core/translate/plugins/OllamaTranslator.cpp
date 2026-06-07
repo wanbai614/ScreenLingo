@@ -31,7 +31,7 @@ QString OllamaTranslator::getConfig(const QString& key) const {
 }
 
 void OllamaTranslator::translate(const TranslateRequest& req) {
-    m_queue.append({req.text, req.sourceLang, req.targetLang, QImage{}, false});
+    m_queue.append({req.text, req.sourceLang, req.targetLang, QImage{}, false, req.batchMode});
     processQueue();
 }
 
@@ -69,6 +69,18 @@ void OllamaTranslator::sendRequest(const QueuedReq& r) {
         QJsonArray images;
         images.append(b64);
         body["images"] = images;
+    } else if (r.batchMode) {
+        // Batch mode: model outputs JSON array of translations
+        int count = r.text.count('\n') + 1;  // rough item count
+        QString prompt = m_systemPrompt.arg(r.srcLang, r.tgtLang)
+            + QStringLiteral("\n\nTranslate the %1 items below from %2 to %3.\n"
+                             "Output ONLY a JSON array of strings: [\"t1\",\"t2\",...]\n\n")
+                .arg(count).arg(r.srcLang, r.tgtLang)
+            + r.text;
+        body["messages"] = QJsonArray{
+            QJsonObject{{"role", "user"}, {"content", prompt}}
+        };
+        body["format"] = QStringLiteral("json");  // force valid JSON output
     } else {
         QString prompt = m_systemPrompt.arg(r.srcLang, r.tgtLang)
                          + QStringLiteral("\n\nOutput ONLY: {\"translation\":\"...\"}\n\nText: ") + r.text;
@@ -177,6 +189,6 @@ void OllamaTranslator::cancelAll() {
 void OllamaTranslator::translateWithImage(const QImage& image,
                                             const QString& sourceLang,
                                             const QString& targetLang) {
-    m_queue.append({QString(), sourceLang, targetLang, image, true});
+    m_queue.append({QString(), sourceLang, targetLang, image, true, false});
     processQueue();
 }

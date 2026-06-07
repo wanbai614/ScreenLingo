@@ -978,6 +978,29 @@ QVector<PromptPreset> SettingsPanel::loadOrInitPresets() {
                 "- Legal terms must be precise and standard.\n"
                 "- Maintain professional tone throughout.\n"
                 "- Numbers, dates, and currency formats should follow target locale conventions."},
+
+            {"unreal", tr("Unreal Engine Dev"),
+                "You are an Unreal Engine 5 technical translator.\n"
+                "Translate the following text from %1 to %2.\n"
+                "Rules:\n"
+                "- Keep ALL class names, function names, variable names, macros, and API symbols in English.\n"
+                "- Translate UI labels, tooltips, menu items, and editor text naturally.\n"
+                "- UE-specific glossary:\n"
+                "  Actor → Actor, Pawn → Pawn, Character → 角色, Controller → 控制器,\n"
+                "  GameMode → 游戏模式, GameState → 游戏状态, PlayerState → 玩家状态,\n"
+                "  Viewport/VP → 视口, Blueprint → 蓝图, Widget → 控件,\n"
+                "  Level → 关卡, World → 世界, Scene → 场景, Asset → 资产,\n"
+                "  Material → 材质, Texture → 贴图, Mesh → 网格体, Skeleton → 骨架,\n"
+                "  Animation → 动画, Montage → 蒙太奇, Blend Space → 混合空间,\n"
+                "  Behavior Tree → 行为树, Blackboard → 黑板, EQS → 环境查询系统,\n"
+                "  Niagara → Niagara, Cascade → Cascade, Particle → 粒子,\n"
+                "  Collision → 碰撞, Trigger → 触发器, Volume → 体积,\n"
+                "  Lightmass → Lightmass, LOD → LOD, Nanite → Nanite, Lumen → Lumen,\n"
+                "  Sequencer → Sequencer, Take → Take, Cinematic → 过场动画,\n"
+                "  Gameplay Ability System/GAS → GAS 技能系统,\n"
+                "  Replication → 复制, Network → 网络, RPC → RPC,\n"
+                "- For editor UI: prefer short, standard translations used in Epic's official Chinese docs.\n"
+                "- If a term has no standard translation, keep it in English."},
         };
 
         for (const auto& b : builtins) {

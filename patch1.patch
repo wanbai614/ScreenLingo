@@ -1,0 +1,18 @@
+*** Begin Patch
+*** Update File: src/app/Application.h
+@@ class FloatingToolbar;
++class AreaOverlay;
+ class SettingsPanel;
+@@ private slots:
+     void onHotkeyTriggered(const QString& id);
+     void onModeChanged(Mode mode);
+     void onSnapshotRequested();
+     void onAreaConfirmed(const QRect& area, int screenIndex);
+-    void onEditArea();
++    void onAreaOverlayChanged(const QRect& newArea);
++    void onAreaEditCancelled();
+     void onAreaCleared();
+@@     FloatingToolbar*    m_floating    = nullptr;
++    AreaOverlay*        m_areaOverlay = nullptr;
+     SettingsPanel*      m_settings    = nullptr;
+*** End Patch
