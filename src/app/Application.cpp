@@ -1325,35 +1325,18 @@ void Application::flushRowLayout() {
             layout.maxWidth     = r.sourceRect.width();
             layout.wordWrap     = true;
         } else if (uiMode) {
-            // UI mode: overlay bubble directly on top of original text element.
-            // This covers the source text so the user sees only the translation.
+            // UI mode: bubble auto-fits translation text width
             int baseFontSize = m_config->loadStyle().font.pointSize();
             QFont font("Microsoft YaHei", baseFontSize);
             QFontMetrics fm(font);
             int textW = fm.horizontalAdvance(r.translated);
             int textH = fm.height();
 
-            // Use source rect width if the translation fits; otherwise expand
-            int srcW = r.sourceRect.width();
-            int srcH = r.sourceRect.height();
-            int bubbleW = qMax(srcW, textW + 12);
-            int bubbleH = qMax(srcH, textH + 10);
-
-            // Shrink font if translation is too wide for source rect
-            int fontSize = baseFontSize;
-            while (fontSize > 8 && textW > srcW + 20) {
-                --fontSize;
-                QFont f("Microsoft YaHei", fontSize);
-                QFontMetrics fm2(f);
-                textW = fm2.horizontalAdvance(r.translated);
-                bubbleW = qMax(srcW, textW + 12);
-            }
-
             layout.position     = r.sourceRect.topLeft();
-            layout.bubbleWidth  = bubbleW;
-            layout.bubbleHeight = bubbleH;
-            layout.fontSize     = fontSize;
-            layout.maxWidth     = bubbleW;
+            layout.bubbleWidth  = textW + 16;
+            layout.bubbleHeight = textH + 10;
+            layout.fontSize     = baseFontSize;
+            layout.maxWidth     = textW + 16;
             layout.wordWrap     = false;  // single-line for UI elements
         } else {
             LayoutRequest req;
