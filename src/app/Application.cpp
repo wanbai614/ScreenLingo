@@ -944,31 +944,26 @@ void Application::onOcrCompleted(const OCRResult& result) {
 
             if (items.isEmpty()) { m_ocrBusy = false; return; }
 
-            // Batch into groups of up to kBatchSize items
-            constexpr int kBatchSize = 12;
-            for (int i = 0; i < items.size(); i += kBatchSize) {
-                int end = qMin(i + kBatchSize, items.size());
-                QVector<QPair<QString, QRect>> batch;
-                QStringList lines;
-                for (int j = i; j < end; ++j) {
-                    batch.append(items[j]);
-                    lines << QString("%1. %2").arg(j - i + 1).arg(items[j].first);
-                }
+            // Merge ALL items into a single batch request — one Ollama inference
+            // outputs a JSON array, split back into individual bubbles on response.
+            QVector<QPair<QString, QRect>> batch = items;
+            QStringList lines;
+            for (int j = 0; j < batch.size(); ++j)
+                lines << QString("%1. %2").arg(j + 1).arg(batch[j].first);
 
-                QString batchedText = lines.join('\n');
+            QString batchedText = lines.join('\n');
 
-                m_batchMap[batchedText] = batch;
-                for (const auto& item : batch) {
-                    int hash = qHash(item.first);
-                    newHashes.insert(hash);
-                    m_textSourceRects[item.first] = item.second;
-                    m_textToBatchKey[item.first] = batchedText;
-                }
-
-                m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
-                ++m_pendingTranslations;
-                ++dispatched;
+            m_batchMap[batchedText] = batch;
+            for (const auto& item : batch) {
+                int hash = qHash(item.first);
+                newHashes.insert(hash);
+                m_textSourceRects[item.first] = item.second;
+                m_textToBatchKey[item.first] = batchedText;
             }
+
+            m_translator->translate(batchedText, srcLang, tgtLang, /*batchMode=*/true);
+            ++m_pendingTranslations;
+            ++dispatched;
 
             m_activeTextHashes = newHashes;
             goto ocrDone;
