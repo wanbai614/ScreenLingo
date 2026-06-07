@@ -449,6 +449,11 @@ bool Application::initialize() {
             this, &Application::stopTranslation);
     connect(m_floating, &FloatingToolbar::selTranslateRequested,
             this, &Application::toggleSelectionMode);
+    connect(m_floating, &FloatingToolbar::dragModeToggleRequested, this, [this]() {
+        m_dragMode = !m_dragMode;
+        m_overlays->setInteractive(m_dragMode);
+        m_floating->setDragMode(m_dragMode);
+    });
     connect(m_tray, &TrayManager::languageChangeRequested,
             this, &Application::onLanguageChangeRequested);
     connect(m_tray, &TrayManager::selTranslateRequested,

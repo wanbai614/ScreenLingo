@@ -1,6 +1,7 @@
 #include "TranslationOverlay.h"
 #include <QtGui/QPainter>
 #include <QtGui/QFontMetrics>
+#include <QtGui/QPen>
 #include <QtWidgets/QApplication>
 #include <QtGui/QClipboard>
 #include <QtCore/QTimer>
@@ -87,6 +88,15 @@ void TranslationOverlay::paintEvent(QPaintEvent*) {
                    Qt::AlignLeft | Qt::AlignVCenter | Qt::TextSingleLine, m_text);
     }
 
+    // Dashed border hint when draggable (interactive mode)
+    if (m_interactive && !m_wordWrap) {
+        QPen dashPen(QColor(255, 255, 255, 60), 1, Qt::DashLine);
+        p.setPen(dashPen);
+        p.setBrush(Qt::NoBrush);
+        p.drawRoundedRect(rect().adjusted(1, 1, -1, -1),
+                          m_style.borderRadius, m_style.borderRadius);
+    }
+
     // Brief green overlay for copy feedback
     if (m_flashGreen) {
         p.setBrush(QColor(0, 200, 100, 120));
@@ -100,7 +110,7 @@ void TranslationOverlay::setInteractive(bool on) {
     if (m_interactive == on) return;
     m_interactive = on;
     setAttribute(Qt::WA_TransparentForMouseEvents, !on);
-    setCursor(on ? Qt::PointingHandCursor : Qt::ArrowCursor);
+    setCursor(on ? Qt::OpenHandCursor : Qt::ArrowCursor);
     HWND hwnd = reinterpret_cast<HWND>(winId());
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
     if (on) {
@@ -109,17 +119,39 @@ void TranslationOverlay::setInteractive(bool on) {
         SetWindowPos(hwnd, nullptr, 0, 0, 0, 0,
                      SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
     }
-    // On "off" we don't restore WS_EX_TRANSPARENT because it's set in constructor
     update();
 }
 
 void TranslationOverlay::mousePressEvent(QMouseEvent* ev) {
     if (!m_interactive || ev->button() != Qt::LeftButton) return;
-    QApplication::clipboard()->setText(m_text);
-    m_flashGreen = true;
-    update();
-    QTimer::singleShot(300, this, [this]() {
-        m_flashGreen = false;
+    m_dragging   = true;
+    m_dragMoved  = false;
+    m_dragOffset = ev->position().toPoint();
+    m_dragStartPos = ev->globalPosition().toPoint();
+    setCursor(Qt::ClosedHandCursor);
+}
+
+void TranslationOverlay::mouseMoveEvent(QMouseEvent* ev) {
+    if (!m_dragging) return;
+    QPoint delta = ev->globalPosition().toPoint() - m_dragStartPos;
+    if (delta.manhattanLength() > 4) {
+        m_dragMoved = true;
+        move(ev->globalPosition().toPoint() - m_dragOffset);
+    }
+}
+
+void TranslationOverlay::mouseReleaseEvent(QMouseEvent* ev) {
+    if (!m_interactive) return;
+    if (m_dragging && !m_dragMoved) {
+        // Short click (no drag) → copy to clipboard
+        QApplication::clipboard()->setText(m_text);
+        m_flashGreen = true;
         update();
-    });
+        QTimer::singleShot(300, this, [this]() {
+            m_flashGreen = false;
+            update();
+        });
+    }
+    m_dragging = false;
+    setCursor(Qt::OpenHandCursor);
 }

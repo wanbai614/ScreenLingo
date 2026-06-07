@@ -63,6 +63,7 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_eyeBtn     = makeBtn(QString::fromUtf8("\xe2\x97\x89"), tr("Hide All Translations"));
     m_settingsBtn= makeBtn(QString::fromUtf8("\xe2\x9a\x99"), tr("Settings"));
     m_selTransBtn= makeBtn(QString::fromUtf8("\xe2\x9c\x82"), tr("Selection Translate"));
+    m_dragBtn    = makeBtn(QString::fromUtf8("\xf0\x9f\xa4\x9a"), tr("Drag Bubbles"));
 
     btnLayout->addWidget(m_toggleBtn);
     btnLayout->addWidget(m_triggerBtn);
@@ -70,6 +71,7 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     btnLayout->addWidget(m_stopBtn);
     btnLayout->addWidget(m_eyeBtn);
     btnLayout->addWidget(m_selTransBtn);
+    btnLayout->addWidget(m_dragBtn);
     btnLayout->addWidget(m_settingsBtn);
     m_btnContainer->setLayout(btnLayout);
 
@@ -79,6 +81,7 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_stopBtn->hide();
     m_eyeBtn->hide();
     m_selTransBtn->hide();
+    m_dragBtn->hide();
     m_settingsBtn->hide();
 
     connect(m_triggerBtn, &QPushButton::clicked,
@@ -93,6 +96,8 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
             this, &FloatingToolbar::settingsToggleRequested);
     connect(m_selTransBtn, &QPushButton::clicked,
             this, &FloatingToolbar::selTranslateRequested);
+    connect(m_dragBtn, &QPushButton::clicked,
+            this, &FloatingToolbar::dragModeToggleRequested);
 
     m_toggleBtn->installEventFilter(this);
 
@@ -247,15 +252,38 @@ void FloatingToolbar::updateSelTransButton() {
     }
 }
 
+void FloatingToolbar::setDragMode(bool on) {
+    m_dragModeActive = on;
+    updateDragButton();
+}
+
+void FloatingToolbar::updateDragButton() {
+    if (m_dragModeActive) {
+        m_dragBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(16,185,129,0.35); color: #dde0e8; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(16,185,129,0.55); }"
+        ).arg(kBtnSize / 2));
+    } else {
+        m_dragBtn->setStyleSheet(QString(
+            "QPushButton { background: rgba(255,255,255,0.07); color: #b8bfcd; border: none;"
+            "  border-radius: %1px; font-size: 14px; }"
+            "QPushButton:hover { background: rgba(129,140,248,0.25); color: #e0e4f0; }"
+        ).arg(kBtnSize / 2));
+    }
+}
+
 void FloatingToolbar::retranslateUi() {
     m_toggleBtn->setToolTip(tr("ScreenLingo — drag to move"));
     m_stopBtn->setToolTip(tr("Stop & Clear"));
     m_settingsBtn->setToolTip(tr("Settings"));
     m_selTransBtn->setToolTip(tr("Selection Translate"));
+    m_dragBtn->setToolTip(tr("Drag Bubbles"));
     updateTriggerButton();
     updateAreaButton();
     updateEyeButton();
     updateSelTransButton();
+    updateDragButton();
 }
 
 void FloatingToolbar::fitToScreen() {
@@ -284,6 +312,7 @@ void FloatingToolbar::expand() {
     m_stopBtn->show();
     m_eyeBtn->show();
     m_selTransBtn->show();
+    m_dragBtn->show();
     m_settingsBtn->show();
     updateTriggerButton();
     updateAreaButton();
@@ -303,6 +332,7 @@ void FloatingToolbar::collapse() {
     m_stopBtn->hide();
     m_eyeBtn->hide();
     m_selTransBtn->hide();
+    m_dragBtn->hide();
     m_settingsBtn->hide();
     m_anim->stop();
     m_anim->setStartValue(m_expandWidth);

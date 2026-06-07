@@ -21,6 +21,8 @@ public:
 protected:
     void paintEvent(QPaintEvent*) override;
     void mousePressEvent(QMouseEvent*) override;
+    void mouseMoveEvent(QMouseEvent*) override;
+    void mouseReleaseEvent(QMouseEvent*) override;
 
 private:
     int  m_id = -1;
@@ -29,4 +31,8 @@ private:
     bool m_interactive = false;
     bool m_flashGreen   = false;
     bool m_wordWrap     = false;  // paragraph mode: full-width, auto-wrap
+    bool m_dragging     = false;
+    bool m_dragMoved    = false;
+    QPoint m_dragOffset;          // cursor offset from window top-left at press
+    QPoint m_dragStartPos;        // global pos at press (for move threshold)
 };

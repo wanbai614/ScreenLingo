@@ -85,6 +85,7 @@ private:
     QTimer*                 m_captureTimer = nullptr;
     bool                    m_globalVisible = true;
     bool                    m_selectionMode = false;
+    bool                    m_dragMode      = false;
 
     // Tracking: source rect of the last OCR/capture request,
     // used when translation completes since TranslatorManager signal
