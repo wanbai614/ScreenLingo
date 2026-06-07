@@ -961,7 +961,7 @@ void Application::onOcrCompleted(const OCRResult& result) {
             // Merge into batches of up to 30 items. Small enough for the
             // model to finish before the user's next snapshot, large enough
             // to minimize Ollama request overhead.
-            constexpr int kBatchCap = 30;
+            constexpr int kBatchCap = 200;
             for (int i = 0; i < items.size(); i += kBatchCap) {
                 int end = qMin(i + kBatchCap, items.size());
                 QVector<QPair<QString, QRect>> batch;
