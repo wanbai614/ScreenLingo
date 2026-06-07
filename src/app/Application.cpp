@@ -1076,38 +1076,47 @@ void Application::onTranslationReady(const QString& original,
         return;
     }
 
-    // Handle batch response: parse → validate → create Pending entries with
-    // OCR-determined source rects → flushRowLayout creates overlays at correct positions
+    // Handle batch response: parse → key-index mapping → validate → flush
     if (m_batchMap.contains(original)) {
         if (m_pendingTranslations > 0) --m_pendingTranslations;
 
         const auto& batch = m_batchMap[original];
-        QStringList parts;
+        // Build index→translation map from JSON response (robust to missing keys)
+        QHash<int, QString> indexToTrans;
 
         QString t = translated.trimmed();
         QJsonDocument doc = QJsonDocument::fromJson(t.toUtf8());
         if (doc.isArray()) {
-            for (const auto& v : doc.array())
-                parts.append(v.toString().trimmed());
+            QJsonArray arr = doc.array();
+            for (int i = 0; i < arr.size(); ++i)
+                indexToTrans[i] = arr[i].toString().trimmed();
         } else if (doc.isObject()) {
             QJsonObject obj = doc.object();
             if (obj.contains("translations") && obj["translations"].isArray()) {
-                for (const auto& v : obj["translations"].toArray())
-                    parts.append(v.toString().trimmed());
+                QJsonArray arr = obj["translations"].toArray();
+                for (int i = 0; i < arr.size(); ++i)
+                    indexToTrans[i] = arr[i].toString().trimmed();
             } else {
-                for (auto it = obj.begin(); it != obj.end(); ++it)
-                    parts.append(it.value().toString().trimmed());
+                // {"t1":"v1","t2":"v2",...} — extract index from key
+                static QRegularExpression numRx("(\\d+)");
+                for (auto it = obj.begin(); it != obj.end(); ++it) {
+                    QRegularExpressionMatch m = numRx.match(it.key());
+                    int idx = m.hasMatch() ? m.captured(1).toInt() - 1 : -1;
+                    if (idx >= 0 && idx < batch.size())
+                        indexToTrans[idx] = it.value().toString().trimmed();
+                }
             }
         } else {
-            parts = t.split('\n', Qt::SkipEmptyParts);
-            for (auto& p : parts) p = p.trimmed();
+            QStringList parts = t.split('\n', Qt::SkipEmptyParts);
+            for (int i = 0; i < parts.size(); ++i)
+                indexToTrans[i] = parts[i].trimmed();
         }
 
         int goodCount = 0;
         for (int i = 0; i < batch.size(); ++i) {
             QString orig = batch[i].first;
-            QRect srcRect = batch[i].second;  // OCR-determined position
-            QString seg = (i < parts.size()) ? parts[i] : QString();
+            QRect srcRect = batch[i].second;
+            QString seg = indexToTrans.value(i);  // keyed by exact index
 
             bool bad = seg.isEmpty() || seg == "??" || seg == orig;
             if (!bad && seg.size() > orig.size() * 3 && seg.size() > 30) bad = true;
