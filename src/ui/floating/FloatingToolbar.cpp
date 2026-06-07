@@ -18,8 +18,12 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
 
     HWND hwnd = reinterpret_cast<HWND>(winId());
     LONG_PTR exStyle = GetWindowLongPtr(hwnd, GWL_EXSTYLE);
-    exStyle |= WS_EX_LAYERED | WS_EX_NOACTIVATE;
+    exStyle |= WS_EX_LAYERED | WS_EX_NOACTIVATE | WS_EX_TOPMOST;
     SetWindowLongPtr(hwnd, GWL_EXSTYLE, exStyle);
+
+    // Force topmost — some fullscreen apps steal Z-order even with WS_EX_TOPMOST
+    SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
     setFixedHeight(kBtnSize + kMargin);
     setFixedWidth(m_expandWidth);
@@ -112,6 +116,16 @@ FloatingToolbar::FloatingToolbar(QWidget* parent)
     m_anim->setEasingCurve(QEasingCurve::OutCubic);
 
     fitToScreen();
+
+    // Periodic topmost assertion — some fullscreen apps steal Z-order
+    auto* topmostTimer = new QTimer(this);
+    topmostTimer->setInterval(3000);
+    connect(topmostTimer, &QTimer::timeout, this, [this]() {
+        HWND hwnd = reinterpret_cast<HWND>(winId());
+        SetWindowPos(hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+    });
+    topmostTimer->start();
 
     connect(LanguageManager::instance(), &LanguageManager::languageChanged,
             this, &FloatingToolbar::retranslateUi);
