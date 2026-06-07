@@ -19,13 +19,12 @@ PaddleOCRSubprocessEngine::~PaddleOCRSubprocessEngine() {
 }
 
 bool PaddleOCRSubprocessEngine::initialize(const QString& /*languageTag*/) {
-    // Python executable in venv
-    QString venvDir = QCoreApplication::applicationDirPath() + "/../paddle_venv_ocr";
-    // Try the global venv location
-    m_pythonExe = "E:/XITONGHUANCUN/paddle_venv/Scripts/python.exe";
-    if (!QFile::exists(m_pythonExe)) {
+    // Python executable — try venv first, then system Python
+    m_pythonExe = QCoreApplication::applicationDirPath() + "/../paddle_venv_ocr/Scripts/python.exe";
+    if (!QFile::exists(m_pythonExe))
+        m_pythonExe = "E:/XITONGHUANCUN/paddle_venv/Scripts/python.exe";
+    if (!QFile::exists(m_pythonExe))
         m_pythonExe = "D:/Python/Python3.12/python.exe";
-    }
 
     m_serverScript = QCoreApplication::applicationDirPath() + "/paddleocr_server.py";
     if (!QFile::exists(m_serverScript)) {
@@ -37,34 +36,36 @@ bool PaddleOCRSubprocessEngine::initialize(const QString& /*languageTag*/) {
     m_process = new QProcess(this);
     m_process->setProcessChannelMode(QProcess::SeparateChannels);
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
-    env.insert("FLAGS_use_mkldnn", "0");  // disable oneDNN to avoid PaddlePaddle 3.3.1 bug
+    env.insert("FLAGS_use_mkldnn", "0");
     m_process->setProcessEnvironment(env);
     m_process->start(m_pythonExe, {m_serverScript});
 
-    if (!m_process->waitForStarted(10000)) {
+    if (!m_process->waitForStarted(5000)) {
         qWarning() << "PaddleOCR process failed to start:" << m_process->errorString();
         emit recognitionError("PaddleOCR process failed to start");
         return false;
     }
 
-    // Wait for "ready" signal on stderr
+    // Async wait for "ready" — non-blocking on main thread (max 10s)
     QTimer timer;
     timer.setSingleShot(true);
     QEventLoop loop;
-    QString stderrBuf;
     connect(m_process, &QProcess::readyReadStandardError, &loop, [&]() {
-        stderrBuf += QString::fromUtf8(m_process->readAllStandardError());
-        if (stderrBuf.contains("ready")) {
+        m_stderrBuf += QString::fromUtf8(m_process->readAllStandardError());
+        if (m_stderrBuf.contains("ready"))
             loop.quit();
-        }
     });
+    // Also quit if process dies unexpectedly
+    connect(m_process, &QProcess::finished, &loop, &QEventLoop::quit);
     connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    timer.start(120000); // 2 min timeout for first model download
+    timer.start(10000); // 10s — Python should start quickly if venv is set up
     loop.exec();
 
-    if (!stderrBuf.contains("ready")) {
-        qWarning() << "PaddleOCR server not ready after timeout";
-        emit recognitionError("PaddleOCR server timeout");
+    if (!m_stderrBuf.contains("ready")) {
+        qWarning() << "PaddleOCR server not ready after 10s";
+        m_process->kill();
+        m_process->waitForFinished(2000);
+        emit recognitionError("PaddleOCR server not ready — check Python venv");
         return false;
     }
 
@@ -89,15 +90,20 @@ void PaddleOCRSubprocessEngine::recognize(const QImage& image) {
     req["image"] = QString::fromLatin1(pngData.toBase64());
     QByteArray reqLine = QJsonDocument(req).toJson(QJsonDocument::Compact) + "\n";
 
-    // Send and read response
     m_process->write(reqLine);
 
-    if (!m_process->waitForReadyRead(30000)) {
+    // Non-blocking wait with 15s timeout (was 30s)
+    if (!m_process->waitForReadyRead(15000)) {
         emit recognitionError("PaddleOCR timeout");
         return;
     }
 
     QByteArray respLine = m_process->readLine();
+    if (respLine.isEmpty()) {
+        emit recognitionError("PaddleOCR empty response");
+        return;
+    }
+
     QJsonDocument doc = QJsonDocument::fromJson(respLine);
     if (doc.isNull()) {
         emit recognitionError("PaddleOCR invalid response");
@@ -116,15 +122,11 @@ void PaddleOCRSubprocessEngine::recognize(const QImage& image) {
         QJsonObject bo = b.toObject();
         TextBox tb;
         tb.text = bo["text"].toString();
-        int x = bo["x"].toInt();
-        int y = bo["y"].toInt();
-        int w = bo["w"].toInt();
-        int h = bo["h"].toInt();
-        tb.boundingRect = QRect(x, y, w, h);
+        tb.boundingRect = QRect(bo["x"].toInt(), bo["y"].toInt(),
+                                bo["w"].toInt(), bo["h"].toInt());
         result.boxes.append(tb);
     }
 
-    // Build fullText
     QStringList all;
     for (const auto& b : result.boxes)
         all.append(b.text);

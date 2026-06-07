@@ -17,5 +17,6 @@ private:
     QProcess* m_process = nullptr;
     QString   m_pythonExe;
     QString   m_serverScript;
+    QString   m_stderrBuf;       // accumulate stderr while waiting for "ready"
     bool      m_ready = false;
 };
