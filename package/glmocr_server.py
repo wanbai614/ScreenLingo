@@ -1,5 +1,12 @@
-"""GLM-OCR JSON-line server for ScreenLingo."""
+"""GLM-OCR JSON-line server for ScreenLingo (local Ollama mode)."""
 import os, sys
+
+# Use the bundled glmocr SDK from the project directory
+_script_dir = os.path.dirname(os.path.abspath(__file__))
+_glmocr_dir = os.path.join(_script_dir, "glmocr")
+if _glmocr_dir not in sys.path:
+    sys.path.insert(0, _script_dir)  # package/ contains glmocr/
+
 os.environ["http_proxy"] = ""
 os.environ["https_proxy"] = ""
 
@@ -10,7 +17,6 @@ from PIL import Image
 from glmocr.pipeline import Pipeline
 from glmocr.config import load_config
 
-# Load config (expects glmocr/config.yaml or env vars for API key)
 config = load_config()
 pipeline = Pipeline(config)
 
