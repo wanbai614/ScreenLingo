@@ -117,11 +117,14 @@ QWidget* SettingsPanel::createGeneralTab() {
     m_ocrCombo->addItem("PaddleOCR (offline, high accuracy)", "paddle");
 #endif
     m_ocrCombo->addItem("GLM-OCR (cloud, GLM-4V vision)", "glmocr");
+    m_ocrCombo->addItem("PaddleOCR-VL (Ollama vision, local)", "ollamavision");
     QString savedOCR = m_config->ocrEngine();
     int ocrIdx = m_ocrCombo->findData(savedOCR);
     if (ocrIdx >= 0) m_ocrCombo->setCurrentIndex(ocrIdx);
     connect(m_ocrCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, [this]() {
-        m_config->setOCREngine(m_ocrCombo->currentData().toString());
+        QString name = m_ocrCombo->currentData().toString();
+        m_config->setOCREngine(name);
+        emit ocrEngineChangeRequested(name);
     });
     m_ocrLabel = new QLabel(tr("OCR Engine:"));
     m_i18nLabels.append({m_ocrLabel, "OCR Engine:"});

@@ -1,4 +1,4 @@
-#include "GlmOcrEngine.h"
+#include "OllamaOcrEngine.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDir>
 #include <QtCore/QJsonDocument>
@@ -7,60 +7,67 @@
 #include <QtCore/QBuffer>
 #include <QtCore/QTimer>
 #include <QtCore/QDebug>
+#include <QtCore/QProcessEnvironment>
 
-GlmOcrEngine::GlmOcrEngine(QObject* parent)
-    : IOCREngine(parent) {}
+OllamaOcrEngine::OllamaOcrEngine(const QString& baseUrl, const QString& model,
+                                   QObject* parent)
+    : IOCREngine(parent), m_baseUrl(baseUrl), m_model(model) {}
 
-GlmOcrEngine::~GlmOcrEngine() {
+OllamaOcrEngine::~OllamaOcrEngine() {
     if (m_process && m_process->state() != QProcess::NotRunning) {
         m_process->kill();
         m_process->waitForFinished(3000);
     }
 }
 
-bool GlmOcrEngine::initialize(const QString& /*languageTag*/) {
+bool OllamaOcrEngine::initialize(const QString& /*languageTag*/) {
     m_pythonExe = QCoreApplication::applicationDirPath() + "/../paddle_venv_ocr/Scripts/python.exe";
     if (!QFile::exists(m_pythonExe))
         m_pythonExe = "E:/XITONGHUANCUN/paddle_venv/Scripts/python.exe";
     if (!QFile::exists(m_pythonExe))
         m_pythonExe = "D:/Python/Python3.12/python.exe";
+    if (!QFile::exists(m_pythonExe))
+        m_pythonExe = "python";
 
-    m_serverScript = QCoreApplication::applicationDirPath() + "/glmocr_server.py";
+    m_serverScript = QCoreApplication::applicationDirPath() + "/paddleocrvl_server.py";
     if (!QFile::exists(m_serverScript)) {
-        qWarning() << "GLM-OCR server script not found:" << m_serverScript;
-        emit recognitionError("GLM-OCR server script not found");
+        qWarning() << "PaddleOCR-VL server script not found:" << m_serverScript;
         return false;
     }
 
     m_process = new QProcess(this);
     m_process->setProcessChannelMode(QProcess::SeparateChannels);
+
     QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+    env.insert("OLLAMA_BASE_URL", m_baseUrl);
+    env.insert("PADDLEOCR_VL_MODEL", m_model);
+    env.insert("http_proxy", "");
+    env.insert("https_proxy", "");
     m_process->setProcessEnvironment(env);
 
     connect(m_process, &QProcess::readyReadStandardOutput,
-            this, &GlmOcrEngine::onReadyRead);
+            this, &OllamaOcrEngine::onReadyRead);
     connect(m_process, &QProcess::errorOccurred,
-            this, &GlmOcrEngine::onProcessError);
+            this, &OllamaOcrEngine::onProcessError);
     connect(m_process, &QProcess::finished,
-            this, &GlmOcrEngine::onProcessFinished);
+            this, &OllamaOcrEngine::onProcessFinished);
 
     m_watchdog = new QTimer(this);
     m_watchdog->setSingleShot(true);
     connect(m_watchdog, &QTimer::timeout, this, [this]() {
         if (m_pending) {
             m_pending = false;
-            emit recognitionError("GLM-OCR timeout (60s)");
+            emit recognitionError("PaddleOCR-VL timeout (120s)");
         }
     });
 
     m_process->start(m_pythonExe, {m_serverScript});
-
     if (!m_process->waitForStarted(5000)) {
-        qWarning() << "GLM-OCR process failed to start:" << m_process->errorString();
-        emit recognitionError("GLM-OCR process failed to start");
+        qWarning() << "PaddleOCR-VL process failed to start:" << m_process->errorString();
         return false;
     }
 
+    // Wait for "ready" on stderr
     QTimer timer;
     timer.setSingleShot(true);
     QEventLoop loop;
@@ -70,25 +77,24 @@ bool GlmOcrEngine::initialize(const QString& /*languageTag*/) {
     });
     connect(m_process, &QProcess::finished, &loop, &QEventLoop::quit);
     connect(&timer, &QTimer::timeout, &loop, &QEventLoop::quit);
-    timer.start(60000);
+    timer.start(15000);
     loop.exec();
 
     if (!m_stderrBuf.contains("ready")) {
-        qWarning() << "GLM-OCR server not ready after 60s";
+        qWarning() << "PaddleOCR-VL server not ready after 15s:" << m_stderrBuf;
         m_process->kill();
         m_process->waitForFinished(2000);
-        emit recognitionError("GLM-OCR server not ready — check API key in config.yaml");
         return false;
     }
 
     m_ready = true;
-    qInfo() << "GLM-OCR engine ready";
+    qInfo() << "PaddleOCR-VL engine ready";
     return true;
 }
 
-void GlmOcrEngine::recognize(const QImage& image) {
+void OllamaOcrEngine::recognize(const QImage& image) {
     if (!m_ready || !m_process || m_process->state() != QProcess::Running) {
-        emit recognitionError("GLM-OCR engine not ready");
+        emit recognitionError("PaddleOCR-VL engine not ready");
         return;
     }
 
@@ -102,11 +108,11 @@ void GlmOcrEngine::recognize(const QImage& image) {
     QByteArray reqLine = QJsonDocument(req).toJson(QJsonDocument::Compact) + "\n";
 
     m_pending = true;
-    m_watchdog->start(60000);  // 60s — cloud API can be slow
+    m_watchdog->start(120000);
     m_process->write(reqLine);
 }
 
-void GlmOcrEngine::onReadyRead() {
+void OllamaOcrEngine::onReadyRead() {
     if (!m_pending) return;
     QByteArray respLine = m_process->readLine();
     if (respLine.isEmpty()) return;
@@ -115,14 +121,11 @@ void GlmOcrEngine::onReadyRead() {
     m_watchdog->stop();
 
     QJsonDocument doc = QJsonDocument::fromJson(respLine);
-    if (doc.isNull()) {
-        emit recognitionError("GLM-OCR invalid response");
-        return;
-    }
+    if (doc.isNull()) { emit recognitionError("PaddleOCR-VL invalid response"); return; }
 
     QJsonObject resp = doc.object();
-    if (resp.contains("error") && !resp["error"].isNull() && resp["error"].toString().size() > 0) {
-        emit recognitionError("GLM-OCR: " + resp["error"].toString());
+    if (resp.contains("error") && !resp["error"].isNull() && !resp["error"].toString().isEmpty()) {
+        emit recognitionError("PaddleOCR-VL: " + resp["error"].toString());
         return;
     }
 
@@ -136,35 +139,21 @@ void GlmOcrEngine::onReadyRead() {
                                 bo["w"].toInt(), bo["h"].toInt());
         result.boxes.append(tb);
     }
-
     result.fullText = resp["fullText"].toString();
     if (result.fullText.isEmpty()) {
-        // Build from boxes if fullText is empty
         QStringList all;
-        for (const auto& b : result.boxes)
-            all.append(b.text);
+        for (const auto& b : result.boxes) all.append(b.text);
         result.fullText = all.join(' ');
     }
-
     emit recognitionComplete(result);
 }
 
-void GlmOcrEngine::onProcessError(QProcess::ProcessError err) {
+void OllamaOcrEngine::onProcessError(QProcess::ProcessError err) {
     Q_UNUSED(err);
-    if (m_pending) {
-        m_pending = false;
-        m_watchdog->stop();
-        emit recognitionError("GLM-OCR process error: " + m_process->errorString());
-    }
+    if (m_pending) { m_pending = false; m_watchdog->stop(); }
 }
 
-void GlmOcrEngine::onProcessFinished(int exitCode, QProcess::ExitStatus status) {
-    Q_UNUSED(exitCode);
-    if (m_pending) {
-        m_pending = false;
-        m_watchdog->stop();
-        emit recognitionError(status == QProcess::CrashExit
-            ? "GLM-OCR process crashed" : "GLM-OCR process exited unexpectedly");
-    }
+void OllamaOcrEngine::onProcessFinished(int, QProcess::ExitStatus status) {
+    if (m_pending) { m_pending = false; m_watchdog->stop(); }
     m_ready = false;
 }

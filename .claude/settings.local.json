@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "deny": ["Workflow"],
     "allow": [
       "Bash(git add *)",
       "Bash(git commit *)",
@@ -50,6 +49,26 @@
       "Bash(powershell -Command \"Start-Process -FilePath 'C:\\\\Qt\\\\MaintenanceTool.exe' -ArgumentList '--al','install','qt.qt6.691.win64_msvc2022_64' -Wait -NoNewWindow\")",
       "Bash(curl -sL \"https://download.qt.io/official_releases/online_installers/\")",
       "Bash(curl -L \"https://download.qt.io/official_releases/online_installers/qt-online-installer-windows-x64-online.exe\" -o /tmp/qt-installer.exe)"
+    ],
+    "deny": [
+      "Workflow"
     ]
-  }
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "codegraph sync -q /e/AIAgentProject/ScreenLingo",
+            "timeout": 30,
+            "async": true
+          }
+        ]
+      }
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "streamable-mcp-server"
+  ]
 }

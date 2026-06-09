@@ -42,6 +42,7 @@ signals:
     void areaCleared();
     void areaEnabledChanged(int id, bool enabled);
     void translatorChangeRequested(const QString& name);
+    void ocrEngineChangeRequested(const QString& name);
 
 public slots:
     void retranslateUi();

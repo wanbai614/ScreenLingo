@@ -8,6 +8,7 @@
 #endif
 #include "core/ocr/PaddleOCRSubprocessEngine.h"
 #include "core/ocr/GlmOcrEngine.h"
+#include "core/ocr/OllamaOcrEngine.h"
 #include "core/translate/TranslatorManager.h"
 #include "core/translate/plugins/DeepLTranslator.h"
 #include "core/translate/plugins/OpenAITranslator.h"
@@ -25,6 +26,7 @@
 #include "ui/overlay/AreaOverlay.h"
 #include "core/selection/MouseSelectionMonitor.h"
 #include "ui/popup/TranslationPopup.h"
+#include "ui/subtitle/SubtitleOverlay.h"
 #include "common/Config.h"
 #include "common/LanguageManager.h"
 
@@ -287,6 +289,21 @@ bool Application::initialize() {
             m_ocr->initialize("auto");
             m_currentOcrEngine = "windows";
         }
+    } else if (ocrEngineName == QStringLiteral("glmocr")) {
+        m_ocr = new GlmOcrEngine(this);
+        if (!m_ocr->initialize("auto")) {
+            qWarning() << "GLM-OCR init failed, falling back to Windows OCR";
+            delete m_ocr;
+            m_ocr = new WindowsOcrEngine(this);
+            m_ocr->initialize("auto");
+            m_currentOcrEngine = "windows";
+        }
+    } else if (ocrEngineName == QStringLiteral("ollamavision")) {
+        QString ollamaUrl = m_config->translatorConfig("Ollama", "baseUrl");
+        if (ollamaUrl.isEmpty()) ollamaUrl = "http://localhost:11434/v1";
+        if (ollamaUrl.endsWith("/v1")) ollamaUrl.chop(3);
+        m_ocr = new OllamaOcrEngine(ollamaUrl, "MedAIBase/PaddleOCR-VL:0.9b", this);
+        m_ocr->initialize("auto");
     } else {
         m_ocr = new WindowsOcrEngine(this);
         if (!m_ocr->initialize("auto")) {
@@ -355,6 +372,8 @@ bool Application::initialize() {
     connect(m_selMonitor, &MouseSelectionMonitor::textSelected,
             this, &Application::onTextSelected);
 
+    // Subtitle overlay (video subtitle translation mode)
+    m_subtitleOverlay = new SubtitleOverlay();
 
     // Persistent area border overlay (non-modal, click-through when idle)
     m_areaOverlay = new AreaOverlay();
@@ -505,6 +524,11 @@ void Application::setMode(Mode mode) {
 
     switch (mode) {
     case Mode::RealTime:
+        // Reset stale state before starting subtitle mode
+        m_ocrBusy = false;
+        m_pendingTranslations = 0;
+        m_pendingResults.clear();
+        m_translator->cancelAll();
         m_captureTimer->start();
         break;
     case Mode::Snapshot:
@@ -548,7 +572,9 @@ void Application::onModeChanged(Mode mode) {
 void Application::processRealtimeFrame() {
     if (m_selectionMode) return;  // selection mode active, skip area translation
     if (m_areas.isEmpty()) return;
-    if (m_ocrBusy || m_pendingTranslations > 0) return;
+    // Subtitle mode: only block on OCR busy — allow concurrent translation
+    if (m_mode != Mode::RealTime && m_pendingTranslations > 0) return;
+    if (m_ocrBusy) return;
     const auto& area = m_areas.first();
     if (!area.enabled) return;
 
@@ -833,8 +859,10 @@ void Application::stopTranslation() {
     m_textToBatchKey.clear();
     m_translatedValues.clear();
     m_lastOcrText.clear();
+    m_lastSubtitleText.clear();
     m_lastFrameHash = 0;
     m_ocrBusy = false;
+    if (m_subtitleOverlay) m_subtitleOverlay->hide();
     if (m_floating) m_floating->setPipelineStatus("idle");
     if (m_tray) m_tray->setBusy(false);
     appLog("Stop: all translations cleared");
@@ -879,6 +907,22 @@ void Application::switchOCREngine(const QString& name) {
             m_ocr->initialize("auto");
             m_currentOcrEngine = "windows";
         }
+    } else if (name == QStringLiteral("ollamavision")) {
+        QString ollamaUrl = m_config->translatorConfig("Ollama", "baseUrl");
+        if (ollamaUrl.isEmpty()) ollamaUrl = "http://localhost:11434/v1";
+        if (ollamaUrl.endsWith("/v1")) ollamaUrl.chop(3);
+        auto* ov = new OllamaOcrEngine(ollamaUrl, "MedAIBase/PaddleOCR-VL:0.9b", this);
+        if (ov->initialize("auto")) {
+            m_ocr = ov;
+            m_currentOcrEngine = name;
+            appLog("OCR engine switched to PaddleOCR-VL");
+        } else {
+            delete ov;
+            qWarning() << "PaddleOCR-VL init failed, falling back to Windows OCR";
+            m_ocr = new WindowsOcrEngine(this);
+            m_ocr->initialize("auto");
+            m_currentOcrEngine = "windows";
+        }
     } else {
         m_ocr = new WindowsOcrEngine(this);
         m_ocr->initialize("auto");
@@ -917,6 +961,8 @@ void Application::onSettingsRequested() {
             m_config->setActiveTranslator(name);
             appLog("Translator switched to: " + name);
         });
+        connect(m_settings, &SettingsPanel::ocrEngineChangeRequested,
+                this, &Application::switchOCREngine);
         connect(m_settings, &SettingsPanel::languageChangeRequested,
                 this, &Application::onLanguageChangeRequested);
         connect(m_settings, &SettingsPanel::areaSelectRequested,
@@ -951,6 +997,32 @@ void Application::onOcrCompleted(const OCRResult& result) {
         return;
     }
 
+    // ── Subtitle mode (RealTime): single-text translation → subtitle bar ──
+    if (m_mode == Mode::RealTime) {
+        QString text = result.fullText.trimmed();
+        if (text == m_lastSubtitleText) {
+            // No change — skip
+            appLog("Subtitle: text unchanged, skip");
+            m_ocrBusy = false;
+            if (m_floating) m_floating->setPipelineStatus("idle");
+            if (m_tray) m_tray->setBusy(false);
+            return;
+        }
+        m_lastSubtitleText = text;
+        appLog(QString("Subtitle OCR: \"%1\"").arg(text.left(80)));
+
+        m_activeGen = m_snapshotGen;  // stamp for stale-response rejection
+        ++m_subtitleGen;              // reject stale subtitle translations
+        if (m_floating) m_floating->setPipelineStatus("translating");
+        // m_tray busy already set by processRealtimeFrame
+        ++m_pendingTranslations;
+        m_translator->translate(text, m_config->sourceLang(),
+                                m_config->targetLang());
+        m_ocrBusy = false;
+        return;
+    }
+
+    // ── Snapshot / Selection mode: existing logic ──
     m_lastOcrText = result.fullText;
     m_pendingResults.clear();
     m_retryPerText.clear();
@@ -1125,6 +1197,17 @@ void Application::onTranslationReady(const QString& original,
                     if (idx >= 0 && idx < batch.size())
                         indexToTrans[idx] = it.value().toString().trimmed();
                 }
+                // Fallback: model used original text as JSON key
+                // e.g. {"paddleocr-vl achieves sota...":"translation"}
+                for (auto it = obj.begin(); it != obj.end(); ++it) {
+                    if (numRx.match(it.key()).hasMatch()) continue;
+                    for (int i = 0; i < batch.size(); ++i) {
+                        if (!indexToTrans.contains(i) && it.key() == batch[i].first) {
+                            indexToTrans[i] = it.value().toString().trimmed();
+                            break;
+                        }
+                    }
+                }
             }
         } else {
             QStringList parts = t.split('\n', Qt::SkipEmptyParts);
@@ -1158,6 +1241,9 @@ void Application::onTranslationReady(const QString& original,
             }
         }
 
+        // Remove current batch BEFORE adding retries (fixes key collision)
+        m_batchMap.remove(original);
+
         // Retry failed items in small batches (max 15 per batch → manageable size)
         if (!retryItems.isEmpty()) {
             constexpr int kRetryCap = 15;
@@ -1178,8 +1264,6 @@ void Application::onTranslationReady(const QString& original,
                    .arg(retryItems.size())
                    .arg((retryItems.size() + kRetryCap - 1) / kRetryCap));
         }
-
-        m_batchMap.remove(original);
         // Flush even if all failed (to show "??" for exhausted retries)
         if (goodCount > 0 || !m_pendingResults.isEmpty())
             flushRowLayout();
@@ -1282,6 +1366,14 @@ void Application::onTranslationReady(const QString& original,
     }
 
     if (isFailed) {
+        // Subtitle mode: don't retry — next frame will capture fresh text
+        if (m_mode == Mode::RealTime) {
+            if (m_pendingTranslations > 0) --m_pendingTranslations;
+            m_floating->setPipelineStatus("idle");
+            if (m_tray) m_tray->setBusy(false);
+            appLog(QString("Subtitle: translation failed, skip"));
+            return;
+        }
         int& tries = m_retryPerText[original.trimmed()];
         if (++tries > 3) {
             // Too many retries for this text — give up and show "??" as-is
@@ -1304,6 +1396,22 @@ void Application::onTranslationReady(const QString& original,
     }
 
     if (m_pendingTranslations > 0) --m_pendingTranslations;
+
+    // ── Subtitle mode: update subtitle bar, skip bubble creation ──
+    if (m_mode == Mode::RealTime && !t.isEmpty()) {
+        // Reject stale responses (OCR text may have changed since dispatch)
+        if (original.trimmed() != m_lastSubtitleText) {
+            appLog("Subtitle: stale response, skip");
+            m_floating->setPipelineStatus("idle");
+            if (m_tray) m_tray->setBusy(false);
+            return;
+        }
+        m_subtitleOverlay->showText(t, m_config->loadStyle());
+        m_floating->setPipelineStatus("idle");
+        if (m_tray) m_tray->setBusy(false);
+        appLog(QString("Subtitle: \"%1\"").arg(t.left(80)));
+        return;
+    }
 
     if (m_globalVisible && !t.isEmpty()) {
         QRect sourceRect = m_textSourceRects.value(original);

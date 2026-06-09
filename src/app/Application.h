@@ -22,6 +22,7 @@ class SettingsPanel;
 class Config;
 class MouseSelectionMonitor;
 class TranslationPopup;
+class SubtitleOverlay;
 
 class Application : public QObject {
     Q_OBJECT
@@ -78,6 +79,7 @@ private:
     Config*             m_config      = nullptr;
     MouseSelectionMonitor* m_selMonitor = nullptr;
     TranslationPopup*      m_selPopup   = nullptr;
+    SubtitleOverlay*    m_subtitleOverlay = nullptr;
 
     // State
     Mode                    m_mode = Mode::Snapshot;
@@ -106,6 +108,7 @@ private:
     int  m_pendingTranslations = 0;
     int  m_snapshotGen = 0;     // generation counter — reject stale responses
     int  m_activeGen = 0;       // generation of current in-flight batch
+    int  m_subtitleGen = 0;     // generation counter for subtitle translations
     QTimer* m_flushTimeout = nullptr;
 
     // Translation cache: original text → translated text (avoid re-translating)
@@ -121,6 +124,7 @@ private:
 
     // Last OCR full text (avoid re-processing identical frames)
     QString m_lastOcrText;
+    QString m_lastSubtitleText;
 
     // Pixel-level frame dedup (more reliable than OCR text compare)
     uint m_lastFrameHash = 0;

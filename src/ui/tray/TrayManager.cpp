@@ -33,7 +33,7 @@ void TrayManager::buildMenu() {
     // --- Translation ---
     m_triggerAction = m_menu->addAction(tr("▶  Translate Now"));
     m_modeMenu = new QMenu(tr("Mode"), m_menu);
-    m_realtimeAction = m_modeMenu->addAction(tr("Real-time Translation"));
+    m_realtimeAction = m_modeMenu->addAction(tr("Subtitle Translation"));
     m_realtimeAction->setCheckable(true);
     m_snapshotAction = m_modeMenu->addAction(tr("Snapshot Translation"));
     m_snapshotAction->setCheckable(true);
@@ -149,7 +149,7 @@ void TrayManager::retranslateUi() {
     updateModeCheck(m_currentMode);  // refresh trigger action text
 
     m_modeMenu->setTitle(tr("Mode"));
-    m_realtimeAction->setText(tr("Real-time Translation"));
+    m_realtimeAction->setText(tr("Subtitle Translation"));
     m_snapshotAction->setText(tr("Snapshot Translation"));
     m_langMenu->setTitle(tr("Language"));
     m_langEnAction->setText(tr("English"));

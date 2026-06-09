@@ -18,7 +18,7 @@ from glmocr.pipeline import Pipeline
 from glmocr.config import load_config
 
 config = load_config()
-pipeline = Pipeline(config)
+pipeline = Pipeline(config.pipeline)
 
 sys.stderr.write("GLM-OCR server ready\n"); sys.stderr.flush()
 

@@ -5,6 +5,7 @@
 #include <QtCore/QRegularExpression>
 #include <QtCore/QUrl>
 #include <QtCore/QBuffer>
+#include <QtCore/QMap>
 
 OllamaTranslator::OllamaTranslator(QObject* parent)
     : ITranslator(parent), m_nam(new QNetworkAccessManager(this)) {}
@@ -73,11 +74,22 @@ void OllamaTranslator::sendRequest(const QueuedReq& r) {
         // Batch mode: minimal system prompt — avoid verbose persona presets
         // that add 2000+ chars of glossary and cause the model to over-think.
         int count = r.text.count('\n') + 1;
+        static const QMap<QString, QString> langNames = {
+            {"zh", "Chinese"},    {"en", "English"},   {"ja", "Japanese"},
+            {"ko", "Korean"},     {"fr", "French"},    {"de", "German"},
+            {"es", "Spanish"},    {"pt", "Portuguese"},{"ru", "Russian"},
+            {"ar", "Arabic"},     {"th", "Thai"},      {"vi", "Vietnamese"},
+            {"it", "Italian"},    {"nl", "Dutch"},
+        };
+        QString srcName = langNames.value(r.srcLang, r.srcLang);
+        QString tgtName = langNames.value(r.tgtLang, r.tgtLang);
         QString prompt = QStringLiteral(
-            "Translate these %1 items from %2 to %3. "
-            "Output ONLY a JSON array with %1 strings. Nothing else.\n"
-            "Format: [\"t1\",\"t2\",...,\"t%1\"]\n\n%4")
-            .arg(count).arg(r.srcLang, r.tgtLang).arg(r.text);
+            "You are a professional translator. "
+            "Translate the following %1 items from %2 to %3. "
+            "Output ONLY %4 — never mix languages. "
+            "Output a JSON array of %1 strings, nothing else.\n"
+            "Format: [\"t1\",\"t2\",...,\"t%1\"]\n\n%5")
+            .arg(count).arg(srcName, tgtName, tgtName).arg(r.text);
         body["messages"] = QJsonArray{
             QJsonObject{{"role", "user"}, {"content", prompt}}
         };

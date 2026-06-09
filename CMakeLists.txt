@@ -64,6 +64,8 @@ set(SOURCES
     src/core/selection/MouseSelectionMonitor.cpp
     src/ui/popup/TranslationPopup.h
     src/ui/popup/TranslationPopup.cpp
+    src/ui/subtitle/SubtitleOverlay.h
+    src/ui/subtitle/SubtitleOverlay.cpp
 )
 
 # --- PaddleOCR + ONNX Runtime (MSVC only) ---
@@ -73,7 +75,9 @@ list(APPEND SOURCES
     src/core/ocr/PaddleOCRSubprocessEngine.h
     src/core/ocr/PaddleOCRSubprocessEngine.cpp
     src/core/ocr/GlmOcrEngine.h
-    src/core/ocr/GlmOcrEngine.cpp)
+    src/core/ocr/GlmOcrEngine.cpp
+    src/core/ocr/OllamaOcrEngine.h
+    src/core/ocr/OllamaOcrEngine.cpp)
 
 # PaddleOCR ONNX engine (requires ONNX Runtime)
 if(MSVC AND EXISTS "${ONNXRUNTIME_ROOT}/include/onnxruntime_cxx_api.h")
